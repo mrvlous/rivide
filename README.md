@@ -1,0 +1,264 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
+# Rivide: Post-Quantum Cryptography C99 Library
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![C Standard](https://img.shields.io/badge/C-C99-green.svg)](docs/architecture/overview.md)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](.github/workflows/ci.yml)
+[![Security](https://img.shields.io/badge/Security-Constant--Time-orange.svg)](docs/architecture/memory_random.md)
+
+**Rivide** is a high-performance, zero-dependency, constant-time C99 Post-Quantum Cryptography (PQC) library. It implements the official **NIST FIPS 203** (ML-KEM) and **NIST FIPS 204** (ML-DSA) standards, engineered specifically for embedded systems, network security protocols, operating system kernels, and security-critical applications.
+
+---
+
+## Key Features
+
+*   **NIST Post-Quantum Standards**:
+    *   **ML-KEM (FIPS 203)**: Module-Lattice-Based Key Encapsulation Mechanism (**ML-KEM-768** and **ML-KEM-1024**).
+    *   **ML-DSA (FIPS 204)**: Module-Lattice-Based Digital Signature Algorithm (**ML-DSA-65** and **ML-DSA-87**).
+*   **ISO C99 Standard Compliance**: Written in clean, portable C99 (`-std=c99 -Wall -Wextra -Wpedantic -Werror`).
+*   **Zero Dynamic Memory Allocation**: Never invokes `malloc` or heap allocation. All buffers are fixed-size and caller-allocated on the stack.
+*   **Constant-Time Side-Channel Protection**: Features constant-time comparisons (`rivide_ct_memcmp`) and conditional selections (`rivide_ct_select`) to prevent timing side-channel attacks.
+*   **Secure Memory Cleansing**: Prevents compiler dead-store elimination via volatile barriers (`rivide_cleanse`) to guarantee zeroization of sensitive private keys in RAM.
+*   **Multi-Platform OS CSPRNG Engine**: Queries kernel entropy sources natively (`getrandom` on Linux, `BCryptGenRandom` on Windows).
+*   **Built-in Symmetric Primitives**: Autonomous implementations of **Keccak-f[1600]** (SHA3-256/512, SHAKE-128/256) and **AES-128/256-GCM** AEAD.
+
+---
+
+## Table of Contents
+
+1. [Installation & Quick Start](#installation--quick-start)
+2. [Code Tutorials & Usage Examples](#code-tutorials--usage-examples)
+   * [Tutorial 1: ML-KEM-768 Key Exchange](#tutorial-1-ml-kem-768-key-exchange)
+   * [Tutorial 2: ML-DSA-65 Digital Signature](#tutorial-2-ml-dsa-65-digital-signature)
+3. [Parameter & Specification Summary](#parameter--specification-summary)
+4. [Master Makefile Command Automation](#master-makefile-command-automation)
+5. [Documentation Map](#documentation-map)
+6. [License & Maintainers](#license--maintainers)
+
+---
+
+## Installation & Quick Start
+
+### 1. Prerequisites
+Install build dependencies (GCC/Clang, CMake, Make):
+
+```bash
+# Ubuntu / Debian
+sudo apt-get install -y build-essential cmake ctest clang-format clang-tidy
+
+# Arch Linux / Manjaro
+sudo pacman -S base-devel cmake clang
+```
+
+### 2. Building from Source
+Clone the repository and build using the master Makefile:
+
+```bash
+# Clone the repository
+git clone https://github.com/mrvlous/rivide.git
+cd rivide
+
+# Compile static library (librivide.a), test suite, and examples
+make build
+
+# Run unit test suite
+make test
+
+# Execute demonstration applications
+make run-examples
+```
+
+### 3. Installing System-Wide
+Install static library archives and header files to system locations (e.g. `/usr/local`):
+
+```bash
+sudo make install
+```
+
+---
+
+## Code Tutorials & Usage Examples
+
+Include the unified master header in your C application:
+```c
+#include "rivide/rivide.h"
+```
+
+### Tutorial 1: ML-KEM-768 Key Exchange
+
+This example demonstrates post-quantum key exchange between Alice and Bob:
+
+```c
+#include <stdio.h>
+#include "rivide/rivide.h"
+
+int main(void) {
+    rivide_status_t status;
+
+    // 1. Initialize Rivide cryptographic library
+    status = rivide_init();
+    if (status != RIVIDE_SUCCESS) {
+        fprintf(stderr, "Rivide initialization failed: %s\n", rivide_status_str(status));
+        return 1;
+    }
+
+    // 2. Allocate fixed-size key buffers (Zero Heap Allocation)
+    uint8_t alice_pk[RIVIDE_ML_KEM_768_PK_BYTES];
+    uint8_t alice_sk[RIVIDE_ML_KEM_768_SK_BYTES];
+    uint8_t ciphertext[RIVIDE_ML_KEM_768_CIPHERTEXT_BYTES];
+    uint8_t bob_shared_secret[RIVIDE_ML_KEM_768_BYTES];
+    uint8_t alice_shared_secret[RIVIDE_ML_KEM_768_BYTES];
+
+    // 3. [Alice] Generate ML-KEM-768 keypair
+    printf("[Alice] Generating ML-KEM-768 key pair...\n");
+    status = rivide_ml_kem_768_keygen(alice_pk, alice_sk);
+    if (status != RIVIDE_SUCCESS) return 1;
+
+    // 4. [Bob] Encapsulate shared secret under Alice's public key
+    printf("[Bob] Encapsulating shared secret...\n");
+    status = rivide_ml_kem_768_encaps(ciphertext, bob_shared_secret, alice_pk);
+    if (status != RIVIDE_SUCCESS) return 1;
+
+    // 5. [Alice] Decapsulate ciphertext using her secret key
+    printf("[Alice] Decapsulating shared secret...\n");
+    status = rivide_ml_kem_768_decaps(alice_shared_secret, ciphertext, alice_sk);
+    if (status != RIVIDE_SUCCESS) return 1;
+
+    // 6. Verify matching shared secret (32 bytes)
+    if (rivide_ct_memcmp(alice_shared_secret, bob_shared_secret, RIVIDE_ML_KEM_768_BYTES) == 0) {
+        printf("SUCCESS: Shared secrets match! Quantum-safe key exchange complete.\n");
+    } else {
+        printf("ERROR: Shared secret mismatch!\n");
+        return 1;
+    }
+
+    // 7. Securely cleanse private keys in RAM
+    rivide_cleanse(alice_sk, sizeof(alice_sk));
+    return 0;
+}
+```
+
+Compile with: `gcc -O3 main.c -lrivide -o kem_app`
+
+---
+
+### Tutorial 2: ML-DSA-65 Digital Signature
+
+This example demonstrates signing and verifying messages using ML-DSA-65:
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include "rivide/rivide.h"
+
+int main(void) {
+    rivide_status_t status;
+
+    // 1. Initialize library
+    rivide_init();
+
+    // 2. Allocate fixed-size key and signature buffers
+    uint8_t pk[RIVIDE_ML_DSA_65_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_DSA_65_SK_BYTES];
+    uint8_t signature[RIVIDE_ML_DSA_65_SIG_BYTES];
+    size_t siglen = sizeof(signature);
+
+    const char *message = "Post-Quantum signed payload using Rivide library.";
+    size_t msglen = strlen(message);
+
+    // 3. Generate ML-DSA-65 keypair
+    printf("[Signer] Generating ML-DSA-65 key pair...\n");
+    status = rivide_ml_dsa_65_keygen(pk, sk);
+    if (status != RIVIDE_SUCCESS) return 1;
+
+    // 4. Sign message
+    printf("[Signer] Signing message...\n");
+    status = rivide_ml_dsa_65_sign(signature, &siglen, (const uint8_t *)message, msglen, sk);
+    if (status != RIVIDE_SUCCESS) return 1;
+
+    // 5. Verify signature
+    printf("[Verifier] Verifying signature...\n");
+    status = rivide_ml_dsa_65_verify(signature, siglen, (const uint8_t *)message, msglen, pk);
+    if (status == RIVIDE_SUCCESS) {
+        printf("SUCCESS: Signature is VALID!\n");
+    } else {
+        printf("ERROR: Signature verification failed!\n");
+        return 1;
+    }
+
+    // 6. Securely wipe secret key
+    rivide_cleanse(sk, sizeof(sk));
+    return 0;
+}
+```
+
+Compile with: `gcc -O3 main.c -lrivide -o dsa_app`
+
+---
+
+## Parameter & Specification Summary
+
+| Algorithm | Standard | Public Key | Secret Key | Ciphertext / Signature | Shared Key / Security |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **ML-KEM-768** | NIST FIPS 203 | `1184` bytes | `2400` bytes | `1088` bytes | 32 bytes (Category 3 / AES-192) |
+| **ML-KEM-1024** | NIST FIPS 203 | `1568` bytes | `3168` bytes | `1568` bytes | 32 bytes (Category 5 / AES-256) |
+| **ML-DSA-65** | NIST FIPS 204 | `1952` bytes | `4032` bytes | `3309` bytes | Category 3 / AES-192 equivalent |
+| **ML-DSA-87** | NIST FIPS 204 | `2592` bytes | `4896` bytes | `4627` bytes | Category 5 / AES-256 equivalent |
+
+---
+
+## Master Makefile Command Automation
+
+The master [`Makefile`](Makefile) provides simple automation targets:
+
+| Command | Action |
+| :--- | :--- |
+| `make build` | Compile static library `librivide.a`, tests, and example binaries |
+| `make test` | Run automated unit test suite using CTest |
+| `make run-examples` | Build and execute ML-KEM and ML-DSA demonstration applications |
+| `make format` | Auto-format all C/H files using `.clang-format` |
+| `make check-format` | Verify code formatting against `.clang-format` rules |
+| `make lint` | Run static code analysis using `clang-tidy` |
+| `make check` | Check system environment for required dependencies |
+| `make clean` | Delete build outputs and temporary artifacts |
+
+---
+
+## Documentation Map
+
+For detailed architectural and API documentation, refer to the [`docs/`](docs/README.md) directory:
+
+*   [Documentation Map Index](docs/README.md)
+*   **Architecture Guides**:
+    *   [Library Architecture Overview](docs/architecture/overview.md)
+    *   [ML-KEM (FIPS 203) Architecture](docs/architecture/pqc_ml_kem.md)
+    *   [ML-DSA (FIPS 204) Architecture](docs/architecture/pqc_ml_dsa.md)
+    *   [Symmetric Primitives Architecture](docs/architecture/crypto_primitives.md)
+    *   [Memory & CSPRNG Engine Architecture](docs/architecture/memory_random.md)
+*   **API References**:
+    *   [Core API Reference](docs/api/core.md)
+    *   [ML-KEM API Reference](docs/api/ml_kem.md)
+    *   [ML-DSA API Reference](docs/api/ml_dsa.md)
+    *   [Symmetric Cryptography API Reference](docs/api/crypto_utils.md)
+*   **Contribution Guidelines**:
+    *   [Development Environment Setup](docs/contributing/setup.md)
+    *   [Building and Tooling](docs/contributing/build.md)
+    *   [Coding & License Style Guidelines](docs/contributing/style.md)
+
+---
+
+## License & Maintainers
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+*   **Author & Maintainer**: Moh. Ananda Firmansyah Putra ([@mrvlous](https://github.com/mrvlous))
+*   **Version History & Release Notes**: [CHANGELOG.md](CHANGELOG.md)
+*   **Maintainers Roster**: [MAINTAINERS](MAINTAINERS)
+*   **Contributors & Credits**: [CREDITS](CREDITS)
+*   **Security Reporting**: [SECURITY.md](.github/SECURITY.md)

@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-and-test:
+    name: Build & Test (${{ matrix.os }} - ${{ matrix.compiler }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        compiler: [gcc, clang]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake clang-format clang-tidy
+
+      - name: Check System Environment
+        run: make check
+
+      - name: Verify Code Formatting
+        run: make check-format
+
+      - name: Build Library and Test Binaries
+        run: make build CC=${{ matrix.compiler }}
+
+      - name: Run Automated Unit Tests
+        run: make test
+
+      - name: Execute Demonstration Examples
+        run: make run-examples
+
+      - name: Static Code Analysis (Lint)
+        run: make lint CC=${{ matrix.compiler }}

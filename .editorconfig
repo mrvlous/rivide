@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+tab_width = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{c,h}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+[Makefile]
+indent_style = tab
+tab_width = 8
+
+[CMakeLists.txt]
+indent_style = space
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
