@@ -53,6 +53,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - IDE integration suite: `.clangd` (LSP compilation database), `.clang-format` (LLVM C99 style), `.clang-tidy` (static analysis), `.editorconfig`, `.gitattributes`, `.gitignore`.
 - **Modular Documentation & GitHub Governance**:
   - Super modular documentation system in `docs/` (`architecture/*`, `api/*`, `contributing/*`).
-  - GitHub Action Workflows (`.github/workflows/ci.yml`, `security.yml`, `release.yml`).
+  - GitHub Action Workflows (`.github/workflows/ci.yml`, `codeql.yml`, `release.yml`).
   - GitHub Issue Templates (`bug_report.md`, `feature_request.md`, `documentation.md`), PR template, `SECURITY.md`, `CODE_OF_CONDUCT.md`, and `CODEOWNERS`.
   - Subsystem Maintainer mapping (`MAINTAINERS`) and Contributor acknowledgments (`CREDITS`).
