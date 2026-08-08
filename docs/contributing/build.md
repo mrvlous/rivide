@@ -1,4 +1,11 @@
-# Building, Testing, and Tooling
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
+# Building, Testing & Tooling
 
 This document describes the build pipeline, CMake targets, Makefile automation rules, unit test execution, and static analysis tools.
 

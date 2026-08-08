@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # ML-KEM API Reference
 
 The ML-KEM API provides keypair generation, encapsulation, and decapsulation for NIST FIPS 203 post-quantum key establishment.

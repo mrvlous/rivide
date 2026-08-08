@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Symmetric Cryptographic Primitives
 
 This document describes the design and implementation of Rivide's symmetric cryptographic primitives: the **Keccak-f[1600]** sponge engine (SHA-3 & SHAKE) and the **AES-128/256-GCM** AEAD cipher.

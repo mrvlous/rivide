@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # ML-KEM Key Encapsulation Mechanism (NIST FIPS 203)
 
 This document details the mathematical architecture, parameter sets, and implementation details of the **ML-KEM** (Module-Lattice-Based Key Encapsulation Mechanism) algorithm implemented in [`src/pqc/ml_kem.c`](../../src/pqc/ml_kem.c).

@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # ML-DSA API Reference
 
 The ML-DSA API provides keypair generation, signature generation, and verification for NIST FIPS 204 post-quantum digital signatures.

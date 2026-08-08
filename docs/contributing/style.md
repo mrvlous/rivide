@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Coding and License Style Guidelines
 
 To maintain high code quality, security, and maintainability across the **Rivide** codebase, all contributions must adhere to the style and licensing standards outlined below.
@@ -45,6 +52,17 @@ Must include the 4-line concise copyright comment block:
 #
 # Rivide Post-Quantum Cryptography Library
 # Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+```
+
+### Documentation Files (`README.md`, `docs/**/*.md`, `.github/**/*.md`)
+Must include the license block in HTML comments:
+```html
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
 ```
 
 ### `LICENSE` File

@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Development Environment Setup
 
 This document describes how to set up your local development environment, toolchain packages, CMake build utilities, and IDE code intelligence for contributing to **Rivide**.

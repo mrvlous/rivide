@@ -1,4 +1,11 @@
-# Memory Cleansing and CSPRNG Subsystems
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
+# Constant-Time Memory Utilities & CSPRNG Entropy Engine
 
 This document details the constant-time memory utilities, secure memory zeroization, and multi-platform Cryptographically Secure Pseudorandom Number Generator (CSPRNG) architecture implemented in [`src/utils/mem.c`](../../src/utils/mem.c) and [`src/utils/random.c`](../../src/utils/random.c).
 

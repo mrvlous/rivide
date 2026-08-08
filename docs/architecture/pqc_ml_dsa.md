@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # ML-DSA Digital Signature Algorithm (NIST FIPS 204)
 
 This document describes the design, algebraic structures, and implementation details of the **ML-DSA** (Module-Lattice-Based Digital Signature Algorithm) implemented in [`src/pqc/ml_dsa.c`](../../src/pqc/ml_dsa.c).

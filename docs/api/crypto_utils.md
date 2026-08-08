@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Symmetric Cryptography & Utility API Reference
 
 This document covers public APIs for SHA-3 hashing, SHAKE XOFs, AES-GCM AEAD encryption, memory cleansing, and random byte generation.

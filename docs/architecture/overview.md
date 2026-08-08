@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Architecture Overview and Design Principles
 
 The **Rivide** Post-Quantum Cryptography library is engineered from the ground up to provide high-performance, post-quantum security primitives in modern C99 for embedded, server, and system software applications.

@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Rivide Post-Quantum Cryptography Documentation Map
 
 Welcome to the technical documentation for **Rivide**, a portable, zero-dependency C99 Post-Quantum Cryptography (PQC) library. This modular documentation system provides developers, cryptographers, and system integrators with a complete understanding of Rivide's design, architecture, API surfaces, and build ecosystem.
