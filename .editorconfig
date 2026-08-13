@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+# EditorConfig file for enforcing consistent coding styles across all IDEs and text editors.
+# Defines indentation width, character encoding, and line ending standards for the project.
+
+# Instruct EditorConfig plugins to stop searching parent directories for root files
+root = true
+
+# Default formatting rules applicable to all files in the repository
+[*]
+indent_style = space
+indent_size = 4
+tab_width = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Formatting rules for ISO C99 source files and public/internal header files
+[*.{c,h}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# Indentation and tab rules required for GNU Makefile targets
+[Makefile]
+indent_style = tab
+tab_width = 8
+
+# Formatting rules for CMake build system configuration files
+[CMakeLists.txt]
+indent_style = space
+indent_size = 4
+
+# Formatting rules for YAML configuration and LSP settings files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Whitespace rules for Markdown documentation files to preserve linebreaks
+[*.md]
+trim_trailing_whitespace = false

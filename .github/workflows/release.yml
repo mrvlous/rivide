@@ -1,0 +1,113 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+name: Create Release Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release-linux:
+    name: Build Release (Linux x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake
+
+      - name: Build Library
+        run: make build
+
+      - name: Package Linux Artifacts
+        run: tar -czvf rivide-linux-x86_64.tar.gz -C build librivide.a librivide.so -C ../ include/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rivide-linux-x86_64
+          path: rivide-linux-x86_64.tar.gz
+
+  release-macos:
+    name: Build Release (macOS ARM64)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: brew install cmake
+
+      - name: Build Library
+        run: make build CC=clang
+
+      - name: Package macOS Artifacts
+        run: tar -czvf rivide-macos-arm64.tar.gz -C build librivide.a librivide.dylib -C ../ include/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rivide-macos-arm64
+          path: rivide-macos-arm64.tar.gz
+
+  release-windows:
+    name: Build Release (Windows x64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DRIVIDE_BUILD_TESTS=OFF -DRIVIDE_BUILD_EXAMPLES=OFF
+
+      - name: Build Library
+        run: cmake --build build --config Release
+
+      - name: Package Windows Artifacts
+        shell: bash
+        run: |
+          mkdir -p release-pkg
+          cp build/Release/rivide.lib release-pkg/ 2>/dev/null || cp build/rivide.lib release-pkg/ 2>/dev/null || true
+          cp -r include release-pkg/
+          cd release-pkg && (7z a ../rivide-windows-x64.zip * 2>/dev/null || zip -r ../rivide-windows-x64.zip * 2>/dev/null || powershell Compress-Archive -Path '*' -DestinationPath '../rivide-windows-x64.zip')
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rivide-windows-x64
+          path: rivide-windows-x64.zip
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: [release-linux, release-macos, release-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            rivide-linux-x86_64.tar.gz
+            rivide-macos-arm64.tar.gz
+            rivide-windows-x64.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

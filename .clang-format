@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+# Configuration file for clang-format code formatting tool.
+# Enforces strict compliance with ISO C99 / LLVM coding guidelines across
+# all source (.c) and header (.h) files in the Rivide library.
+
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: Latest
+
+# Indentation and Tab Settings
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# Formatting and Braces Rules
+BreakBeforeBraces: Attach
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# Pointer and Reference Alignment
+PointerAlignment: Right
+
+# Include Sorting Configurations
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<.*>$'
+    Priority: 1
+  - Regex: '^"rivide/.*"'
+    Priority: 2
+  - Regex: '^".*"'
+    Priority: 3
+
+# Spacing Rules
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInSquareBrackets: false
+SpacesInContainerLiterals: false
+
+# Line Continuation and Alignment
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignEscapedNewlines: Left
+AlignOperands: Align
+AlignTrailingComments: true

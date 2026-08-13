@@ -1,0 +1,94 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-linux:
+    name: Build & Test (Linux - ${{ matrix.compiler }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake clang-format clang-tidy
+
+      - name: Check System Environment
+        run: make check
+
+      - name: Verify Code Formatting
+        run: make check-format
+
+      - name: Build Library and Test Binaries
+        run: make build CC=${{ matrix.compiler }}
+
+      - name: Run Automated Unit Tests
+        run: make test
+
+      - name: Execute Demonstration Examples
+        run: make run-examples
+
+      - name: Static Code Analysis (Lint)
+        run: make lint CC=${{ matrix.compiler }}
+
+  build-macos:
+    name: Build & Test (macOS - Apple Clang)
+    runs-on: macos-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: brew install cmake clang-format
+
+      - name: Check System Environment
+        run: make check
+
+      - name: Verify Code Formatting
+        run: make check-format
+
+      - name: Build Library and Test Binaries
+        run: make build CC=clang
+
+      - name: Run Automated Unit Tests
+        run: make test
+
+      - name: Execute Demonstration Examples
+        run: make run-examples
+
+  build-windows:
+    name: Build & Test (Windows - MSVC)
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DRIVIDE_BUILD_TESTS=ON -DRIVIDE_BUILD_EXAMPLES=ON
+
+      - name: Build Library and Test Binaries
+        run: cmake --build build --config Release
+
+      - name: Run Automated Unit Tests
+        run: cd build && ctest --output-on-failure -C Release

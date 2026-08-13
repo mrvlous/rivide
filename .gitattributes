@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+# Default text file handling with automatic LF normalization
+* text=auto eol=lf
+
+# C99 source code and public/internal header files
+*.c text eol=lf
+*.h text eol=lf
+
+# Build system, toolchain, and package configuration files
+CMakeLists.txt text eol=lf
+Makefile text eol=lf
+rivide.pc.in text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+.clangd text eol=lf
+.clang-format text eol=lf
+.clang-tidy text eol=lf
+
+# Project documentation, licenses, and Markdown files
+*.md text eol=lf
+LICENSE text eol=lf
+MAINTAINERS text eol=lf
+CREDITS text eol=lf
+CHANGELOG.md text eol=lf
+
+# Python scripts and wrapper scripts
+*.py text eol=lf
+
+# Binary artifact formats
+*.a binary
+*.so binary
+*.so.* binary
+*.dylib binary
+*.dll binary
+*.exe binary
+*.png binary
+*.jpg binary

@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+# Configuration file for clang-tidy static code analyzer.
+# Performs static analysis for security vulnerabilities, C99 standard compliance,
+# bugprone code patterns, performance bottlenecks, and magic number readability.
+
+# Active check suites and diagnostic rules
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  performance-*,
+  readability-magic-numbers,
+  readability-redundant-*
+
+# Treat all static analysis warnings as non-fatal diagnostics
+WarningsAsErrors: ''
+
+# Regex filter for header files included in analysis
+HeaderFilterRegex: 'include/.*'
+
+# Formatting style used by automated fixers
+FormatStyle: 'file'

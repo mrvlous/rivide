@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+# CMake build outputs and artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+rivide.pc
+
+# Compiled object files and library binaries
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+
+# Generated test and example executable binaries
+rivide_tests
+basic_kem_example
+basic_dsa_example
+hybrid_pqc_aead_example
+pqc_tls_handshake_example
+pqc_secure_storage_example
+dsa_detached_signature_example
+simd_vector_example
+rivide_bench
+
+# Environment, IDE, and Language Server temporary caches
+.cache/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Test execution logs and temporary output files
+*.log
+*.tmp

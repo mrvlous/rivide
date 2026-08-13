@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+# Template input file for pkg-config package management (rivide.pc).
+# Evaluated and generated dynamically by CMake GNUInstallDirs during build/install.
+
+# Directory installation path variables
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+# Package metadata, linker flags, and header include paths
+Name: rivide
+Description: Portable, zero-dependency, constant-time C99 Post-Quantum Cryptography (PQC) library implementing NIST FIPS 203 (ML-KEM) and NIST FIPS 204 (ML-DSA).
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lrivide
+Cflags: -I${includedir}
