@@ -1,6 +1,6 @@
 # Rivide Documentation Portal
 
-Welcome to the official documentation for the **Rivide Post-Quantum Cryptography Library** (`v1.0.0`). Rivide is a high-performance, zero-dependency, constant-time C99 cryptographic library implementing NIST FIPS 203 (ML-KEM) and NIST FIPS 204 (ML-DSA).
+Welcome to the official documentation for the **Rivide Post-Quantum Cryptography Library** (`v1.0.1`). Rivide is a high-performance, zero-dependency, constant-time C99 cryptographic library implementing NIST FIPS 203 (ML-KEM) and NIST FIPS 204 (ML-DSA).
 
 ## Documentation Structure
 

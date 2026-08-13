@@ -14,6 +14,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2026-08-14
+
+### Fixed
+- **Strict Signature Length Validation in ML-DSA (Security Audit P0 Remediation)**:
+  - Enforced strict buffer length validation in `rivide_ml_dsa_65_verify` and `rivide_ml_dsa_87_verify` against expected encoded signature sizes (`RIVIDE_ML_DSA_65_SIG_BYTES = 3309`, `RIVIDE_ML_DSA_87_SIG_BYTES = 4627`).
+  - Corrected `ml_dsa_verify_internal` to strictly reject both truncated (`siglen < expected`) and oversized (`siglen > expected`) signatures with `RIVIDE_ERR_VERIFICATION_FAILED` before deserialization, preventing potential out-of-bounds reads and undefined behavior.
+- **Python CTypes FFI Binding (`examples/python/rivide_pqc_binding.py`)**:
+  - Corrected function symbol from `rivide_ml_kem_768_keypair` to `rivide_ml_kem_768_keygen` to align with the public C library API.
+
+### Added
+- **Security Regression & Boundary Fuzzing Test Suite**:
+  - Added `test_ml_dsa_65_siglen_validation` and `test_ml_dsa_87_siglen_validation` testing signature length boundaries (`siglen = 0, 1, 2, expected-1, expected, expected+1, expected+32`).
+  - Added `test_ml_dsa_boundary_fuzz` verifying robust rejection on corrupted challenge seeds ($c$), corrupted $z$ polynomials, corrupted hint vectors ($h$), corrupted public keys, NULL pointers, and empty messages (`msglen = 0`).
+- **Mathematical NTT/INTT Invertibility & Modular Reduction Tests**:
+  - Added `test_ml_kem_ntt_invertibility` verifying roundtrip invertibility of $\text{INTT}(\text{NTT}(x))$ modulo $q = 3329$.
+  - Added `test_ml_dsa_ntt_invertibility` verifying roundtrip invertibility of $\text{INTT}(\text{NTT}(x))$ modulo $q = 8380417$.
+  - Added `test_modular_reductions` verifying Barrett reduction and conditional modular addition ($q$).
+- **ASan & UBSan Sanitizer Conformance Verification**:
+  - Verified full test suite execution under AddressSanitizer (`-fsanitize=address`) and UndefinedBehaviorSanitizer (`-fsanitize=undefined`) with zero warnings, zero memory leaks, and zero undefined behaviors.
+
+### Changed
+- **API Documentation (`docs/api/ml_dsa.md`)**:
+  - Documented explicit `siglen` buffer requirements and `RIVIDE_ERR_VERIFICATION_FAILED` error return code for ML-DSA verification functions.
+
+---
+
 ## [1.0.0] - 2026-08-13
 
 ### Added

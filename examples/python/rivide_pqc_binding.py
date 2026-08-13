@@ -75,8 +75,8 @@ def main():
     lib.rivide_version_string.argtypes = []
 
     # Bind ML-KEM-768 APIs
-    lib.rivide_ml_kem_768_keypair.restype = ctypes.c_int
-    lib.rivide_ml_kem_768_keypair.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    lib.rivide_ml_kem_768_keygen.restype = ctypes.c_int
+    lib.rivide_ml_kem_768_keygen.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 
     lib.rivide_ml_kem_768_encaps.restype = ctypes.c_int
     lib.rivide_ml_kem_768_encaps.argtypes = [
@@ -109,7 +109,7 @@ def main():
     ss_decap = ctypes.create_string_buffer(RIVIDE_ML_KEM_BYTES)
 
     print("[Python] Generating ML-KEM-768 keypair...")
-    lib.rivide_ml_kem_768_keypair(pk, sk)
+    lib.rivide_ml_kem_768_keygen(pk, sk)
 
     print("[Python] Encapsulating shared secret...")
     lib.rivide_ml_kem_768_encaps(ct, ss_encap, pk)

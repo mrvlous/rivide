@@ -34,10 +34,10 @@
 #define RIVIDE_VERSION_MINOR 0
 
 /** @brief Patch version number. */
-#define RIVIDE_VERSION_PATCH 0
+#define RIVIDE_VERSION_PATCH 1
 
-/** @brief Full version string. */
-#define RIVIDE_VERSION_STRING "1.0.0"
+/** @brief Complete version string constant (e.g., "1.0.1"). */
+#define RIVIDE_VERSION_STRING "1.0.1"
 
 #include "crypto/sha3.h"
 #include "rivide_config.h"

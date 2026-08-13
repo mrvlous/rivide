@@ -423,6 +423,7 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
     dsa_poly_t cp;
     size_t sig_offset;
     size_t z_bytes_per_poly;
+    size_t expected_siglen;
     int i;
     int32_t beta;
 
@@ -430,7 +431,17 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
         return RIVIDE_ERR_NULL_PTR;
     }
 
-    (void)siglen;
+    if (gamma1 == (1 << 17)) {
+        z_bytes_per_poly = 576;
+    } else {
+        z_bytes_per_poly = 640;
+    }
+
+    /* Strict signature length verification to prevent out-of-bounds reads. */
+    expected_siglen = ctilde_bytes + (size_t)l * z_bytes_per_poly + (size_t)omega + (size_t)k;
+    if (siglen != expected_siglen) {
+        return RIVIDE_ERR_VERIFICATION_FAILED;
+    }
 
     /* Unpack public key. */
     dsa_unpack_pk(rho, &t1, pk, k);
@@ -592,7 +603,9 @@ rivide_status_t rivide_ml_dsa_65_sign(uint8_t *sig, size_t *siglen, const uint8_
 
 rivide_status_t rivide_ml_dsa_65_verify(const uint8_t *sig, size_t siglen, const uint8_t *msg,
                                         size_t msglen, const uint8_t *pk) {
-    (void)siglen;
+    if (siglen != RIVIDE_ML_DSA_65_SIG_BYTES) {
+        return RIVIDE_ERR_VERIFICATION_FAILED;
+    }
     return ml_dsa_verify_internal(sig, siglen, msg, msglen, pk, RIVIDE_ML_DSA_65_K,
                                   RIVIDE_ML_DSA_65_L, RIVIDE_ML_DSA_65_GAMMA1,
                                   RIVIDE_ML_DSA_65_GAMMA2, RIVIDE_ML_DSA_TAU_65,
@@ -616,7 +629,9 @@ rivide_status_t rivide_ml_dsa_87_sign(uint8_t *sig, size_t *siglen, const uint8_
 
 rivide_status_t rivide_ml_dsa_87_verify(const uint8_t *sig, size_t siglen, const uint8_t *msg,
                                         size_t msglen, const uint8_t *pk) {
-    (void)siglen;
+    if (siglen != RIVIDE_ML_DSA_87_SIG_BYTES) {
+        return RIVIDE_ERR_VERIFICATION_FAILED;
+    }
     return ml_dsa_verify_internal(sig, siglen, msg, msglen, pk, RIVIDE_ML_DSA_87_K,
                                   RIVIDE_ML_DSA_87_L, RIVIDE_ML_DSA_87_GAMMA1,
                                   RIVIDE_ML_DSA_87_GAMMA2, RIVIDE_ML_DSA_TAU_87,

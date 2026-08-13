@@ -34,9 +34,15 @@ extern int test_ml_kem_1024_roundtrip(void);
 extern int test_ml_dsa_65_roundtrip(void);
 extern int test_ml_dsa_65_tampered_msg(void);
 extern int test_ml_dsa_87_roundtrip(void);
+extern int test_ml_dsa_65_siglen_validation(void);
+extern int test_ml_dsa_87_siglen_validation(void);
+extern int test_ml_dsa_boundary_fuzz(void);
 
 extern int test_simd_poly_add_reduce(void);
 extern int test_simd_poly_sub_reduce(void);
+extern int test_ml_kem_ntt_invertibility(void);
+extern int test_ml_dsa_ntt_invertibility(void);
+extern int test_modular_reductions(void);
 
 extern int test_sha3_256_empty(void);
 extern int test_shake128_incremental(void);
@@ -67,10 +73,16 @@ int main(void) {
     RUN_TEST(test_ml_dsa_65_roundtrip);
     RUN_TEST(test_ml_dsa_65_tampered_msg);
     RUN_TEST(test_ml_dsa_87_roundtrip);
+    RUN_TEST(test_ml_dsa_65_siglen_validation);
+    RUN_TEST(test_ml_dsa_87_siglen_validation);
+    RUN_TEST(test_ml_dsa_boundary_fuzz);
 
-    printf("\nSIMD Vectorization Tests:\n");
+    printf("\nSIMD & NTT Arithmetic Tests:\n");
     RUN_TEST(test_simd_poly_add_reduce);
     RUN_TEST(test_simd_poly_sub_reduce);
+    RUN_TEST(test_ml_kem_ntt_invertibility);
+    RUN_TEST(test_ml_dsa_ntt_invertibility);
+    RUN_TEST(test_modular_reductions);
 
     printf("\nCrypto Primitives Tests:\n");
     RUN_TEST(test_sha3_256_empty);
