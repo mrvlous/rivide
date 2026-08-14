@@ -1,6 +1,6 @@
 # Rivide Documentation Portal
 
-Welcome to the official documentation for the **Rivide Post-Quantum Cryptography Library** (`v1.0.1`). Rivide is a high-performance, zero-dependency, constant-time C99 cryptographic library implementing NIST FIPS 203 (ML-KEM) and NIST FIPS 204 (ML-DSA).
+Welcome to the official documentation for the **Rivide Post-Quantum Cryptography Library** (`v1.1.0`). Rivide is a high-performance, zero-dependency, constant-time C99 cryptographic library implementing NIST FIPS 203 (ML-KEM) and NIST FIPS 204 (ML-DSA).
 
 ## Documentation Structure
 
@@ -13,6 +13,9 @@ The documentation is organized into modular sections covering architecture, API 
 - [Symmetric Primitives Architecture](architecture/crypto_primitives.md): Keccak-f[1600], SHA-3, SHAKE, AES-GCM, and GHASH engines.
 - [Memory & Randomness Architecture](architecture/memory_random.md): Secure memory cleansing, constant-time primitives, and OS entropy sources.
 - [SIMD Acceleration Architecture](architecture/pqc_simd_ntt.md): Hardware vectorization (AVX2, ARM NEON, AES-NI) abstractions.
+- [NIST KAT & Test Suite](architecture/testing_and_kat.md): Modular Known Answer Test framework and validation vectors.
+- [Fuzzing Subsystem](architecture/fuzzing.md): Automated security fuzzing via LLVM libFuzzer.
+- [Dedicated Benchmark Subsystem](architecture/benchmarking.md): Hardware performance measurement and metrics.
 
 ### API Reference
 - [Core API](api/core.md): Initialization, error codes (`rivide_status_t`), and memory utilities.

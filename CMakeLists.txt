@@ -14,7 +14,7 @@
 # copies or substantial portions of the Software.
 
 cmake_minimum_required(VERSION 3.10)
-project(rivide VERSION 1.0.1 LANGUAGES C)
+project(rivide VERSION 1.1.0 LANGUAGES C)
 
 # Export compilation commands database for clangd, IDEs, and linters
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -29,8 +29,14 @@ set(CMAKE_C_EXTENSIONS OFF)
 # Enable strict diagnostic warnings and treat all compiler warnings as errors.
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(-Wall -Wextra -Wpedantic -Werror -fno-strict-aliasing)
+    if(APPLE)
+        add_compile_definitions(_DARWIN_C_SOURCE)
+    elseif(UNIX)
+        add_compile_definitions(_POSIX_C_SOURCE=200809L)
+    endif()
 elseif(MSVC)
     add_compile_options(/W4 /WX)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
 
 # Core Library Source Definitions
@@ -129,6 +135,39 @@ if(RIVIDE_BUILD_TESTS)
     add_test(NAME rivide_tests COMMAND rivide_tests)
 endif()
 
+# NIST Known Answer Test (KAT) Suite Configuration
+option(RIVIDE_BUILD_KAT "Build NIST Known Answer Test (KAT) suite" ON)
+if(RIVIDE_BUILD_KAT)
+    add_executable(rivide_kat_tests
+        tests/kat/test_kat_main.c
+        tests/kat/test_kat_sha3.c
+        tests/kat/test_kat_ml_kem.c
+        tests/kat/test_kat_ml_dsa.c
+    )
+    target_link_libraries(rivide_kat_tests PRIVATE rivide)
+    target_include_directories(rivide_kat_tests PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/kat
+    )
+    add_test(NAME rivide_kat_tests COMMAND rivide_kat_tests)
+endif()
+
+# Dedicated Benchmark Subsystem Configuration
+option(RIVIDE_BUILD_BENCHMARKS "Build dedicated benchmark subsystem" ON)
+if(RIVIDE_BUILD_BENCHMARKS)
+    add_executable(rivide_bench
+        benchmarks/bench_main.c
+        benchmarks/bench_kem.c
+        benchmarks/bench_dsa.c
+        benchmarks/bench_crypto.c
+    )
+    target_link_libraries(rivide_bench PRIVATE rivide)
+    target_include_directories(rivide_bench PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks
+    )
+endif()
+
 # Sub-directory Example Executables Configuration
 option(RIVIDE_BUILD_EXAMPLES "Build example programs" ON)
 if(RIVIDE_BUILD_EXAMPLES)
@@ -159,8 +198,22 @@ if(RIVIDE_BUILD_EXAMPLES)
     add_executable(simd_vector_example examples/simd/vector_acceleration.c)
     target_link_libraries(simd_vector_example PRIVATE rivide)
     target_include_directories(simd_vector_example PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+endif()
 
-    add_executable(pqc_bench_example examples/benchmark/pqc_bench.c)
-    target_link_libraries(pqc_bench_example PRIVATE rivide)
-    target_include_directories(pqc_bench_example PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# LLVM libFuzzer Fuzzing Targets Configuration
+option(RIVIDE_BUILD_FUZZERS "Build libFuzzer fuzzing targets" OFF)
+if(RIVIDE_BUILD_FUZZERS)
+    set(FUZZ_TARGETS
+        fuzz_ml_kem_decaps
+        fuzz_ml_dsa_verify
+        fuzz_aes_gcm
+        fuzz_sha3
+    )
+    foreach(TARGET ${FUZZ_TARGETS})
+        add_executable(${TARGET} fuzz/${TARGET}.c)
+        target_link_libraries(${TARGET} PRIVATE rivide)
+        target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+        target_compile_options(${TARGET} PRIVATE -fsanitize=fuzzer,address,undefined -g)
+        target_link_options(${TARGET} PRIVATE -fsanitize=fuzzer,address,undefined)
+    endforeach()
 endif()

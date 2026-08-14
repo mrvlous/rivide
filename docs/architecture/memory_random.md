@@ -36,8 +36,15 @@ To prevent side-channel timing leakage, secret byte arrays are compared and sele
 
 ## OS Random Entropy Source (`rivide_randombytes`)
 
-Cryptographic keys and nonces require cryptographically secure random bytes from OS entropy pools:
+Cryptographic keys and ephemeral nonces require high-entropy random bytes provided exclusively by native operating system Cryptographically Secure Pseudorandom Number Generators (CSPRNG):
 
-- **Linux / Android**: `getrandom()` system call or `/dev/urandom`.
-- **macOS / iOS / BSD**: `arc4random_buf()`.
-- **Windows**: `BCryptGenRandom()`.
+- **Linux**: `getrandom(2)` system call with automated loop handling for partial reads.
+- **macOS / Apple Platforms**: `getentropy(2)` with automated 256-byte chunking.
+- **Windows**: `BCryptGenRandom(NULL, buf, len, BCRYPT_USE_SYSTEM_PREFERRED_RNG)`.
+- **BSD Platforms**: `getentropy(2)` system call with 256-byte chunking.
+- **Bare-Metal / Freestanding**: Explicit failure returning `RIVIDE_ERR_RNG_FAILURE` unless a trusted hardware TRNG callback is registered via `rivide_set_rng_callback()`.
+
+### Randomness Guarantees & Audit Checklist
+1. **Zero Weak PRNG Fallback**: Rivide strictly prohibits fallback to insecure pseudo-random generators (such as standard C `rand()` or `random()`).
+2. **Explicit Error Handling**: If the underlying OS kernel entropy pool fails or blocks unexpectedly, `RIVIDE_ERR_RNG_FAILURE` is immediately returned to the caller.
+3. **Pluggable TRNG Callback**: Hardware security modules (HSM) or embedded system developers can register a custom hardware TRNG driver using `rivide_set_rng_callback()`.

@@ -1,42 +1,60 @@
 # SIMD Acceleration & Feature Query API Reference
 
-Public API routines for querying CPU SIMD vector capabilities and executing vector polynomial arithmetic (`include/rivide/pqc/ntt_simd.h`).
+Public API routines for querying CPU SIMD vector capabilities and executing vector polynomial arithmetic (`include/rivide/pqc/ntt_simd.h`, `include/rivide/rivide_config.h`).
 
-## Header File
+## Header Files
 ```c
 #include "rivide/pqc/ntt_simd.h"
+#include "rivide/rivide_config.h"
 ```
 
-## Data Types
+## Hardware Feature Query Functions
+
+Rivide dynamically inspects hardware features at runtime:
 
 ```c
-typedef struct {
-    int has_aesni;  /* Intel/AMD AES-NI instructions */
-    int has_arm_ce; /* ARMv8 Crypto Extensions */
-    int has_avx2;   /* Intel/AMD AVX2 256-bit SIMD */
-    int has_neon;   /* ARM NEON 128-bit SIMD */
-} rivide_simd_caps_t;
+int rivide_has_aesni(void);      /* Intel/AMD AES-NI instructions */
+int rivide_has_arm_crypto(void); /* ARMv8 Cryptography Extensions */
+int rivide_has_avx2(void);       /* Intel/AMD AVX2 256-bit SIMD */
+int rivide_has_neon(void);       /* ARM NEON 128-bit SIMD */
 ```
+- **Returns**: `1` if the hardware acceleration capability is supported and detected, `0` otherwise.
 
-## Functions
+---
 
-### `rivide_get_simd_caps`
-Queries CPU capabilities and returns feature flags.
+## Vectorized Polynomial Arithmetic
+
+### `rivide_simd_poly_add_reduce`
+Computes element-wise polynomial coefficient addition modulo $q$ ($r[i] = (a[i] + b[i]) \pmod q$) for all 256 coefficients using AVX2 or NEON vectorization when available.
 
 ```c
-rivide_simd_caps_t rivide_get_simd_caps(void);
+void rivide_simd_poly_add_reduce(int16_t *r, const int16_t *a, const int16_t *b, int16_t q);
 ```
+- **`r`**: Output coefficient buffer (256 entries).
+- **`a`**: First operand coefficient buffer (256 entries).
+- **`b`**: Second operand coefficient buffer (256 entries).
+- **`q`**: Modulus $q$ (e.g., 3329 for ML-KEM).
 
-### `poly_add_simd`
-Performs element-wise polynomial coefficient addition modulo $q$ using hardware SIMD vector instructions when available.
+### `rivide_simd_poly_sub_reduce`
+Computes element-wise polynomial coefficient subtraction modulo $q$ ($r[i] = (a[i] - b[i]) \pmod q$) for all 256 coefficients using vector registers.
 
 ```c
-void poly_add_simd(int16_t r[256], const int16_t a[256], const int16_t b[256]);
+void rivide_simd_poly_sub_reduce(int16_t *r, const int16_t *a, const int16_t *b, int16_t q);
 ```
+- **`r`**: Output coefficient buffer (256 entries).
+- **`a`**: First operand coefficient buffer (256 entries).
+- **`b`**: Second operand coefficient buffer (256 entries).
+- **`q`**: Modulus $q$.
 
-### `poly_sub_simd`
-Performs element-wise polynomial coefficient subtraction modulo $q$ using hardware SIMD vector instructions when available.
+### `rivide_simd_poly_pointwise_montgomery`
+Computes vectorized 8-way pointwise multiplication of NTT polynomials ($r[i] = (a[i] \cdot b[i] \cdot R^{-1}) \pmod q$) in constant time.
 
 ```c
-void poly_sub_simd(int16_t r[256], const int16_t a[256], const int16_t b[256]);
+void rivide_simd_poly_pointwise_montgomery(int16_t *r, const int16_t *a, const int16_t *b,
+                                           int16_t q, int32_t qinv);
 ```
+- **`r`**: Output coefficient buffer (256 entries).
+- **`a`**: First polynomial coefficient buffer (256 entries).
+- **`b`**: Second polynomial coefficient buffer (256 entries).
+- **`q`**: Modulus $q$.
+- **`qinv`**: Montgomery $q$-inverse constant.

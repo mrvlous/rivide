@@ -56,7 +56,9 @@ Rivide is built around four core cryptographic engineering principles:
 | `src/crypto/` | Symmetric primitives (Keccak, SHA-3, SHAKE, AES-GCM, GHASH). |
 | `src/utils/` | Secure memory cleansing (`rivide_cleanse`) and OS entropy generation (`rivide_randombytes`). |
 | `src/pqc/ntt_simd.c` | SIMD vector acceleration and hardware feature detection. |
-| `examples/benchmark/` | Modular performance benchmarking harness (`pqc_bench.c`). |
+| `benchmarks/` | Dedicated first-class performance profiling and benchmarking subsystem. |
+| `tests/kat/` | Official NIST Known Answer Test (KAT) vector validation subsystem. |
+| `fuzz/` | Dedicated LLVM libFuzzer automated security fuzzing subsystem. |
 
 ## Secure Memory Lifecycle
 

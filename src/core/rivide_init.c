@@ -25,6 +25,7 @@
 
 #if defined(RIVIDE_PLATFORM_MACOS) && defined(RIVIDE_ARCH_ARM64)
 #include <sys/sysctl.h>
+#include <sys/types.h>
 #endif
 
 /** @brief Tracks whether rivide_init() has already been called. */

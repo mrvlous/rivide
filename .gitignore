@@ -3,8 +3,9 @@
 # Rivide Post-Quantum Cryptography Library
 # Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
-# CMake build outputs and artifacts
+# CMake build outputs and artifact directories
 build/
+build-*/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
@@ -22,8 +23,10 @@ rivide.pc
 *.dll
 *.exe
 
-# Generated test and example executable binaries
+# Generated test, KAT, benchmark, and example executable binaries
 rivide_tests
+rivide_kat_tests
+rivide_bench
 basic_kem_example
 basic_dsa_example
 hybrid_pqc_aead_example
@@ -31,7 +34,17 @@ pqc_tls_handshake_example
 pqc_secure_storage_example
 dsa_detached_signature_example
 simd_vector_example
-rivide_bench
+
+# libFuzzer executables, corpora, and crash artifacts
+fuzz_ml_kem_decaps
+fuzz_ml_dsa_verify
+fuzz_aes_gcm
+fuzz_sha3
+corpus*/
+crash-*
+leak-*
+timeout-*
+oom-*
 
 # Environment, IDE, and Language Server temporary caches
 .cache/

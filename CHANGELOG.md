@@ -14,6 +14,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-08-14
+
+### Added
+- **Dedicated NIST Known Answer Test (KAT) Subsystem**:
+  - Implemented a standalone, modular KAT verification framework under [`tests/kat/`](tests/kat/) with reproducible byte-exact vector validation:
+    - `test_kat_harness.h`: Standardized KAT comparison macros, hex string parser, and result accounting.
+    - `test_kat_sha3.c`: Official NIST FIPS 202 CAVP test vectors for SHA3-256, SHA3-512, SHAKE-128, and SHAKE-256 across empty, short, and multi-block inputs.
+    - `test_kat_ml_kem.c`: NIST FIPS 203 functional KAT vectors and deterministic constant-time implicit rejection consistency checks for ML-KEM-768 and ML-KEM-1024.
+    - `test_kat_ml_dsa.c`: NIST FIPS 204 functional KAT vectors and deterministic signature verification for ML-DSA-65 and ML-DSA-87.
+    - `test_kat_main.c`: Dedicated test runner executable (`rivide_kat_tests`).
+  - Integrated dedicated build and execution targets (`make kat` and `make run-kat`), as well as CTest integration (`ctest -R rivide_kat_tests`).
+- **Dedicated LLVM libFuzzer Fuzzing Subsystem**:
+  - Implemented modular, mutation-based fuzz testing targets under [`fuzz/`](fuzz/) targeting parser boundaries, untrusted deserialization, and decoding edge cases:
+    - `fuzz_ml_kem_decaps.c`: Fuzzes ML-KEM ciphertext deserialization, polynomial decompression, and implicit rejection pathways.
+    - `fuzz_ml_dsa_verify.c`: Fuzzes ML-DSA signature length validation, hint vector unpacking, challenge recovery, and verification logic.
+    - `fuzz_aes_gcm.c`: Fuzzes AES-128/256-GCM authenticated decryption, AAD processing, and GHASH tag authentication against random bit corruptions.
+    - `fuzz_sha3.c`: Fuzzes SHA-3 one-shot hashing and SHAKE-128/256 incremental absorption/squeezing state transitions.
+  - Added `make fuzz CC=clang` build target and CMake `RIVIDE_BUILD_FUZZERS` option with integrated AddressSanitizer and UndefinedBehaviorSanitizer instrumentation.
+- **Dedicated First-Class Benchmark Subsystem**:
+  - Implemented an isolated performance profiling and throughput benchmark suite under [`benchmarks/`](benchmarks/):
+    - `bench_harness.h`: High-resolution monotonic timer (`clock_gettime(CLOCK_MONOTONIC)` / `QueryPerformanceCounter`), compiler detection, and CPU acceleration feature query helper.
+    - `bench_kem.c`: Operations/sec and microsecond latency benchmarking for ML-KEM-768 and ML-KEM-1024 KeyGen, Encaps, and Decaps.
+    - `bench_dsa.c`: Operations/sec and microsecond latency benchmarking for ML-DSA-65 and ML-DSA-87 KeyGen, Sign, and Verify.
+    - `bench_crypto.c`: High-throughput benchmarking (MB/sec and us/op) for SHA3-256, SHAKE-256, and AES-256-GCM AEAD over 4KB payload blocks.
+    - `bench_main.c`: Configurable iteration runner via CLI arguments or `BENCH_ITERS` environment variable.
+  - Added standalone build and run targets (`make bench` and `make run-bench`).
+- **Documentation Expansion & Architectural Specifications**:
+  - Added [`docs/architecture/testing_and_kat.md`](docs/architecture/testing_and_kat.md) documenting multi-tier test methodology and KAT layout.
+  - Added [`docs/architecture/fuzzing.md`](docs/architecture/fuzzing.md) detailing libFuzzer design, target specifications, and execution instructions.
+  - Added [`docs/architecture/benchmarking.md`](docs/architecture/benchmarking.md) documenting performance measurement methodology, hardware capability bitmasks, and metric reporting.
+  - Synchronized API references in [`docs/api/core.md`](docs/api/core.md), [`docs/api/crypto_utils.md`](docs/api/crypto_utils.md), and [`docs/api/ntt_simd.md`](docs/api/ntt_simd.md).
+
+### Changed
+- **Benchmark Subsystem Relocation**:
+  - Removed deprecated benchmark executable `examples/benchmark/pqc_bench.c` and migrated all profiling logic into the dedicated top-level `benchmarks/` subsystem.
+- **Documentation Centralization**:
+  - Consolidated sub-directory documentation (`fuzz/README.md`) into `docs/architecture/fuzzing.md`, establishing `docs/` as the single authoritative documentation tree.
+- **Strict POSIX Feature Macro Compliance**:
+  - Enforced `-D_POSIX_C_SOURCE=200809L` across all GNU and Clang build pipelines in `CMakeLists.txt` for consistent POSIX monotonic timer resolution.
+- **Repository `.gitignore` Hygiene**:
+  - Expanded root `.gitignore` to comprehensively ignore all CMake build variants (`build-*/`), test executables (`rivide_kat_tests`, `rivide_bench`), fuzzer targets (`fuzz_*`), fuzzing corpora (`corpus*/`), and sanitizer crash artifacts (`crash-*`, `leak-*`, `timeout-*`, `oom-*`).
+
+### Security & Architecture Hardening
+- **Randomness Subsystem OS CSPRNG Conformance Audit**:
+  - Audited `src/utils/random.c` to guarantee strict OS-level CSPRNG entropy sources:
+    - Linux: `getrandom(2)` with partial read loop handling `EINTR`.
+    - macOS / BSD / iOS: `getentropy(2)` with 256-byte chunking.
+    - Windows: `BCryptGenRandom` using `BCRYPT_USE_SYSTEM_PREFERRED_RNG`.
+    - Freestanding / Embedded: Explicit `RIVIDE_ERR_RNG_FAILURE` return with zero insecure PRNG fallback (`rand()`, `lrand48()`).
+  - Documented cryptographic randomness security guarantees in [`docs/architecture/memory_random.md`](docs/architecture/memory_random.md).
+- **Public API Caller-Buffer Allocation Enforcement**:
+  - Verified 100% caller-allocated memory model (`0% malloc`) across all public APIs (`include/rivide/`).
+  - Guaranteed zero heap fragmentation, zero hidden background allocations, and const-correct input buffers across all exported functions.
+- **Continuous Sanitizer & Static Analysis Conformance**:
+  - Verified 100% clean passes with AddressSanitizer (`-fsanitize=address`), UndefinedBehaviorSanitizer (`-fsanitize=undefined`), `clang-format`, and `clang-tidy` across all library targets, tests, KAT vectors, examples, and benchmarks.
+
+---
+
 ## [1.0.1] - 2026-08-14
 
 ### Fixed

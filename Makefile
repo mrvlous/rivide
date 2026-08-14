@@ -14,7 +14,7 @@
 # copies or substantial portions of the Software.
 
 # Master Build System Architecture
-# Orchestrates CMake configuration, compilation, automated testing, and installation.
+# Orchestrates CMake configuration, compilation, automated testing, KAT, benchmarks, and installation.
 
 # Directory layout paths
 BUILD_DIR     := build
@@ -22,12 +22,14 @@ CMAKE_DIR     := .
 
 # Project metadata and versioning
 PROJECT_NAME  := rivide
-VERSION       := 1.0.1
+VERSION       := 1.1.0
 BUILD_TYPE    ?= Release
 
 # Configurable build options
-RIVIDE_BUILD_TESTS    ?= ON
-RIVIDE_BUILD_EXAMPLES ?= ON
+RIVIDE_BUILD_TESTS      ?= ON
+RIVIDE_BUILD_KAT        ?= ON
+RIVIDE_BUILD_BENCHMARKS ?= ON
+RIVIDE_BUILD_EXAMPLES   ?= ON
 
 # Toolchain executables
 CMAKE         := cmake
@@ -72,19 +74,20 @@ LOG_ERR     := printf "$(CLR_RED)$(CLR_BOLD)[ERR]$(CLR_RESET)   %s\n"
 LOG_CHECK   := printf "  $(CLR_GREEN)$(CLR_BOLD)[OK]$(CLR_RESET)    %s\n"
 LOG_MISS    := printf "  $(CLR_RED)$(CLR_BOLD)[MISS]$(CLR_RESET)  %s\n"
 
-.PHONY: all help info check config build test examples run-examples bench install clean format check-format lint
+.PHONY: all help info check config build test kat run-kat bench run-bench examples run-examples fuzz install clean format check-format lint
 
 .DEFAULT_GOAL := all
 
-all: build ## Configure CMake and compile static/shared libraries, test suite, and examples
+all: build ## Configure CMake and compile static/shared libraries, test suite, KAT, benchmarks, and examples
 
 help: ## Display all available Makefile targets and descriptions
 	@printf "$(CLR_BOLD)Rivide Post-Quantum Cryptography Build System$(CLR_RESET)  $(CLR_CYAN)v$(VERSION)$(CLR_RESET)\n\n"
 	@printf "  $(CLR_BOLD)Usage$(CLR_RESET): make <target> [BUILD_TYPE=Release|Debug] [V=1] [COLOR=0]\n\n"
-	@printf "$(CLR_BOLD)  Build Targets:$(CLR_RESET)\n"
+	@printf "$(CLR_BOLD)  Build & Test Targets:$(CLR_RESET)\n"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "    $(CLR_CYAN)%-18s$(CLR_RESET) %s\n", $$1, $$2}'
 	@printf "\n$(CLR_BOLD)  Variables:$(CLR_RESET)\n"
 	@printf "    $(CLR_CYAN)BUILD_TYPE=Type$(CLR_RESET)   Set build configuration (Release or Debug)\n"
+	@printf "    $(CLR_CYAN)BENCH_ITERS=N$(CLR_RESET)     Set iteration count for benchmarks (default: 100)\n"
 	@printf "    $(CLR_CYAN)V=1$(CLR_RESET)             Enable verbose build output showing exact commands\n"
 	@printf "    $(CLR_CYAN)COLOR=0$(CLR_RESET)         Disable colored output in terminal logs\n\n"
 
@@ -113,21 +116,37 @@ config: ## Generate CMake build system files inside the build directory
 	$(Q)$(CMAKE) -B $(BUILD_DIR) -S $(CMAKE_DIR) \
 		-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
 		-DRIVIDE_BUILD_TESTS=$(RIVIDE_BUILD_TESTS) \
+		-DRIVIDE_BUILD_KAT=$(RIVIDE_BUILD_KAT) \
+		-DRIVIDE_BUILD_BENCHMARKS=$(RIVIDE_BUILD_BENCHMARKS) \
 		-DRIVIDE_BUILD_EXAMPLES=$(RIVIDE_BUILD_EXAMPLES)
 	$(Q)if [ -f $(BUILD_DIR)/compile_commands.json ]; then \
 		ln -sf $(BUILD_DIR)/compile_commands.json compile_commands.json ; \
 	fi
 	$(Q)$(LOG_DONE) "CMake configuration complete."
 
-build: config ## Compile all targets including static library, shared library, tests, and examples
+build: config ## Compile all targets including static/shared libraries, tests, KAT, and benchmarks
 	$(Q)$(LOG_INFO) "Compiling Rivide targets..."
 	$(Q)$(CMAKE) --build $(BUILD_DIR) --config $(BUILD_TYPE) $(VERBOSE_FLAG)
 	$(Q)$(LOG_DONE) "Compilation completed successfully."
 
 test: build ## Run the automated unit test suite via CTest
-	$(Q)$(LOG_INFO) "Running Rivide test suite..."
-	$(Q)cd $(BUILD_DIR) && $(CTEST) --output-on-failure --verbose
+	$(Q)$(LOG_INFO) "Running Rivide unit test suite..."
+	$(Q)cd $(BUILD_DIR) && $(CTEST) --output-on-failure --verbose -R rivide_tests
 	$(Q)$(LOG_DONE) "All unit tests passed."
+
+kat: build ## Execute the NIST Known Answer Test (KAT) validation suite
+	$(Q)$(LOG_INFO) "Executing NIST Known Answer Test (KAT) suite..."
+	$(Q)./$(BUILD_DIR)/rivide_kat_tests
+	$(Q)$(LOG_DONE) "All NIST KAT validation vectors passed."
+
+run-kat: kat ## Alias for kat target
+
+bench: build ## Execute the dedicated PQC benchmark subsystem
+	$(Q)$(LOG_INFO) "Executing dedicated Rivide benchmark subsystem..."
+	$(Q)./$(BUILD_DIR)/rivide_bench
+	$(Q)$(LOG_DONE) "Benchmark execution complete."
+
+run-bench: bench ## Alias for bench target
 
 examples: build ## Ensure all sub-directory example binaries are compiled
 
@@ -155,32 +174,35 @@ run-examples: examples ## Execute all sub-directory example binaries sequentiall
 	$(Q)printf "\n"
 	$(Q)$(LOG_DONE) "All example binaries executed successfully."
 
-bench: examples ## Compile and execute the PQC algorithm benchmark harness
-	$(Q)$(LOG_INFO) "Executing PQC benchmark suite..."
-	$(Q)./$(BUILD_DIR)/pqc_bench_example
-	$(Q)$(LOG_DONE) "Benchmark completed."
+fuzz: ## Build LLVM libFuzzer targets using Clang
+	$(Q)$(LOG_INFO) "Configuring and compiling libFuzzer targets with Clang..."
+	$(Q)$(CMAKE) -B $(BUILD_DIR)-fuzz -S $(CMAKE_DIR) \
+		-DCMAKE_C_COMPILER=clang \
+		-DRIVIDE_BUILD_FUZZERS=ON \
+		-DCMAKE_BUILD_TYPE=Debug
+	$(Q)$(CMAKE) --build $(BUILD_DIR)-fuzz $(VERBOSE_FLAG)
+	$(Q)$(LOG_DONE) "Fuzzing targets compiled in $(BUILD_DIR)-fuzz/."
 
 install: build ## Install public headers and libraries to system/DESTDIR
 	$(Q)$(LOG_INFO) "Installing Rivide libraries and public headers..."
 	$(Q)$(CMAKE) --install $(BUILD_DIR)
 	$(Q)$(LOG_DONE) "Installation complete."
 
-clean: ## Remove build directory and generated compile_commands.json
+clean: ## Remove build directories and generated compile_commands.json
 	$(Q)$(LOG_INFO) "Cleaning build artifacts..."
-	$(Q)rm -rf $(BUILD_DIR) compile_commands.json
+	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz compile_commands.json
 	$(Q)$(LOG_DONE) "Clean finished."
 
-format: ## Format all source, header, and test files using clang-format
+format: ## Format all source, header, test, benchmark, and fuzz files using clang-format
 	$(Q)$(LOG_INFO) "Formatting code with clang-format..."
-	$(Q)clang-format -i $(shell find include src tests examples -type f \( -name "*.c" -o -name "*.h" \))
+	$(Q)clang-format -i $(shell find include src tests benchmarks examples fuzz -type f \( -name "*.c" -o -name "*.h" \))
 	$(Q)$(LOG_DONE) "Formatting complete."
 
 check-format: ## Verify code formatting compliance without modifying files
 	$(Q)$(LOG_INFO) "Checking code formatting compliance..."
-	$(Q)clang-format --dry-run --Werror $(shell find include src tests examples -type f \( -name "*.c" -o -name "*.h" \))
+	$(Q)clang-format --dry-run --Werror $(shell find include src tests benchmarks examples fuzz -type f \( -name "*.c" -o -name "*.h" \))
 	$(Q)$(LOG_DONE) "Code formatting is fully compliant."
 
 lint: config ## Run static code analysis with clang-tidy
 	$(Q)$(LOG_INFO) "Running static analysis with clang-tidy..."
-	$(Q)clang-tidy -p $(BUILD_DIR) $(shell find src -type f -name "*.c")
-	$(Q)$(LOG_DONE) "Static analysis finished."
+	$(Q)clang-tidy -p $(BUILD_DIR) $(shell find src benchmarks -type f -name "*.c")

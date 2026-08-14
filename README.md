@@ -7,7 +7,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 # Rivide: Post-Quantum Cryptography C99 Library
 
-[![Version](https://img.shields.io/badge/Version-v1.0.1-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-v1.1.0-informational.svg)](CHANGELOG.md)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](.github/workflows/ci.yml)
 [![Linux](https://img.shields.io/badge/OS-Linux-blue.svg?logo=linux&logoColor=white)](docs/contributing/setup.md)
 [![macOS](https://img.shields.io/badge/OS-macOS-black.svg?logo=apple&logoColor=white)](docs/contributing/setup.md)
@@ -28,7 +28,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 - **Zero Dynamic Memory Allocation (0 Malloc)**: Never invokes `malloc` or heap allocation. All buffers are fixed-size and caller-allocated on the stack.
 - **Constant-Time Side-Channel Protection**: Features constant-time comparisons (`rivide_ct_memcmp`) and conditional selections (`rivide_ct_select`) to prevent timing side-channel attacks.
 - **Secure Memory Cleansing**: Prevents compiler dead-store elimination via volatile barriers (`rivide_cleanse`) to guarantee zeroization of sensitive private keys in RAM.
-- **Multi-Platform OS CSPRNG Engine**: Queries kernel entropy sources natively (`getrandom` on Linux, `arc4random_buf` on macOS/BSD, `BCryptGenRandom` on Windows).
+- **Multi-Platform OS CSPRNG Engine**: Queries kernel entropy sources natively (`getrandom` on Linux, `getentropy` on macOS/BSD, `BCryptGenRandom` on Windows).
 - **Built-in Symmetric Primitives**: Autonomous implementations of **Keccak-f[1600]** (SHA3-256/512, SHAKE-128/256) and **AES-128/256-GCM** AEAD.
 
 ## Table of Contents
@@ -68,11 +68,14 @@ Clone the repository and build using the master Makefile:
 git clone https://github.com/mrvlous/rivide.git
 cd rivide
 
-# Compile static library (librivide.a), test suite, and examples
+# Compile static/shared libraries, test suite, KAT, and examples
 make build
 
 # Run automated unit test suite
 make test
+
+# Execute official NIST Known Answer Test (KAT) validation suite
+make kat
 
 # Execute demonstration applications
 make run-examples
@@ -218,10 +221,12 @@ The master [`Makefile`](Makefile) provides simple automation targets:
 
 | Command | Action |
 | :--- | :--- |
-| `make build` | Compile static library `librivide.a`, tests, and example binaries |
+| `make build` | Compile static library `librivide.a`, shared library, tests, KAT, and examples |
 | `make test` | Run automated unit test suite using CTest |
-| `make run-examples` | Build and execute demonstration applications |
-| `make bench` | Build and execute performance benchmark suite |
+| `make kat` | Execute official NIST Known Answer Test (KAT) validation suite |
+| `make bench` | Compile and execute dedicated PQC performance benchmark subsystem |
+| `make run-examples` | Build and execute demonstration applications sequentially |
+| `make fuzz CC=clang` | Compile LLVM libFuzzer fuzzing targets with AddressSanitizer |
 | `make format` | Auto-format all C/H files using `.clang-format` |
 | `make check-format` | Verify code formatting against `.clang-format` rules |
 | `make lint` | Run static code analysis using `clang-tidy` |
@@ -240,6 +245,9 @@ For detailed architectural and API documentation, refer to the [`docs/`](docs/RE
   - [Symmetric Primitives Architecture](docs/architecture/crypto_primitives.md)
   - [SIMD NTT Vectorization Engine](docs/architecture/pqc_simd_ntt.md)
   - [Memory & CSPRNG Engine Architecture](docs/architecture/memory_random.md)
+  - [NIST KAT & Testing Subsystem](docs/architecture/testing_and_kat.md)
+  - [Automated Fuzzing Subsystem](docs/architecture/fuzzing.md)
+  - [Dedicated Benchmark Subsystem](docs/architecture/benchmarking.md)
 - **API References**:
   - [Core API Reference](docs/api/core.md)
   - [ML-KEM API Reference](docs/api/ml_kem.md)

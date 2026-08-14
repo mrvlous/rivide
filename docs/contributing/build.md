@@ -7,23 +7,32 @@ This guide details compilation workflow, CMake configuration parameters, and Mak
 The repository includes a top-level Makefile for convenient developer workflows:
 
 ```bash
-# Compile static/shared libraries, tests, and examples
+# Compile static/shared libraries, tests, KAT, benchmarks, and examples
 make build
 
 # Run automated unit test suite
 make test
 
+# Execute NIST Known Answer Test (KAT) validation suite
+make kat
+
+# Compile and execute dedicated PQC performance benchmark subsystem
+make bench
+
 # Compile and execute all example binaries
 make run-examples
 
-# Compile and execute the PQC performance benchmark suite
-make bench
+# Compile LLVM libFuzzer targets using Clang
+make fuzz CC=clang
 
 # Check code formatting compliance
 make check-format
 
 # Format all code with clang-format
 make format
+
+# Run static analysis with clang-tidy
+make lint
 
 # Clean build directory and compile commands
 make clean
