@@ -40,8 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [`bench_crypto.c`](benchmarks/bench_crypto.c): High-throughput benchmarking (MB/sec and us/op) for SHA3-256, SHAKE-256, and AES-256-GCM AEAD over 4KB payload blocks.
     - [`bench_main.c`](benchmarks/bench_main.c): Configurable iteration runner via CLI arguments or `BENCH_ITERS` environment variable.
   - Added standalone build and run targets (`make bench` and `make run-bench`).
-- **Official Node.js Native Bindings & npm Package (`rivide`)**:
-  - Implemented high-performance, zero-dependency Node-API (N-API) native bindings under [`bindings/node/`](bindings/node/):
+- **Official Node.js Native Bindings & Package (`rivide`)**:
+  - Implemented high-performance, zero-dependency Node-API (N-API) native bindings under [`bindings/node/`](bindings/node/) with full multi-package-manager support (`npm`, `pnpm`, `yarn`):
     - [`src/napi_kem.c`](bindings/node/src/napi_kem.c): ML-KEM-768 and ML-KEM-1024 keypair generation, encapsulation, and decapsulation.
     - [`src/napi_dsa.c`](bindings/node/src/napi_dsa.c): ML-DSA-65 and ML-DSA-87 digital signing and verification with strict `siglen` boundary validation.
     - [`src/napi_crypto.c`](bindings/node/src/napi_crypto.c): SHA-3, SHAKE-128/256 XOF, and AES-128/256-GCM authenticated encryption/decryption.

@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `aesGcm`: AES-128-GCM and AES-256-GCM authenticated encryption and decryption.
   - `utils`: Secure memory zeroization (`cleanse`), OS CSPRNG entropy generation (`randombytes`), constant-time memory comparison (`ctMemcmp`), and runtime hardware SIMD feature detection (`getSimdCaps`).
 - **Developer Ergonomics & Type Safety**:
+  - Universal package manager compatibility supporting `npm`, `pnpm`, and `yarn` installations.
   - Full TypeScript declaration file (`index.d.ts`) with strict typing and JSDoc documentation.
   - Dual module distribution with CommonJS (`lib/index.js`) and ECMAScript Modules (`lib/index.mjs`).
   - Dedicated unit tests (`test/`) and interactive performance benchmark harness (`bench.js`).

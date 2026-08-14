@@ -47,6 +47,8 @@ bindings/node/
    - Exposes `utils.cleanse(buffer)` to guarantee explicit volatile zeroization of sensitive private keys in Node.js applications.
 4. **Dual ESM & CommonJS Support**:
    - Seamlessly imported via `import { mlKem768 } from 'rivide'` or `const { mlKem768 } = require('rivide')`.
+5. **Universal Package Manager Compatibility**:
+   - Fully compatible with `npm`, `pnpm`, and `yarn` installation workflows with automated source packaging.
 
 ## Build and Test Automation
 

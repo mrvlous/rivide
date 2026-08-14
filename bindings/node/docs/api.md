@@ -9,6 +9,21 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 Complete API documentation for the **`rivide`** Node.js native package.
 
+## Installation
+
+Install via your preferred package manager:
+
+```bash
+# npm
+npm install rivide
+
+# pnpm
+pnpm add rivide
+
+# yarn
+yarn add rivide
+```
+
 ## Module Structure
 
 The package exports both namespace modules and direct utility helpers:
