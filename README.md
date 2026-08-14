@@ -31,6 +31,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 - **Secure Memory Cleansing**: Prevents compiler dead-store elimination via volatile barriers (`rivide_cleanse`) to guarantee zeroization of sensitive private keys in RAM.
 - **Multi-Platform OS CSPRNG Engine**: Queries kernel entropy sources natively (`getrandom` on Linux, `getentropy` on macOS/BSD, `BCryptGenRandom` on Windows).
 - **Built-in Symmetric Primitives**: Autonomous implementations of **Keccak-f[1600]** (SHA3-256/512, SHAKE-128/256) and **AES-128/256-GCM** AEAD.
+- **Node.js Native Bindings**: Zero-dependency, high-performance Node-API (N-API) bindings and npm package ([`rivide`](bindings/node/README.md)) with full TypeScript definitions.
 
 ## Table of Contents
 
@@ -38,10 +39,11 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 2. [Code Tutorials & Usage Examples](#code-tutorials--usage-examples)
    - [Tutorial 1: ML-KEM-768 Key Exchange](#tutorial-1-ml-kem-768-key-exchange)
    - [Tutorial 2: ML-DSA-65 Digital Signature](#tutorial-2-ml-dsa-65-digital-signature)
-3. [Parameter & Specification Summary](#parameter--specification-summary)
-4. [Master Makefile Command Automation](#master-makefile-command-automation)
-5. [Documentation Map](#documentation-map)
-6. [License & Maintainers](#license--maintainers)
+3. [Node.js / npm Bindings Quick Start](#nodejs--npm-bindings-quick-start)
+4. [Parameter & Specification Summary](#parameter--specification-summary)
+5. [Master Makefile Command Automation](#master-makefile-command-automation)
+6. [Documentation Map](#documentation-map)
+7. [License & Maintainers](#license--maintainers)
 
 ## Installation & Quick Start
 
@@ -207,6 +209,34 @@ int main(void) {
 
 Compile with: `gcc -O3 main.c -lrivide -o dsa_app`
 
+## Node.js / npm Bindings Quick Start
+
+Rivide provides official native Node-API bindings for JavaScript and TypeScript developers via the [`rivide`](bindings/node/README.md) npm package:
+
+```bash
+npm install rivide
+```
+
+```javascript
+import { mlKem768, mlDsa65, utils } from 'rivide';
+
+// ML-KEM-768 Key Exchange
+const alice = mlKem768.keypair();
+const bob = mlKem768.encaps(alice.publicKey);
+const sharedSecret = mlKem768.decaps(bob.ciphertext, alice.secretKey);
+
+// ML-DSA-65 Digital Signature
+const signer = mlDsa65.keypair();
+const signature = mlDsa65.sign('Quantum-Safe Contract', signer.secretKey);
+const isValid = mlDsa65.verify(signature, 'Quantum-Safe Contract', signer.publicKey);
+
+// Secure RAM Cleanup
+utils.cleanse(alice.secretKey);
+utils.cleanse(signer.secretKey);
+```
+
+For full documentation and TypeScript usage, refer to the [Node.js Bindings Guide](bindings/node/README.md).
+
 ## Parameter & Specification Summary
 
 | Algorithm | Standard | Public Key | Secret Key | Ciphertext / Signature | Shared Key / Security |
@@ -228,6 +258,9 @@ The master [`Makefile`](Makefile) provides simple automation targets:
 | `make bench` | Compile and execute dedicated PQC performance benchmark subsystem |
 | `make run-examples` | Build and execute demonstration applications sequentially |
 | `make fuzz CC=clang` | Compile LLVM libFuzzer fuzzing targets with AddressSanitizer |
+| `make node-build` | Compile Node-API native bindings addon using `node-gyp` |
+| `make node-test` | Run automated Node.js test suite across all PQC primitives |
+| `make node-bench` | Execute Node.js performance benchmarking suite |
 | `make format` | Auto-format all C/H files using `.clang-format` |
 | `make check-format` | Verify code formatting against `.clang-format` rules |
 | `make lint` | Run static code analysis using `clang-tidy` |
@@ -249,12 +282,14 @@ For detailed architectural and API documentation, refer to the [`docs/`](docs/RE
   - [NIST KAT & Testing Subsystem](docs/architecture/testing_and_kat.md)
   - [Automated Fuzzing Subsystem](docs/architecture/fuzzing.md)
   - [Dedicated Benchmark Subsystem](docs/architecture/benchmarking.md)
+  - [Node.js Native Bindings](docs/architecture/node_bindings.md)
 - **API References**:
   - [Core API Reference](docs/api/core.md)
   - [ML-KEM API Reference](docs/api/ml_kem.md)
   - [ML-DSA API Reference](docs/api/ml_dsa.md)
   - [SIMD NTT API Reference](docs/api/ntt_simd.md)
   - [Symmetric Cryptography API Reference](docs/api/crypto_utils.md)
+  - [Node.js (npm) API](bindings/node/README.md)
 - **Real-World Integration Guides**:
   - [Web Development & API Security (Post-Quantum JWT)](docs/use_cases/web_jwt.md)
   - [Network Security & TLS (Hybrid KEM Exchange)](docs/use_cases/network_tls.md)

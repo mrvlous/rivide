@@ -1,0 +1,63 @@
+{
+  "name": "rivide",
+  "version": "1.1.0",
+  "description": "Official Node.js native bindings for Rivide Post-Quantum Cryptography (NIST FIPS 203 ML-KEM & NIST FIPS 204 ML-DSA) C99 Library.",
+  "main": "./lib/index.js",
+  "module": "./lib/index.mjs",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js"
+    }
+  },
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "build": "node-gyp rebuild",
+    "test": "node --test test/*.js",
+    "bench": "node bench.js",
+    "prepack": "mkdir -p deps && cp -rf ../../include ../../src deps/",
+    "postpack": "rm -rf deps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrvlous/rivide.git"
+  },
+  "keywords": [
+    "post-quantum",
+    "pqc",
+    "ml-kem",
+    "ml-dsa",
+    "fips-203",
+    "fips-204",
+    "kyber",
+    "dilithium",
+    "quantum-safe",
+    "cryptography",
+    "nist",
+    "sha3",
+    "aes-gcm"
+  ],
+  "author": "Moh. Ananda Firmansyah Putra <mrvlous@proton.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrvlous/rivide/issues"
+  },
+  "homepage": "https://github.com/mrvlous/rivide#readme",
+  "gypfile": true,
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "binding.gyp",
+    "index.d.ts",
+    "lib/",
+    "src/",
+    "deps/",
+    "docs/",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE"
+  ]
+}

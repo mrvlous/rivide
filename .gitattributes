@@ -31,6 +31,15 @@ CHANGELOG.md text eol=lf
 # Python scripts and wrapper scripts
 *.py text eol=lf
 
+# JavaScript, TypeScript, JSON, and GYP configuration files
+*.js text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.ts text eol=lf
+*.json text eol=lf
+*.gyp text eol=lf
+*.gypi text eol=lf
+
 # Binary artifact formats
 *.a binary
 *.so binary
@@ -38,5 +47,6 @@ CHANGELOG.md text eol=lf
 *.dylib binary
 *.dll binary
 *.exe binary
+*.node binary
 *.png binary
 *.jpg binary

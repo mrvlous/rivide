@@ -59,3 +59,15 @@ Thumbs.db
 # Test execution logs and temporary output files
 *.log
 *.tmp
+
+# Node.js native addon build directories and npm artifacts
+node_modules/
+bindings/node/build/
+bindings/node/deps/
+*.node
+*.tgz
+.node-gyp/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

@@ -74,7 +74,7 @@ LOG_ERR     := printf "$(CLR_RED)$(CLR_BOLD)[ERR]$(CLR_RESET)   %s\n"
 LOG_CHECK   := printf "  $(CLR_GREEN)$(CLR_BOLD)[OK]$(CLR_RESET)    %s\n"
 LOG_MISS    := printf "  $(CLR_RED)$(CLR_BOLD)[MISS]$(CLR_RESET)  %s\n"
 
-.PHONY: all help info check config build test kat run-kat bench run-bench examples run-examples fuzz install clean format check-format lint
+.PHONY: all help info check config build test kat run-kat bench run-bench examples run-examples fuzz node-build node-test node-bench install clean format check-format lint
 
 .DEFAULT_GOAL := all
 
@@ -183,6 +183,22 @@ fuzz: ## Build LLVM libFuzzer targets using Clang
 	$(Q)$(CMAKE) --build $(BUILD_DIR)-fuzz $(VERBOSE_FLAG)
 	$(Q)$(LOG_DONE) "Fuzzing targets compiled in $(BUILD_DIR)-fuzz/."
 
+node-build: ## Build Node.js native bindings using node-gyp
+	$(Q)$(LOG_INFO) "Building Node.js native bindings in bindings/node/..."
+	$(Q)mkdir -p bindings/node/deps
+	$(Q)cp -rf include src bindings/node/deps/
+	$(Q)cd bindings/node && npx --yes node-gyp rebuild
+	$(Q)$(LOG_DONE) "Node.js native bindings compiled."
+
+node-test: node-build ## Run automated Node.js test suite
+	$(Q)$(LOG_INFO) "Executing Node.js unit tests..."
+	$(Q)cd bindings/node && node --test test/*.js
+	$(Q)$(LOG_DONE) "Node.js unit tests passed."
+
+node-bench: node-build ## Execute Node.js performance benchmarks
+	$(Q)$(LOG_INFO) "Executing Node.js benchmark suite..."
+	$(Q)cd bindings/node && node bench.js
+
 install: build ## Install public headers and libraries to system/DESTDIR
 	$(Q)$(LOG_INFO) "Installing Rivide libraries and public headers..."
 	$(Q)$(CMAKE) --install $(BUILD_DIR)
@@ -190,17 +206,17 @@ install: build ## Install public headers and libraries to system/DESTDIR
 
 clean: ## Remove build directories and generated compile_commands.json
 	$(Q)$(LOG_INFO) "Cleaning build artifacts..."
-	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz compile_commands.json
+	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz compile_commands.json bindings/node/build
 	$(Q)$(LOG_DONE) "Clean finished."
 
-format: ## Format all source, header, test, benchmark, and fuzz files using clang-format
+format: ## Format all source, header, test, benchmark, fuzz, and binding files using clang-format
 	$(Q)$(LOG_INFO) "Formatting code with clang-format..."
-	$(Q)clang-format -i $(shell find include src tests benchmarks examples fuzz -type f \( -name "*.c" -o -name "*.h" \))
+	$(Q)clang-format -i $(shell find include src tests benchmarks examples fuzz bindings/node/src -type f \( -name "*.c" -o -name "*.h" \))
 	$(Q)$(LOG_DONE) "Formatting complete."
 
 check-format: ## Verify code formatting compliance without modifying files
 	$(Q)$(LOG_INFO) "Checking code formatting compliance..."
-	$(Q)clang-format --dry-run --Werror $(shell find include src tests benchmarks examples fuzz -type f \( -name "*.c" -o -name "*.h" \))
+	$(Q)clang-format --dry-run --Werror $(shell find include src tests benchmarks examples fuzz bindings/node/src -type f \( -name "*.c" -o -name "*.h" \))
 	$(Q)$(LOG_DONE) "Code formatting is fully compliant."
 
 lint: config ## Run static code analysis with clang-tidy

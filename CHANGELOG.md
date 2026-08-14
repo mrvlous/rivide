@@ -40,7 +40,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [`bench_crypto.c`](benchmarks/bench_crypto.c): High-throughput benchmarking (MB/sec and us/op) for SHA3-256, SHAKE-256, and AES-256-GCM AEAD over 4KB payload blocks.
     - [`bench_main.c`](benchmarks/bench_main.c): Configurable iteration runner via CLI arguments or `BENCH_ITERS` environment variable.
   - Added standalone build and run targets (`make bench` and `make run-bench`).
+- **Official Node.js Native Bindings & npm Package (`rivide`)**:
+  - Implemented high-performance, zero-dependency Node-API (N-API) native bindings under [`bindings/node/`](bindings/node/):
+    - [`src/napi_kem.c`](bindings/node/src/napi_kem.c): ML-KEM-768 and ML-KEM-1024 keypair generation, encapsulation, and decapsulation.
+    - [`src/napi_dsa.c`](bindings/node/src/napi_dsa.c): ML-DSA-65 and ML-DSA-87 digital signing and verification with strict `siglen` boundary validation.
+    - [`src/napi_crypto.c`](bindings/node/src/napi_crypto.c): SHA-3, SHAKE-128/256 XOF, and AES-128/256-GCM authenticated encryption/decryption.
+    - [`src/napi_utils.c`](bindings/node/src/napi_utils.c): Constant-time memory cleansing (`cleanse`), OS entropy generation (`randombytes`), and SIMD capability inspection (`getSimdCaps`).
+  - Added comprehensive TypeScript type definitions ([`index.d.ts`](bindings/node/index.d.ts)), CommonJS ([`lib/index.js`](bindings/node/lib/index.js)), and ESM ([`lib/index.mjs`](bindings/node/lib/index.mjs)) dual module exports.
+  - Added automated test suite (`npm test`), interactive performance benchmark (`npm run bench`), and demonstration examples under [`bindings/node/examples/`](bindings/node/examples/).
+  - Added `make node-build`, `make node-test`, and `make node-bench` automation targets to master `Makefile`.
 - **Documentation Expansion & Architectural Specifications**:
+  - Added [`docs/architecture/node_bindings.md`](docs/architecture/node_bindings.md) documenting Node-API design and JavaScript runtime interface.
   - Added [`docs/architecture/testing_and_kat.md`](docs/architecture/testing_and_kat.md) documenting multi-tier test methodology and KAT layout.
   - Added [`docs/architecture/fuzzing.md`](docs/architecture/fuzzing.md) detailing libFuzzer design, target specifications, and execution instructions.
   - Added [`docs/architecture/benchmarking.md`](docs/architecture/benchmarking.md) documenting performance measurement methodology, hardware capability bitmasks, and metric reporting.

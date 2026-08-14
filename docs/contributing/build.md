@@ -25,6 +25,15 @@ make run-examples
 # Compile LLVM libFuzzer targets using Clang
 make fuzz CC=clang
 
+# Compile Node-API native bindings addon
+make node-build
+
+# Run automated Node.js unit tests
+make node-test
+
+# Run Node.js runtime performance benchmarks
+make node-bench
+
 # Check code formatting compliance
 make check-format
 
@@ -74,5 +83,8 @@ ctest --output-on-failure
 | :--- | :--- | :--- |
 | `CMAKE_BUILD_TYPE` | `Release` | Build configuration (`Release` or `Debug`). |
 | `RIVIDE_BUILD_TESTS` | `ON` | Enable compilation of `rivide_tests` binary. |
+| `RIVIDE_BUILD_KAT` | `ON` | Enable compilation of NIST Known Answer Test (`rivide_kat_tests`) binary. |
+| `RIVIDE_BUILD_BENCHMARKS` | `ON` | Enable compilation of dedicated benchmark (`rivide_bench`) binary. |
 | `RIVIDE_BUILD_EXAMPLES` | `ON` | Enable compilation of sub-directory example binaries. |
+| `RIVIDE_BUILD_FUZZERS` | `OFF` | Enable compilation of LLVM libFuzzer fuzzing targets. |
 | `BUILD_SHARED_LIBS` | `OFF` | Build shared library (`librivide.so`) in addition to static library (`librivide.a`). |

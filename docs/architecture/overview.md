@@ -57,8 +57,8 @@ Rivide is built around four core cryptographic engineering principles:
 | `src/utils/` | Secure memory cleansing (`rivide_cleanse`) and OS entropy generation (`rivide_randombytes`). |
 | `src/pqc/ntt_simd.c` | SIMD vector acceleration and hardware feature detection. |
 | `benchmarks/` | Dedicated first-class performance profiling and benchmarking subsystem. |
-| `tests/kat/` | Official NIST Known Answer Test (KAT) vector validation subsystem. |
 | `fuzz/` | Dedicated LLVM libFuzzer automated security fuzzing subsystem. |
+| `bindings/node/` | Official Node.js native Node-API (N-API) bindings and npm package (`rivide`). |
 
 ## Secure Memory Lifecycle
 

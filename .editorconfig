@@ -40,6 +40,12 @@ indent_size = 4
 indent_style = space
 indent_size = 2
 
+# Formatting rules for JavaScript, TypeScript, JSON, and GYP configuration files
+[*.{json,gyp,gypi,js,mjs,cjs,ts}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+
 # Whitespace rules for Markdown documentation files to preserve linebreaks
 [*.md]
 trim_trailing_whitespace = false
