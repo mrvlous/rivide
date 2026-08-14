@@ -47,12 +47,19 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 ## Installation & Quick Start
 
-### 1. Installation via npm
+### 1. Installation
 
-Install the package into your Node.js or TypeScript project:
+Install the package into your Node.js or TypeScript project using your preferred package manager:
 
 ```bash
+# npm
 npm install rivide
+
+# pnpm
+pnpm add rivide
+
+# yarn
+yarn add rivide
 ```
 
 ### 2. Building from Source

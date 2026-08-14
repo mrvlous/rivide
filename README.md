@@ -38,8 +38,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 1. [Installation & Quick Start](#installation--quick-start)
 2. [Code Tutorials & Usage Examples](#code-tutorials--usage-examples)
    - [Tutorial 1: ML-KEM-768 Key Exchange](#tutorial-1-ml-kem-768-key-exchange)
-   - [Tutorial 2: ML-DSA-65 Digital Signature](#tutorial-2-ml-dsa-65-digital-signature)
-3. [Node.js / npm Bindings Quick Start](#nodejs--npm-bindings-quick-start)
+3. [Node.js / JavaScript / TypeScript Bindings Quick Start](#nodejs--javascript--typescript-bindings-quick-start)
 4. [Parameter & Specification Summary](#parameter--specification-summary)
 5. [Master Makefile Command Automation](#master-makefile-command-automation)
 6. [Documentation Map](#documentation-map)
@@ -209,12 +208,19 @@ int main(void) {
 
 Compile with: `gcc -O3 main.c -lrivide -o dsa_app`
 
-## Node.js / npm Bindings Quick Start
+## Node.js / JavaScript / TypeScript Bindings Quick Start
 
-Rivide provides official native Node-API bindings for JavaScript and TypeScript developers via the [`rivide`](bindings/node/README.md) npm package:
+Rivide provides official native Node-API bindings for JavaScript and TypeScript developers via the [`rivide`](bindings/node/README.md) package:
 
 ```bash
+# npm
 npm install rivide
+
+# pnpm
+pnpm add rivide
+
+# yarn
+yarn add rivide
 ```
 
 ```javascript

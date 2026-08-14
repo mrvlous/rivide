@@ -28,4 +28,4 @@ This integration guide demonstrates how to construct a quantum-safe encrypted st
 
 ## Sample Code Reference
 
-See [`examples/storage/secure_vault_storage.c`](file:///home/v1lnv/Documents/Projects/rivide/examples/storage/secure_vault_storage.c) for full executable code.
+See [`examples/storage/secure_vault_storage.c`](../../examples/storage/secure_vault_storage.c) for full executable code.

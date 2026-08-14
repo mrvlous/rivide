@@ -24,7 +24,7 @@ This integration guide demonstrates how to combine **ML-KEM-768** key encapsulat
 
 ## Sample Code Reference
 
-See [`examples/protocol/tls_handshake_pqc.c`](file:///home/v1lnv/Documents/Projects/rivide/examples/protocol/tls_handshake_pqc.c) for full executable code.
+See [`examples/protocol/tls_handshake_pqc.c`](../../examples/protocol/tls_handshake_pqc.c) for full executable code.
 
 ```c
 #include "rivide/pqc/ml_dsa.h"

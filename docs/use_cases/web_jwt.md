@@ -24,4 +24,4 @@ This integration guide describes how to issue and verify quantum-resistant API a
 
 ## Sample Code Reference
 
-See [`examples/document/detached_pdf_signer.c`](file:///home/v1lnv/Documents/Projects/rivide/examples/document/detached_pdf_signer.c) for full executable code.
+See [`examples/document/detached_pdf_signer.c`](../../examples/document/detached_pdf_signer.c) for full executable code.

@@ -10,7 +10,12 @@ bindings/node/
 ├── package.json         # Package manifest for npm module 'rivide' v1.1.0
 ├── index.d.ts           # Full TypeScript type definitions and JSDoc annotations
 ├── README.md            # Dedicated npm package documentation & quick start
+├── CHANGELOG.md         # Dedicated release changelog for npm package
+├── LICENSE              # Dedicated MIT license file
 ├── bench.js             # Performance profiling script for Node.js runtime
+├── docs/
+│   ├── api.md           # Standalone TypeScript & JavaScript API reference
+│   └── benchmarks.md    # Node.js performance benchmarking guide
 ├── lib/
 │   ├── index.js         # High-level CommonJS entry point and buffer normalizers
 │   └── index.mjs        # Native ECMAScript Module (ESM) export wrapper
