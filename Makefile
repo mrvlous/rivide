@@ -74,7 +74,7 @@ LOG_ERR     := printf "$(CLR_RED)$(CLR_BOLD)[ERR]$(CLR_RESET)   %s\n"
 LOG_CHECK   := printf "  $(CLR_GREEN)$(CLR_BOLD)[OK]$(CLR_RESET)    %s\n"
 LOG_MISS    := printf "  $(CLR_RED)$(CLR_BOLD)[MISS]$(CLR_RESET)  %s\n"
 
-.PHONY: all help info check config build test kat run-kat bench run-bench examples run-examples fuzz node-build node-test node-bench install clean format check-format lint
+.PHONY: all help info check config build test kat run-kat bench run-bench examples run-examples fuzz node-build node-test node-bench rust-build rust-test rust-examples rust-bench rust-pack rust-publish install clean format check-format lint
 
 .DEFAULT_GOAL := all
 
@@ -199,6 +199,43 @@ node-bench: node-build ## Execute Node.js performance benchmarks
 	$(Q)$(LOG_INFO) "Executing Node.js benchmark suite..."
 	$(Q)cd bindings/node && node bench.js
 
+rust-build: ## Build Rust native bindings using cargo
+	$(Q)$(LOG_INFO) "Building Rust native bindings in bindings/rust/..."
+	$(Q)cd bindings/rust && cargo build --release
+	$(Q)$(LOG_DONE) "Rust native bindings compiled."
+
+rust-test: ## Run automated Rust integration tests and doctests
+	$(Q)$(LOG_INFO) "Executing Rust test suite..."
+	$(Q)cd bindings/rust && cargo test
+	$(Q)$(LOG_DONE) "Rust test suite passed."
+
+rust-examples: ## Execute Rust demonstration examples
+	$(Q)$(LOG_INFO) "Executing Rust demonstration examples..."
+	$(Q)cd bindings/rust && cargo run --example kem_exchange
+	$(Q)cd bindings/rust && cargo run --example dsa_sign
+	$(Q)cd bindings/rust && cargo run --example hybrid_channel
+	$(Q)$(LOG_DONE) "All Rust demonstration examples executed successfully."
+
+rust-bench: ## Execute Rust performance benchmarks
+	$(Q)$(LOG_INFO) "Executing Rust benchmark suite..."
+	$(Q)cd bindings/rust && cargo bench
+
+rust-pack: ## Package Rust crate for crates.io with bundled C source
+	$(Q)$(LOG_INFO) "Packaging Rust crate for crates.io..."
+	$(Q)mkdir -p bindings/rust/c_src
+	$(Q)cp -rf include src bindings/rust/c_src/
+	$(Q)cd bindings/rust && cargo package --allow-dirty
+	$(Q)rm -rf bindings/rust/c_src
+	$(Q)$(LOG_DONE) "Rust crate packaged and verified successfully."
+
+rust-publish: ## Publish Rust crate to crates.io with bundled C source
+	$(Q)$(LOG_INFO) "Publishing Rust crate to crates.io..."
+	$(Q)mkdir -p bindings/rust/c_src
+	$(Q)cp -rf include src bindings/rust/c_src/
+	$(Q)cd bindings/rust && cargo publish --allow-dirty
+	$(Q)rm -rf bindings/rust/c_src
+	$(Q)$(LOG_DONE) "Rust crate published to crates.io successfully."
+
 install: build ## Install public headers and libraries to system/DESTDIR
 	$(Q)$(LOG_INFO) "Installing Rivide libraries and public headers..."
 	$(Q)$(CMAKE) --install $(BUILD_DIR)
@@ -206,7 +243,7 @@ install: build ## Install public headers and libraries to system/DESTDIR
 
 clean: ## Remove build directories and generated compile_commands.json
 	$(Q)$(LOG_INFO) "Cleaning build artifacts..."
-	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz compile_commands.json bindings/node/build
+	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz compile_commands.json bindings/node/build bindings/rust/target
 	$(Q)$(LOG_DONE) "Clean finished."
 
 format: ## Format all source, header, test, benchmark, fuzz, and binding files using clang-format

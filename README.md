@@ -37,12 +37,12 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 1. [Installation & Quick Start](#installation--quick-start)
 2. [Code Tutorials & Usage Examples](#code-tutorials--usage-examples)
-   - [Tutorial 1: ML-KEM-768 Key Exchange](#tutorial-1-ml-kem-768-key-exchange)
 3. [Node.js / JavaScript / TypeScript Bindings Quick Start](#nodejs--javascript--typescript-bindings-quick-start)
-4. [Parameter & Specification Summary](#parameter--specification-summary)
-5. [Master Makefile Command Automation](#master-makefile-command-automation)
-6. [Documentation Map](#documentation-map)
-7. [License & Maintainers](#license--maintainers)
+4. [Rust Native Bindings Quick Start](#rust-native-bindings-quick-start)
+5. [Parameter & Specification Summary](#parameter--specification-summary)
+6. [Master Makefile Command Automation](#master-makefile-command-automation)
+7. [Documentation Map](#documentation-map)
+8. [License & Maintainers](#license--maintainers)
 
 ## Installation & Quick Start
 
@@ -242,6 +242,35 @@ utils.cleanse(signer.secretKey);
 ```
 
 For full documentation and TypeScript usage, refer to the [Node.js Bindings Guide](bindings/node/README.md).
+
+## Rust Native Bindings Quick Start
+
+Rivide provides official idiomatic Rust bindings via the [`rivide`](bindings/rust/README.md) crate:
+
+```bash
+cargo add rivide
+```
+
+```rust
+use rivide::kem::MlKem768;
+use rivide::dsa::MlDsa65;
+
+// ML-KEM-768 Key Exchange
+let alice = MlKem768::keypair().expect("KeyGen failed");
+let bob = MlKem768::encapsulate(&alice.public_key).expect("Encaps failed");
+let shared_secret = MlKem768::decapsulate(&bob.ciphertext, &alice.secret_key).expect("Decaps failed");
+
+assert_eq!(shared_secret, bob.shared_secret);
+
+// ML-DSA-65 Digital Signature
+let signer = MlDsa65::keypair().expect("KeyGen failed");
+let signature = MlDsa65::sign(b"Quantum-Safe Transaction", &signer.secret_key).expect("Sign failed");
+let is_valid = MlDsa65::verify(&signature, b"Quantum-Safe Transaction", &signer.public_key);
+
+assert!(is_valid);
+```
+
+For full documentation, refer to the [Rust Bindings Guide](bindings/rust/README.md).
 
 ## Parameter & Specification Summary
 

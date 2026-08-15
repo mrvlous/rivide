@@ -34,6 +34,18 @@ make node-test
 # Run Node.js runtime performance benchmarks
 make node-bench
 
+# Compile Rust native bindings crate
+make rust-build
+
+# Run automated Rust integration tests and doctests
+make rust-test
+
+# Execute Rust demonstration examples
+make rust-examples
+
+# Run Rust runtime performance benchmarks
+make rust-bench
+
 # Check code formatting compliance
 make check-format
 

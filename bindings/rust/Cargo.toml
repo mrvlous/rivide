@@ -1,0 +1,54 @@
+[package]
+name = "rivide"
+version = "1.1.0"
+edition = "2021"
+authors = ["Moh. Ananda Firmansyah Putra <mrvlous@proton.me>"]
+license = "MIT"
+description = "Official Rust idiomatic and zero-allocation bindings for the Rivide Post-Quantum Cryptography (NIST FIPS 203 ML-KEM & NIST FIPS 204 ML-DSA) C99 Library."
+repository = "https://github.com/mrvlous/rivide"
+readme = "README.md"
+keywords = ["post-quantum", "pqc", "ml-kem", "ml-dsa", "cryptography"]
+categories = ["cryptography", "no-std"]
+include = [
+    "Cargo.toml",
+    "build.rs",
+    "src/**/*.rs",
+    "tests/**/*.rs",
+    "benches/**/*.rs",
+    "examples/**/*.rs",
+    "c_src/**/*",
+    "docs/**/*.md",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+]
+
+[dependencies]
+
+[build-dependencies]
+cc = "1.0"
+
+[features]
+default = ["std"]
+std = []
+
+[[example]]
+name = "kem_exchange"
+path = "examples/kem_exchange.rs"
+
+[[example]]
+name = "dsa_sign"
+path = "examples/dsa_sign.rs"
+
+[[example]]
+name = "hybrid_channel"
+path = "examples/hybrid_channel.rs"
+
+[[example]]
+name = "bench"
+path = "examples/bench.rs"
+
+[[bench]]
+name = "bench_pqc"
+harness = false
+path = "benches/bench_pqc.rs"

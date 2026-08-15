@@ -11,7 +11,10 @@ To build and test Rivide, your system requires:
 2. **Build Toolchain**:
    - `cmake` ($\ge 3.16$)
    - `make` (GNU Make $\ge 3.82$)
-3. **Quality & Formatting Tools (Optional but Recommended)**:
+3. **Language Bindings Toolchains (Optional)**:
+   - **Node.js**: `node` ($\ge 16.0$) and `npm` for JavaScript/TypeScript native addon.
+   - **Rust**: `rustc` and `cargo` ($\ge 1.70$) for Rust native crate.
+4. **Quality & Formatting Tools (Optional but Recommended)**:
    - `clang-format` ($\ge 10.0$)
    - `clang-tidy` ($\ge 10.0$)
 

@@ -16,7 +16,8 @@ The documentation is organized into modular sections covering architecture, API 
 - [NIST KAT & Test Suite](architecture/testing_and_kat.md): Modular Known Answer Test framework and validation vectors.
 - [Fuzzing Subsystem](architecture/fuzzing.md): Automated security fuzzing via LLVM libFuzzer.
 - [Dedicated Benchmark Subsystem](architecture/benchmarking.md): Hardware performance measurement and metrics.
-- [Node.js Native Bindings](architecture/node_bindings.md): Architecture and API of the official `rivide` Node.js npm package.
+- [Node.js Native Bindings](architecture/node_bindings.md): Architecture and API of the official `rivide` Node.js package.
+- [Rust Native Bindings](architecture/rust_bindings.md): Architecture and API of the official `rivide` Rust crate.
 
 ### API Reference
 - [Core API](api/core.md): Initialization, error codes (`rivide_status_t`), and memory utilities.
@@ -25,6 +26,7 @@ The documentation is organized into modular sections covering architecture, API 
 - [Symmetric & Utility API](api/crypto_utils.md): SHA-3, SHAKE, AES-GCM, and constant-time memory helpers.
 - [SIMD API](api/ntt_simd.md): Hardware feature detection queries and SIMD vector math functions.
 - [Node.js (npm) API](../bindings/node/README.md): Full JavaScript/TypeScript documentation for the `rivide` npm package.
+- [Rust (crates.io) API](../bindings/rust/README.md): Full Rust idiomatic documentation for the `rivide` crate.
 
 ### Integration Use Cases
 - [Post-Quantum TLS 1.3](use_cases/network_tls.md): Hybrid PQC key exchange and identity certificate signing for network protocols.

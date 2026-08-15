@@ -59,6 +59,7 @@ Rivide is built around four core cryptographic engineering principles:
 | `benchmarks/` | Dedicated first-class performance profiling and benchmarking subsystem. |
 | `fuzz/` | Dedicated LLVM libFuzzer automated security fuzzing subsystem. |
 | `bindings/node/` | Official Node.js native Node-API (N-API) bindings and npm package (`rivide`). |
+| `bindings/rust/` | Official Rust idiomatic bindings and crates.io crate (`rivide`). |
 
 ## Secure Memory Lifecycle
 

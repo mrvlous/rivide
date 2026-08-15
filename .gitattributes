@@ -40,6 +40,10 @@ CHANGELOG.md text eol=lf
 *.gyp text eol=lf
 *.gypi text eol=lf
 
+# Rust source and configuration files
+*.rs text eol=lf
+*.toml text eol=lf
+
 # Binary artifact formats
 *.a binary
 *.so binary

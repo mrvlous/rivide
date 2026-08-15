@@ -49,8 +49,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added comprehensive TypeScript type definitions ([`index.d.ts`](bindings/node/index.d.ts)), CommonJS ([`lib/index.js`](bindings/node/lib/index.js)), and ESM ([`lib/index.mjs`](bindings/node/lib/index.mjs)) dual module exports.
   - Added automated test suite (`npm test`), interactive performance benchmark (`npm run bench`), and demonstration examples under [`bindings/node/examples/`](bindings/node/examples/).
   - Added `make node-build`, `make node-test`, and `make node-bench` automation targets to master `Makefile`.
+- **Official Rust Native Bindings & Crate (`rivide`)**:
+  - Implemented idiomatic, zero-allocation Rust bindings under [`bindings/rust/`](bindings/rust/) with direct C99 compilation via `build.rs`:
+    - Safe types for **ML-KEM-768** and **ML-KEM-1024** (`MlKem768`, `MlKem1024`, `MlKem768KeyPair`, `MlKem768EncapsResult`).
+    - Safe types for **ML-DSA-65** and **ML-DSA-87** (`MlDsa65`, `MlDsa87`, `MlDsa65KeyPair`, `MlDsa65Signature`).
+    - Symmetric cryptography wrappers for SHA-3, SHAKE-128/256, and AES-128/256-GCM AEAD (`Sha3`, `AesGcm`).
+    - Automated RAII memory zeroization (`Drop` trait implementation invoking `rivide_cleanse` on all secret keys).
+    - Fixed-size stack arrays (`[u8; N]`) for zero heap allocation overhead.
+    - Automated integration tests (`tests/`) and standalone examples (`examples/`).
+    - Added `make rust-build`, `make rust-test`, `make rust-examples`, and `make rust-bench` Makefile targets.
 - **Documentation Expansion & Architectural Specifications**:
   - Added [`docs/architecture/node_bindings.md`](docs/architecture/node_bindings.md) documenting Node-API design and JavaScript runtime interface.
+  - Added [`docs/architecture/rust_bindings.md`](docs/architecture/rust_bindings.md) documenting Rust crate design and RAII memory model.
   - Added [`docs/architecture/testing_and_kat.md`](docs/architecture/testing_and_kat.md) documenting multi-tier test methodology and KAT layout.
   - Added [`docs/architecture/fuzzing.md`](docs/architecture/fuzzing.md) detailing libFuzzer design, target specifications, and execution instructions.
   - Added [`docs/architecture/benchmarking.md`](docs/architecture/benchmarking.md) documenting performance measurement methodology, hardware capability bitmasks, and metric reporting.
