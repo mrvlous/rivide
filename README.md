@@ -296,6 +296,12 @@ The master [`Makefile`](Makefile) provides simple automation targets:
 | `make node-build` | Compile Node-API native bindings addon using `node-gyp` |
 | `make node-test` | Run automated Node.js test suite across all PQC primitives |
 | `make node-bench` | Execute Node.js performance benchmarking suite |
+| `make rust-build` | Compile Rust native bindings crate using Cargo |
+| `make rust-test` | Run automated Rust integration test suite and doc-tests |
+| `make rust-examples` | Execute Rust demonstration examples |
+| `make rust-bench` | Execute high-precision Rust performance benchmark suite |
+| `make rust-pack` | Package and verify Rust crate tarball for crates.io |
+| `make rust-publish` | Publish Rust crate to crates.io with bundled C source |
 | `make format` | Auto-format all C/H files using `.clang-format` |
 | `make check-format` | Verify code formatting against `.clang-format` rules |
 | `make lint` | Run static code analysis using `clang-tidy` |
@@ -304,36 +310,59 @@ The master [`Makefile`](Makefile) provides simple automation targets:
 
 ## Documentation Map
 
-For detailed architectural and API documentation, refer to the [`docs/`](docs/README.md) directory:
+For detailed architectural, algorithmic, and API documentation, refer to the [`docs/`](docs/README.md) portal:
 
-- [Documentation Map Index](docs/README.md)
-- **Architecture Guides**:
-  - [Library Architecture Overview](docs/architecture/overview.md)
-  - [ML-KEM (FIPS 203) Architecture](docs/architecture/pqc_ml_kem.md)
-  - [ML-DSA (FIPS 204) Architecture](docs/architecture/pqc_ml_dsa.md)
-  - [Symmetric Primitives Architecture](docs/architecture/crypto_primitives.md)
-  - [SIMD NTT Vectorization Engine](docs/architecture/pqc_simd_ntt.md)
-  - [Memory & CSPRNG Engine Architecture](docs/architecture/memory_random.md)
-  - [NIST KAT & Testing Subsystem](docs/architecture/testing_and_kat.md)
-  - [Automated Fuzzing Subsystem](docs/architecture/fuzzing.md)
-  - [Dedicated Benchmark Subsystem](docs/architecture/benchmarking.md)
-  - [Node.js Native Bindings](docs/architecture/node_bindings.md)
-- **API References**:
-  - [Core API Reference](docs/api/core.md)
-  - [ML-KEM API Reference](docs/api/ml_kem.md)
-  - [ML-DSA API Reference](docs/api/ml_dsa.md)
-  - [SIMD NTT API Reference](docs/api/ntt_simd.md)
-  - [Symmetric Cryptography API Reference](docs/api/crypto_utils.md)
-  - [Node.js (npm) API](bindings/node/README.md)
-- **Real-World Integration Guides**:
-  - [Web Development & API Security (Post-Quantum JWT)](docs/use_cases/web_jwt.md)
-  - [Network Security & TLS (Hybrid KEM Exchange)](docs/use_cases/network_tls.md)
-  - [Embedded Systems & Firmware (Secure Boot & OTA)](docs/use_cases/embedded_iot.md)
-  - [Cloud Storage & Database (Envelope Encryption)](docs/use_cases/cloud_storage.md)
+- **[Master Documentation Portal](docs/README.md)**
+- **Getting Started**:
+  - [Overview & Quantum Threat Model](docs/getting_started/overview.md)
+  - [C99 Integration Quickstart](docs/getting_started/quickstart_c.md)
+  - [Node.js / TypeScript Quickstart](docs/getting_started/quickstart_node.md)
+  - [Rust Crate Quickstart](docs/getting_started/quickstart_rust.md)
+  - [Python CTypes Quickstart](docs/getting_started/quickstart_python.md)
+- **Algorithms & Standards**:
+  - [NIST FIPS 203 ML-KEM Specification](docs/algorithms/ml_kem_fips203.md)
+  - [NIST FIPS 204 ML-DSA Specification](docs/algorithms/ml_dsa_fips204.md)
+  - [NTT & Modular Arithmetic](docs/algorithms/ntt_and_reductions.md)
+  - [SHA-3 & Keccak Sponge Functions](docs/algorithms/sha3_and_keccak.md)
+  - [AES-GCM Authenticated Encryption](docs/algorithms/aes_gcm_aead.md)
+- **Architecture & Design**:
+  - [Subsystem Architecture Overview](docs/architecture/overview.md)
+  - [Zero-Allocation Memory Model](docs/architecture/memory_model.md)
+  - [Hardware SIMD Acceleration](docs/architecture/hardware_acceleration.md)
+  - [Node.js Native Bindings Architecture](docs/architecture/node_bindings.md)
+  - [Rust Native Bindings Architecture](docs/architecture/rust_bindings.md)
+- **Security & Hardening**:
+  - [Threat Model & Security Proofs](docs/security/threat_model.md)
+  - [Constant-Time Engineering](docs/security/constant_time.md)
+  - [Memory Safety & Cleansing](docs/security/memory_safety.md)
+  - [Vulnerability Reporting Policy](docs/security/vulnerability_reporting.md)
+- **Cross-Language API References**:
+  - [C99 API: Core Engine](docs/api/c/core.md)
+  - [C99 API: ML-KEM](docs/api/c/ml_kem.md)
+  - [C99 API: ML-DSA](docs/api/c/ml_dsa.md)
+  - [C99 API: Symmetric & Utilities](docs/api/c/crypto_utils.md)
+  - [C99 API: NTT & SIMD](docs/api/c/ntt_simd.md)
+  - [Node.js / TypeScript API](docs/api/node/api.md)
+  - [Rust Crate API](docs/api/rust/api.md)
+- **Performance Benchmarks**:
+  - [Benchmarking Methodology](docs/benchmarks/methodology.md)
+  - [C Native Benchmarks](docs/benchmarks/c_benchmarks.md)
+  - [Node.js Runtime Benchmarks](docs/benchmarks/node_benchmarks.md)
+  - [Rust Crate Benchmarks](docs/benchmarks/rust_benchmarks.md)
+- **Testing & Verification**:
+  - [Automated Unit Tests](docs/testing/unit_tests.md)
+  - [NIST Known Answer Tests (KAT)](docs/testing/nist_kat.md)
+  - [LLVM libFuzzer Fuzzing](docs/testing/fuzzing.md)
+- **Real-World Integration Blueprints**:
+  - [TLS 1.3 Quantum-Safe Handshake](docs/use_cases/network_tls.md)
+  - [Cloud Storage Vault Encryption](docs/use_cases/cloud_storage.md)
+  - [Embedded IoT & Microcontrollers](docs/use_cases/embedded_iot.md)
+  - [Post-Quantum JWT Tokens](docs/use_cases/web_jwt.md)
+  - [Detached Document & PDF Signing](docs/use_cases/document_signing.md)
 - **Contribution Guidelines**:
   - [Development Environment Setup](docs/contributing/setup.md)
   - [Building and Tooling](docs/contributing/build.md)
-  - [Coding & License Style Guidelines](docs/contributing/style.md)
+  - [Coding Style & Memory Standards](docs/contributing/style.md)
 
 ## License & Maintainers
 
