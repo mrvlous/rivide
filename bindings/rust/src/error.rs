@@ -2,21 +2,31 @@
 //
 // Rivide Post-Quantum Cryptography Library
 // Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 
-//! Error types for the Rivide cryptographic library.
+//! Strongly typed error definitions for the Rivide Rust crate.
 
 use std::fmt;
 
-/// The error type for Rivide operations.
+/// The primary error type for all Rivide cryptographic operations.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RivideError {
-    /// Invalid parameter supplied to a cryptographic routine.
+    /// Invalid parameter supplied to a cryptographic routine (e.g. null buffer or invalid length).
     InvalidParameter,
-    /// Digital signature or authentication tag verification failed.
+    /// Digital signature or AEAD authentication tag verification failed.
     VerificationFailed,
     /// Operating system CSPRNG failed to supply requested entropy bytes.
     EntropyFailure,
-    /// Internal cryptographic or system failure.
+    /// Internal cryptographic or hardware state fault.
     InternalError,
 }
 

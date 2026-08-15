@@ -2,8 +2,18 @@
 //
 // Rivide Post-Quantum Cryptography Library
 // Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 
-//! ML-KEM-768 Post-Quantum Key Encapsulation Example in Rust.
+//! Demonstration example of ML-KEM-768 quantum-safe key exchange in Rust.
 
 use rivide::kem::MlKem768;
 use rivide::utils::ct_memcmp;

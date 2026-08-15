@@ -2,12 +2,29 @@
 //
 // Rivide Post-Quantum Cryptography Library
 // Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 
 //! # Rivide: Post-Quantum Cryptography Rust Crate
 //!
-//! Official high-performance, zero-allocation Rust bindings for the **Rivide**
+//! Official high-performance, zero-allocation, idiomatic Rust bindings for the **Rivide**
 //! Post-Quantum Cryptography (PQC) C99 library. Implements official **NIST FIPS 203** (ML-KEM)
 //! and **NIST FIPS 204** (ML-DSA) standards with automated RAII memory zeroization.
+//!
+//! ## Key Modules
+//!
+//! - [`kem`]: Key Encapsulation Mechanisms (**ML-KEM-768** and **ML-KEM-1024**).
+//! - [`dsa`]: Digital Signature Algorithms (**ML-DSA-65** and **ML-DSA-87**).
+//! - [`crypto`]: Symmetric cryptography primitives (**SHA-3**, **SHAKE**, **AES-GCM** AEAD).
+//! - [`utils`]: Memory cleansing, entropy generation, constant-time comparisons, and SIMD CPU queries.
 //!
 //! ## Quick Start
 //!
@@ -69,6 +86,9 @@ pub use utils::{cleanse, ct_memcmp, get_cpu_features, randombytes, randombytes_i
 /// Initializes the underlying Rivide C library subsystem.
 ///
 /// Note: Initialization is called automatically upon first use, but can be invoked explicitly.
+///
+/// # Errors
+/// Returns [`RivideError::InternalError`] if hardware or internal state initialization fails.
 pub fn init() -> Result<(), RivideError> {
     let status = unsafe { sys::rivide_init() };
     RivideError::from_status(status)

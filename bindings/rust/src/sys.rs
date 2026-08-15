@@ -2,21 +2,36 @@
 //
 // Rivide Post-Quantum Cryptography Library
 // Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 
-//! Raw low-level FFI bindings to the Rivide C99 library.
+//! Raw low-level `extern "C"` FFI bindings to the Rivide C99 cryptographic library.
 
 #![allow(non_camel_case_types)]
 #![allow(dead_code)]
 
 pub type rivide_status_t = i32;
 
+/// Operation completed successfully.
 pub const RIVIDE_SUCCESS: rivide_status_t = 0;
+/// Invalid parameter or null pointer passed to function.
 pub const RIVIDE_ERR_INVALID_PARAM: rivide_status_t = -1;
+/// Cryptographic signature or authentication tag verification failed.
 pub const RIVIDE_ERR_VERIFICATION_FAILED: rivide_status_t = -2;
+/// Operating system CSPRNG failure.
 pub const RIVIDE_ERR_ENTROPY_FAILURE: rivide_status_t = -3;
+/// Internal cryptographic or system fault.
 pub const RIVIDE_ERR_INTERNAL: rivide_status_t = -4;
 
-// Buffer length constants
+// Buffer length constants for ML-KEM
 pub const RIVIDE_ML_KEM_768_PK_BYTES: usize = 1184;
 pub const RIVIDE_ML_KEM_768_SK_BYTES: usize = 2400;
 pub const RIVIDE_ML_KEM_768_CT_BYTES: usize = 1088;
@@ -27,6 +42,7 @@ pub const RIVIDE_ML_KEM_1024_SK_BYTES: usize = 3168;
 pub const RIVIDE_ML_KEM_1024_CT_BYTES: usize = 1568;
 pub const RIVIDE_ML_KEM_1024_SS_BYTES: usize = 32;
 
+// Buffer length constants for ML-DSA
 pub const RIVIDE_ML_DSA_65_PK_BYTES: usize = 1952;
 pub const RIVIDE_ML_DSA_65_SK_BYTES: usize = 4032;
 pub const RIVIDE_ML_DSA_65_SIG_BYTES: usize = 3309;
@@ -35,17 +51,20 @@ pub const RIVIDE_ML_DSA_87_PK_BYTES: usize = 2592;
 pub const RIVIDE_ML_DSA_87_SK_BYTES: usize = 4896;
 pub const RIVIDE_ML_DSA_87_SIG_BYTES: usize = 4627;
 
+// Symmetric buffer length constants
 pub const RIVIDE_SHA3_256_DIGEST_LENGTH: usize = 32;
 pub const RIVIDE_SHA3_512_DIGEST_LENGTH: usize = 64;
 
 pub const RIVIDE_AES_GCM_IV_BYTES: usize = 12;
 pub const RIVIDE_AES_GCM_TAG_BYTES: usize = 16;
 
+// CPU feature bitmask constants
 pub const RIVIDE_CPU_AESNI: u32 = 1 << 0;
 pub const RIVIDE_CPU_ARM_CE: u32 = 1 << 1;
 pub const RIVIDE_CPU_AVX2: u32 = 1 << 2;
 pub const RIVIDE_CPU_ARM_NEON: u32 = 1 << 3;
 
+/// Expanded AES key schedule structure matching C `rivide_aes_key_t`.
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub struct rivide_aes_key_t {
