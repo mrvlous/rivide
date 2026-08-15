@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Developer Environment Setup Guide
 
 This guide describes how to configure your local development workspace to build, test, format, and contribute to the **Rivide Post-Quantum Cryptography Library**.

@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Integration Guide: Post-Quantum TLS 1.3 Handshake
 
 This integration guide demonstrates how to combine **ML-KEM-768** key encapsulation and **ML-DSA-65** digital signatures to build a simulated Post-Quantum TLS 1.3 handshake protocol.

@@ -1,4 +1,11 @@
-# Integration Guide: Embedded & IoT Bare-Metal Integration
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
+# Integration Guide: Embedded Systems & Firmware Security
 
 This guide describes best practices for deploying Rivide into resource-constrained microcontrollers and bare-metal IoT firmware environments.
 

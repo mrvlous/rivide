@@ -1,4 +1,11 @@
-# Node.js Native Bindings Architecture
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
+# Node.js Native Addon Subsystem Architecture
 
 This document describes the design, directory structure, and execution model of the official **Rivide** Node.js native bindings subsystem (`bindings/node/`).
 

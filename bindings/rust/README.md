@@ -219,8 +219,8 @@ For complete documentation, see the [Rivide Rust API Reference](docs/api.md).
 
 ## License & Maintainers
 
-Rivide is licensed under the [MIT License](LICENSE).
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-- **Maintainer**: Moh. Ananda Firmansyah Putra ([@mrvlous](https://github.com/mrvlous))
-- **Email**: `mrvlous@proton.me`
-- **Repository**: [https://github.com/mrvlous/rivide](https://github.com/mrvlous/rivide)
+- **Author & Maintainer**: Moh. Ananda Firmansyah Putra ([@mrvlous](https://github.com/mrvlous))
+- **Maintainers Roster**: [MAINTAINERS](https://github.com/mrvlous/rivide/blob/main/MAINTAINERS)
+- **Contributors & Credits**: [CREDITS](https://github.com/mrvlous/rivide/blob/main/CREDITS)

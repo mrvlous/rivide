@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Rivide System Architecture Overview
 
 This document provides a comprehensive technical overview of the **Rivide Post-Quantum Cryptography Library** architecture, module boundaries, memory management model, and design principles.

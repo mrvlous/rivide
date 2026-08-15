@@ -1,4 +1,11 @@
-# Rust Native Bindings Architecture
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
+# Rust Native Crate Subsystem Architecture
 
 This document describes the design, directory structure, memory safety guarantees, and execution model of the official **Rivide** Rust native bindings crate (`bindings/rust/`).
 

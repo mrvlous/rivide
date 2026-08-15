@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # Integration Guide: Post-Quantum Secure Vault Storage
 
 This integration guide demonstrates how to construct a quantum-safe encrypted storage vault using **ML-KEM-1024**, **SHA3-512**, and **AES-256-GCM**.

@@ -1,4 +1,11 @@
-# Integration Guide: Post-Quantum Signed Tokens & Detached Documents
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
+# Integration Guide: Post-Quantum Signed Tokens & JWT Authentication
 
 This integration guide describes how to issue and verify quantum-resistant API authentication tokens and detached digital documents using **ML-DSA-87** (NIST Security Category 5).
 

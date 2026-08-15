@@ -1,3 +1,10 @@
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
+
 # In-Depth Build System Guide
 
 This guide details compilation workflow, CMake configuration parameters, and Makefile automation targets available in **Rivide**.
