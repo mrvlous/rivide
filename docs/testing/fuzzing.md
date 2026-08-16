@@ -59,3 +59,12 @@ llvm-cov show ./build-fuzz/fuzz_ml_kem_decaps \
     -instr-profile=fuzz_kem.profdata \
     -format=html -output-dir=coverage_report/
 ```
+
+## 5. Continuous Fuzzing & Security Automation (CI/CD)
+
+Rivide integrates automated continuous fuzzing into GitHub Actions (`.github/workflows/ci.yml`) under the `security-fuzzing` job:
+
+- **Target Engines**: `fuzz_ml_kem_decaps`, `fuzz_ml_dsa_verify`, `fuzz_aes_gcm`, and `fuzz_sha3`.
+- **Sanitizers**: AddressSanitizer (ASan) and UndefinedBehaviorSanitizer (UBSan).
+- **Execution Invariant**: Every pull request and commit to `main` executes continuous fuzzing with randomized malformed inputs to formally verify that no edge-case or corrupted payload can cause crashes, out-of-bounds reads/writes, integer overflows, or undefined behavior.
+

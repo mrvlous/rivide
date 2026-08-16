@@ -154,3 +154,32 @@ jobs:
           cargo run --example kem_exchange
           cargo run --example dsa_sign
           cargo run --example hybrid_channel
+
+  security-fuzzing:
+    name: Continuous Fuzzing (LLVM libFuzzer + ASan/UBSan)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Clang & LLVM Toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake clang llvm
+
+      - name: Build libFuzzer Targets with AddressSanitizer & UndefinedBehaviorSanitizer
+        run: make fuzz
+
+      - name: Fuzz ML-KEM-768 Decapsulation (libFuzzer + ASan/UBSan)
+        run: ./build-fuzz/fuzz_ml_kem_decaps -max_total_time=30 -timeout=5
+
+      - name: Fuzz ML-DSA-65 Verification (libFuzzer + ASan/UBSan)
+        run: ./build-fuzz/fuzz_ml_dsa_verify -max_total_time=30 -timeout=5
+
+      - name: Fuzz AES-256-GCM AEAD (libFuzzer + ASan/UBSan)
+        run: ./build-fuzz/fuzz_aes_gcm -max_total_time=15 -timeout=5
+
+      - name: Fuzz SHA-3 / SHAKE (libFuzzer + ASan/UBSan)
+        run: ./build-fuzz/fuzz_sha3 -max_total_time=15 -timeout=5

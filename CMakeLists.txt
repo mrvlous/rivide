@@ -220,6 +220,15 @@ endif()
 # LLVM libFuzzer Fuzzing Targets Configuration
 option(RIVIDE_BUILD_FUZZERS "Build libFuzzer fuzzing targets" OFF)
 if(RIVIDE_BUILD_FUZZERS)
+    add_library(rivide_fuzz STATIC ${RIVIDE_SOURCES})
+    target_include_directories(rivide_fuzz PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    )
+    if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+        target_compile_options(rivide_fuzz PRIVATE -fsanitize=fuzzer-no-link,address,undefined -g)
+    endif()
+
     set(FUZZ_TARGETS
         fuzz_ml_kem_decaps
         fuzz_ml_dsa_verify
@@ -228,7 +237,7 @@ if(RIVIDE_BUILD_FUZZERS)
     )
     foreach(TARGET ${FUZZ_TARGETS})
         add_executable(${TARGET} fuzz/${TARGET}.c)
-        target_link_libraries(${TARGET} PRIVATE rivide)
+        target_link_libraries(${TARGET} PRIVATE rivide_fuzz)
         target_include_directories(${TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
         target_compile_options(${TARGET} PRIVATE -fsanitize=fuzzer,address,undefined -g)
         target_link_options(${TARGET} PRIVATE -fsanitize=fuzzer,address,undefined)
