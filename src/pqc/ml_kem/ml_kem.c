@@ -102,6 +102,8 @@ static void ml_kem_keypair_internal(uint8_t *pk, uint8_t *sk, const uint8_t seed
     polyvec_tobytes(sk, &s, k);
 
     rivide_cleanse(buf, sizeof(buf));
+    rivide_cleanse(g_input, sizeof(g_input));
+    rivide_cleanse(extseed, sizeof(extseed));
     rivide_cleanse(sigma, sizeof(sigma));
     rivide_cleanse(&s, sizeof(s));
     rivide_cleanse(&e, sizeof(e));
@@ -181,6 +183,8 @@ static void ml_kem_encrypt_internal(uint8_t *ct, const uint8_t *pk, const uint8_
     rivide_cleanse(&r_vec, sizeof(r_vec));
     rivide_cleanse(&e1, sizeof(e1));
     rivide_cleanse(&e2, sizeof(e2));
+    rivide_cleanse(&v_poly, sizeof(v_poly));
+    rivide_cleanse(&msg_poly, sizeof(msg_poly));
 }
 
 /**
@@ -273,12 +277,20 @@ static rivide_status_t ml_kem_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk
                                      int eta2, int du, int dv, size_t pk_bytes) {
     uint8_t m[32], h_pk[32];
     uint8_t g_input[64], g_output[64];
+    polyvec_t t_hat_test;
     rivide_status_t ret;
     unsigned int i;
 
     if (!ct || !ss || !pk) {
         return RIVIDE_ERR_NULL_PTR;
     }
+
+    /* NIST FIPS 203 Section 7.2: Type check on encapsulation key (coeffs of t_hat < 3329). */
+    if (polyvec_frombytes_check(&t_hat_test, pk, k) != 0) {
+        rivide_cleanse(&t_hat_test, sizeof(t_hat_test));
+        return RIVIDE_ERR_INVALID_PARAM;
+    }
+    rivide_cleanse(&t_hat_test, sizeof(t_hat_test));
 
     ret = rivide_randombytes(m, 32);
     if (ret != RIVIDE_SUCCESS) {

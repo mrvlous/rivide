@@ -15,7 +15,7 @@ Add `rivide` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rivide = "1.1.1"
+rivide = "1.1.2"
 ```
 
 Or via `cargo add`:

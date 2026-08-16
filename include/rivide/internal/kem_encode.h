@@ -80,4 +80,16 @@ void polyvec_tobytes(uint8_t *buf, const polyvec_t *v, int k);
  */
 void polyvec_frombytes(polyvec_t *v, const uint8_t *buf, int k);
 
+/**
+ * @brief Deserialize a vector of polynomials from byte array with FIPS 203 Section 7.2 Type Check.
+ *
+ * Verifies that all decoded 12-bit coefficients are strictly less than KEM_Q (3329).
+ *
+ * @param[out] v   Output polynomial vector structure.
+ * @param[in]  buf Input byte buffer.
+ * @param[in]  k   Module rank.
+ * @return 0 on success, or -1 if any coefficient >= 3329.
+ */
+int polyvec_frombytes_check(polyvec_t *v, const uint8_t *buf, int k);
+
 #endif /* RIVIDE_INTERNAL_KEM_ENCODE_H */

@@ -119,3 +119,24 @@ void polyvec_frombytes(polyvec_t *v, const uint8_t *buf, int k) {
         poly_frombytes(&v->vec[i], buf + 384 * i);
     }
 }
+
+/**
+ * @brief Deserialize a vector of polynomials with FIPS 203 Section 7.2 Type Check.
+ *
+ * @param[out] v   Output polynomial vector structure.
+ * @param[in]  buf Input byte buffer.
+ * @param[in]  k   Module rank.
+ * @return 0 on success, or -1 if any coefficient >= 3329.
+ */
+int polyvec_frombytes_check(polyvec_t *v, const uint8_t *buf, int k) {
+    int i, j;
+    polyvec_frombytes(v, buf, k);
+    for (i = 0; i < k; i++) {
+        for (j = 0; j < KEM_N; j++) {
+            if ((uint16_t)v->vec[i].coeffs[j] >= KEM_Q) {
+                return -1;
+            }
+        }
+    }
+    return 0;
+}

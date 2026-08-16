@@ -100,10 +100,9 @@ void rivide_simd_poly_sub_reduce(int16_t *r, const int16_t *a, const int16_t *b,
 void rivide_simd_poly_pointwise_montgomery(int16_t *r, const int16_t *a, const int16_t *b,
                                            int16_t q, int32_t qinv) {
     size_t i;
-    (void)qinv;
     for (i = 0; i < 256; i++) {
         int32_t prod = (int32_t)a[i] * (int32_t)b[i];
-        int16_t t = (int16_t)((int64_t)prod * 62209);
+        int16_t t = (int16_t)((int64_t)prod * (int16_t)qinv);
         r[i] = (int16_t)((prod - (int32_t)t * q) >> 16);
     }
 }

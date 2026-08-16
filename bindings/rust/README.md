@@ -58,7 +58,7 @@ Or add it directly to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rivide = "1.1.1"
+rivide = "1.1.2"
 ```
 
 ### 2. Building from Source

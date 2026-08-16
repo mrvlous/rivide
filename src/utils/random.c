@@ -72,18 +72,22 @@ rivide_status_t rivide_set_randombytes(rivide_rng_callback_t callback) {
 
 #if defined(RIVIDE_PLATFORM_LINUX)
 
+#include <errno.h>
 #include <sys/random.h>
 
 /**
  * @brief Linux implementation using getrandom(2).
  *
  * Loops until all requested bytes are filled, handling partial reads
- * from the kernel entropy pool.
+ * and signal interruptions (EINTR/EAGAIN) from the kernel entropy pool.
  */
 static rivide_status_t rivide_os_randombytes(uint8_t *buf, size_t len) {
     while (len > 0) {
         ssize_t ret = getrandom(buf, len, 0);
         if (ret < 0) {
+            if (errno == EINTR || errno == EAGAIN) {
+                continue;
+            }
             return RIVIDE_ERR_RNG_FAILURE;
         }
         buf += (size_t)ret;

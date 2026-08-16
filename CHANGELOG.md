@@ -12,6 +12,26 @@ All notable changes to the **Rivide** Post-Quantum Cryptography library will be 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-08-16
+
+### Fixed
+- **Constant-Time Branchless GHASH Multiplication**:
+  - Eliminated conditional branching in Galois Field $\text{GF}(2^{128})$ bitwise multiplication (`rivide_ghash_mult`), replacing branches with constant-time bitmask arithmetic to prevent side-channel timing and branch predictor leakage of the secret GHASH key $H$.
+- **Input Validation for AAD in AES-GCM**:
+  - Added strict null pointer validation when `aad_len > 0` in `rivide_aes_gcm_encrypt` and `rivide_aes_gcm_decrypt`, preventing invalid GHASH length block encoding.
+- **NIST FIPS 203 Section 7.2 Type Check Validation in ML-KEM**:
+  - Implemented encapsulation key verification (`polyvec_frombytes_check`) ensuring all decoded polynomial coefficients in ByteDecode_12 are strictly $< 3329$ (`RIVIDE_ML_KEM_Q`), returning `RIVIDE_ERR_INVALID_PARAM` on malformed keys.
+- **Linux CSPRNG Interruption Resilience**:
+  - Added `EINTR` and `EAGAIN` retry handling in `rivide_os_randombytes` using `getrandom(2)` to prevent spurious RNG failures during POSIX signal interruptions.
+- **SIMD Montgomery Modular Multiplication Parameterization**:
+  - Bound `qinv` parameter in `rivide_simd_poly_pointwise_montgomery`, removing hardcoded reduction constants.
+- **ML-DSA Signing Timeout Error Code**:
+  - Corrected rejection loop timeout return code in `ml_dsa_sign_internal` from `RIVIDE_ERR_VERIFICATION_FAILED` to `RIVIDE_ERR_INTERNAL`.
+- **Complete Intermediate Stack Variable Zeroization**:
+  - Added `rivide_cleanse` zeroization for intermediate secret buffers (`msg_poly`, `v_poly`, `g_input`, `extseed`, `t0`, `cs2`, `ct0`, `w0`, `w`) across ML-KEM and ML-DSA.
+- **Thread-Safe Atomic Library Initialization**:
+  - Implemented atomic state management and compare-exchange synchronization in `rivide_init()`, eliminating data races during concurrent CPU feature detection.
+
 ## [1.1.1] - 2026-08-16
 
 ### Fixed

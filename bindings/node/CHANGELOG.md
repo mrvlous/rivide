@@ -12,6 +12,21 @@ All notable changes to the **`rivide`** Node.js native package will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-08-16
+
+### Fixed
+
+- **Constant-Time Branchless GHASH Multiplication**:
+    - Replaced conditional branches in GHASH bitwise multiplication with constant-time bitmask arithmetic to prevent side-channel timing and branch predictor leakage.
+- **Input Validation for AAD in AES-GCM**:
+    - Added strict null pointer validation when `aad_len > 0` in authenticated encryption/decryption routines.
+- **NIST FIPS 203 Section 7.2 Type Check in ML-KEM**:
+    - Validated encapsulation key coefficients (< 3329) to reject malformed public keys.
+- **Resilient CSPRNG Entropy Reads**:
+    - Added `EINTR`/`EAGAIN` retry handling for Linux `getrandom(2)`.
+- **Complete Secret Stack Zeroization**:
+    - Zeroized intermediate polynomials and hash buffers across ML-KEM and ML-DSA.
+
 ## [1.1.1] - 2026-08-16
 
 ### Fixed

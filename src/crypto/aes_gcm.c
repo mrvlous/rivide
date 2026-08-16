@@ -92,6 +92,9 @@ rivide_status_t rivide_aes_gcm_encrypt(const rivide_aes_key_t *key, const uint8_
     if (!key || !iv || !ct || !tag) {
         return RIVIDE_ERR_NULL_PTR;
     }
+    if (aad_len > 0 && !aad) {
+        return RIVIDE_ERR_NULL_PTR;
+    }
     if (pt_len > 0 && !pt) {
         return RIVIDE_ERR_NULL_PTR;
     }
@@ -172,6 +175,9 @@ rivide_status_t rivide_aes_gcm_decrypt(const rivide_aes_key_t *key, const uint8_
     size_t i;
 
     if (!key || !iv || !tag || !pt) {
+        return RIVIDE_ERR_NULL_PTR;
+    }
+    if (aad_len > 0 && !aad) {
         return RIVIDE_ERR_NULL_PTR;
     }
     if (ct_len > 0 && !ct) {

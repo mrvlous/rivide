@@ -46,23 +46,20 @@ void rivide_ghash_mult(uint8_t x[16], const uint8_t y[16]) {
 
     for (i = 0; i < 16; i++) {
         for (j = 7; j >= 0; j--) {
-            if ((x[i] >> j) & 1) {
-                int k;
-                for (k = 0; k < 16; k++) {
-                    z[k] ^= v[k];
-                }
+            uint8_t bit = (uint8_t)((x[i] >> j) & 1);
+            uint8_t mask_bit = (uint8_t)(0 - bit);
+            int k;
+            for (k = 0; k < 16; k++) {
+                z[k] ^= (uint8_t)(v[k] & mask_bit);
             }
 
             {
-                uint8_t carry = v[15] & 1;
-                int k;
+                uint8_t carry = (uint8_t)(v[15] & 1);
+                uint8_t mask_carry = (uint8_t)(0 - carry);
                 for (k = 15; k > 0; k--) {
                     v[k] = (uint8_t)((v[k] >> 1) | ((v[k - 1] & 1) << 7));
                 }
-                v[0] >>= 1;
-                if (carry) {
-                    v[0] ^= 0xE1;
-                }
+                v[0] = (uint8_t)((v[0] >> 1) ^ (mask_carry & 0xE1));
             }
         }
     }

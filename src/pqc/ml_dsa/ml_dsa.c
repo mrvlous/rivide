@@ -131,6 +131,7 @@ static rivide_status_t ml_dsa_keygen_internal(uint8_t *pk, uint8_t *sk, int k, i
     rivide_cleanse(&s1, sizeof(s1));
     rivide_cleanse(&s1_hat, sizeof(s1_hat));
     rivide_cleanse(&s2, sizeof(s2));
+    rivide_cleanse(&t0, sizeof(t0));
 
     return RIVIDE_SUCCESS;
 }
@@ -218,7 +219,7 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
         reject = 0;
         loop_ctr++;
         if (loop_ctr > 10000) {
-            return RIVIDE_ERR_VERIFICATION_FAILED;
+            return RIVIDE_ERR_INTERNAL;
         }
         /* Sample masking vector y from ExpandMask(rho', nonce). */
         for (i = 0; i < l; i++) {
@@ -402,6 +403,10 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
     rivide_cleanse(&s1, sizeof(s1));
     rivide_cleanse(&s2, sizeof(s2));
     rivide_cleanse(&t0, sizeof(t0));
+    rivide_cleanse(&cs2, sizeof(cs2));
+    rivide_cleanse(&ct0, sizeof(ct0));
+    rivide_cleanse(&w0, sizeof(w0));
+    rivide_cleanse(&w, sizeof(w));
     rivide_cleanse(K, sizeof(K));
     rivide_cleanse(rho_prime, sizeof(rho_prime));
     rivide_cleanse(&y, sizeof(y));

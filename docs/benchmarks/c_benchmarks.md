@@ -26,20 +26,26 @@ Or via direct binary execution:
 ## 2. Benchmark Output Sample
 
 ```text
-================================================================================
-  Rivide Post-Quantum Cryptography Benchmark Suite
-  Library Version : 1.1.1
-  Modulus Info    : q = 3329 (ML-KEM), q = 8380417 (ML-DSA)
-  CPU Features    : AVX2: YES, AES-NI: YES, NEON: NO
-================================================================================
+Rivide Post-Quantum Cryptography Benchmark Suite v1.1.2
+
+Environment Information:
+  Compiler             : GCC 16.2.1
+  Build Configuration  : Release (-O3 / -DNDEBUG)
+  Benchmark Iterations : 100 runs per operation
+
+Detected Hardware Acceleration Capabilities:
+  AES-NI Acceleration  : YES
+  ARM Crypto Ext       : NO
+  AVX2 SIMD Vector     : YES
+  ARM NEON SIMD        : NO
 
 [Benchmark] ML-KEM-768
-  KeyGen  :   7240.12 ops/sec ( 138.12 us/op)
-  Encaps  :   5820.45 ops/sec ( 171.81 us/op)
-  Decaps  :   5120.30 ops/sec ( 195.30 us/op)
+  KeyGen  :   8815.55 ops/sec ( 113.44 us/op)
+  Encaps  :   7941.99 ops/sec ( 125.91 us/op)
+  Decaps  :   6493.72 ops/sec ( 154.00 us/op)
 
 [Benchmark] ML-DSA-65
-  KeyGen  :   3420.10 ops/sec ( 292.39 us/op)
-  Sign    :    890.40 ops/sec (1123.09 us/op)
-  Verify  :   3150.20 ops/sec ( 317.44 us/op)
+  KeyGen  :   2841.09 ops/sec ( 351.98 us/op)
+  Sign    :    400.60 ops/sec (2496.23 us/op)
+  Verify  :   3013.90 ops/sec ( 331.80 us/op)
 ```
