@@ -1,18 +1,17 @@
-<!--
-SPDX-License-Identifier: MIT
-
-Rivide Post-Quantum Cryptography Library
-Copyright (C) 2026 Moh. Ananda Firmansyah Putra
--->
-
 ---
 name: Bug Report
 about: Create a report to help us improve the Rivide library
 title: '[BUG] '
 labels: 'bug'
 assignees: ''
-
 ---
+
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
 
 **Describe the Bug**
 A clear and concise description of what the bug is.

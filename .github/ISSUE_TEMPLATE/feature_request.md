@@ -1,18 +1,17 @@
-<!--
-SPDX-License-Identifier: MIT
-
-Rivide Post-Quantum Cryptography Library
-Copyright (C) 2026 Moh. Ananda Firmansyah Putra
--->
-
 ---
 name: Feature Request
 about: Suggest an idea or feature enhancement for Rivide
 title: '[FEAT] '
 labels: 'enhancement'
 assignees: ''
-
 ---
+
+<!--
+SPDX-License-Identifier: MIT
+
+Rivide Post-Quantum Cryptography Library
+Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+-->
 
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
