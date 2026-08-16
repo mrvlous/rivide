@@ -11,8 +11,6 @@ Public C99 declarations for engine initialization, status error codes, and libra
 
 Header: `<rivide/rivide.h>`
 
----
-
 ## 1. Engine Initialization
 
 ```c
@@ -23,8 +21,6 @@ Initializes the Rivide cryptographic engine, validates internal constants, and p
 
 - **Returns**: `RIVIDE_SUCCESS` (0) on success, or negative error code on failure.
 
----
-
 ## 2. Version Information
 
 ```c
@@ -32,10 +28,8 @@ const char *rivide_version_string(void);
 uint32_t rivide_version_number(void);
 ```
 
-- `rivide_version_string()`: Returns static semantic version string (e.g. `"1.1.0"`).
-- `rivide_version_number()`: Returns packed 32-bit integer version (`0x010100`).
-
----
+- `rivide_version_string()`: Returns static semantic version string (e.g. `"1.1.1"`).
+- `rivide_version_number()`: Returns packed 32-bit integer version (`0x010101`).
 
 ## 3. Status Error Codes
 

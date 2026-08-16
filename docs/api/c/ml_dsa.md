@@ -11,8 +11,6 @@ Public C99 declarations for Module-Lattice-Based Digital Signature Algorithm (**
 
 Header: `<rivide/pqc/ml_dsa.h>`
 
----
-
 ## 1. Buffer Size Constants
 
 | Constant Macro | ML-DSA-65 | ML-DSA-87 |
@@ -20,8 +18,6 @@ Header: `<rivide/pqc/ml_dsa.h>`
 | `RIVIDE_ML_DSA_*_PUBLICKEYBYTES` | `1952` bytes | `2592` bytes |
 | `RIVIDE_ML_DSA_*_SECRETKEYBYTES` | `4032` bytes | `4896` bytes |
 | `RIVIDE_ML_DSA_*_BYTES` (Signature) | `3309` bytes | `4627` bytes |
-
----
 
 ## 2. ML-DSA-65 Functions
 
@@ -48,8 +44,6 @@ rivide_status_t rivide_ml_dsa_65_verify(
 - **`keygen`**: Generates a public key (`1952` bytes) and secret key (`4032` bytes).
 - **`sign`**: Generates signature (`3309` bytes) over `msg`.
 - **`verify`**: Verifies signature authenticity. Returns `RIVIDE_SUCCESS` (0) on valid signature, or `RIVIDE_ERR_VERIFICATION_FAILED` (-2) on invalid signature.
-
----
 
 ## 3. ML-DSA-87 Functions
 

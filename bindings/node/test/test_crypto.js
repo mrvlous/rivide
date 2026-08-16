@@ -95,5 +95,5 @@ test('Utils: Randomness, Cleanse, CT Memcmp, and SIMD Capabilities', () => {
     assert.strictEqual(typeof caps.hasAvx2, 'boolean');
     assert.strictEqual(typeof caps.bitmask, 'number');
 
-    assert.strictEqual(utils.version(), '1.1.0');
+    assert.strictEqual(utils.version(), '1.1.1');
 });

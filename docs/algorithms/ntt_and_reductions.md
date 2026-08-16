@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This document details the mathematical theory, butterfly algorithms, and modular reduction techniques implemented in **Rivide**'s high-speed arithmetic core.
 
----
-
 ## 1. Number Theoretic Transform (NTT) Overview
 
 Polynomial multiplication in the cyclotomic ring $\mathcal{R}_q = \mathbb{Z}_q[X] / (X^{256} + 1)$ naively requires $\mathcal{O}(n^2) = 65,536$ modular multiplications.
@@ -18,8 +16,6 @@ Polynomial multiplication in the cyclotomic ring $\mathcal{R}_q = \mathbb{Z}_q[X
 The **Number Theoretic Transform (NTT)** computes polynomial multiplication in quasi-linear time $\mathcal{O}(n \log n)$ by transforming polynomials into the frequency domain using primitive roots of unity $\zeta \in \mathbb{Z}_q$:
 
 $$f(X) \cdot g(X) \pmod{X^{256} + 1} = \text{iNTT}(\text{NTT}(f) \circ \text{NTT}(g))$$
-
----
 
 ## 2. Cooley-Tukey & Gentleman-Sande Butterfly Operations
 
@@ -40,8 +36,6 @@ $$\begin{aligned}
 a' &= a + b \pmod q \\
 b' &= (a - b) \cdot \zeta^{-1} \pmod q
 \end{aligned}$$
-
----
 
 ## 3. Constant-Time Modular Reductions
 

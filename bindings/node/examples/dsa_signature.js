@@ -19,7 +19,7 @@
 
 const { mlDsa65, utils } = require('../lib/index.js');
 
-console.log('=== Rivide Node.js: ML-DSA-65 Digital Signature Demonstration ===\n');
+console.log('Rivide Node.js: ML-DSA-65 Digital Signature Demonstration\n');
 
 // 1. Generate post-quantum ML-DSA-65 signing keypair
 console.log('[Signer] Generating ML-DSA-65 key pair...');

@@ -7,7 +7,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 # Rivide: Post-Quantum Cryptography C99 Library
 
-[![Version](https://img.shields.io/badge/Version-v1.1.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-v1.1.1-informational.svg)](CHANGELOG.md)
 [![CI](https://github.com/mrvlous/rivide/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mrvlous/rivide/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/mrvlous/rivide/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/mrvlous/rivide/actions/workflows/codeql.yml)
 [![Linux](https://img.shields.io/badge/Linux-Ubuntu%20(GCC%20%7C%20Clang)-blue.svg?logo=ubuntu&logoColor=white)](https://github.com/mrvlous/rivide/actions/workflows/ci.yml)
@@ -290,12 +290,14 @@ The master [`Makefile`](Makefile) provides simple automation targets:
 | `make build` | Compile static library `librivide.a`, shared library, tests, KAT, and examples |
 | `make test` | Run automated unit test suite using CTest |
 | `make kat` | Execute official NIST Known Answer Test (KAT) validation suite |
+| `make timing` | Execute Dudect constant-time statistical timing leakage verification |
 | `make bench` | Compile and execute dedicated PQC performance benchmark subsystem |
 | `make run-examples` | Build and execute demonstration applications sequentially |
 | `make fuzz CC=clang` | Compile LLVM libFuzzer fuzzing targets with AddressSanitizer |
 | `make node-build` | Compile Node-API native bindings addon using `node-gyp` |
 | `make node-test` | Run automated Node.js test suite across all PQC primitives |
 | `make node-bench` | Execute Node.js performance benchmarking suite |
+| `make node-publish` | Publish Node.js native addon package to npm registry |
 | `make rust-build` | Compile Rust native bindings crate using Cargo |
 | `make rust-test` | Run automated Rust integration test suite and doc-tests |
 | `make rust-examples` | Execute Rust demonstration examples |

@@ -22,8 +22,14 @@
  * Provides a portable API for obtaining cryptographic-quality entropy.
  * On hosted platforms (Linux, Windows, BSD), the implementation dispatches
  * to the appropriate OS-provided CSPRNG. On freestanding/bare-metal targets,
- * the caller must register an RNG callback via @ref rivide_set_rng_callback
- * before invoking any key generation or encapsulation functions.
+ * the caller can register an RNG callback via @ref rivide_set_rng_callback or
+ * @ref rivide_set_randombytes before invoking any key generation or encapsulation.
+ *
+ * Thread-Safety Model:
+ * - All entropy generation routines (@ref rivide_randombytes) are thread-safe and re-entrant.
+ * - Custom RNG callback registration is synchronized atomically via C11 stdatomic
+ *   (release-acquire memory ordering) to eliminate data races in multi-threaded
+ *   runtime environments (e.g. Rust Rayon, Node.js Worker Threads, Go cgo, POSIX pthreads).
  */
 
 #ifndef RIVIDE_UTILS_RANDOM_H
@@ -52,28 +58,35 @@ extern "C" {
 typedef rivide_status_t (*rivide_rng_callback_t)(uint8_t *buf, size_t len);
 
 /**
- * @brief Register a custom random number generator callback.
+ * @brief Register a custom random number generator callback (Thread-Safe Atomic).
  *
- * This function is intended for bare-metal and freestanding environments
- * that lack an OS-provided CSPRNG. The registered callback will be used
- * by @ref rivide_randombytes for all subsequent calls.
+ * This function is intended for bare-metal, testing, or custom hardware environments.
+ * The registered callback is stored atomically and used by @ref rivide_randombytes
+ * for all subsequent calls across all threads.
  *
- * @param[in] callback  Pointer to the RNG callback function. Must not be NULL.
+ * @param[in] callback  Pointer to the RNG callback function.
  *
  * @return @ref RIVIDE_SUCCESS on success, or @ref RIVIDE_ERR_NULL_PTR if
  *         @p callback is NULL.
- *
- * @note On hosted platforms, this function overrides the default OS-provided
- *       entropy source. Call with NULL to restore the default (not recommended).
  */
 rivide_status_t rivide_set_rng_callback(rivide_rng_callback_t callback);
+
+/**
+ * @brief Alias for @ref rivide_set_rng_callback (Thread-Safe Atomic).
+ *
+ * @param[in] callback  Pointer to the RNG callback function.
+ *
+ * @return @ref RIVIDE_SUCCESS on success, or @ref RIVIDE_ERR_NULL_PTR if
+ *         @p callback is NULL.
+ */
+rivide_status_t rivide_set_randombytes(rivide_rng_callback_t callback);
 
 /**
  * @brief Fill a buffer with cryptographically secure random bytes.
  *
  * On Linux, this calls getrandom(2). On Windows, it uses BCryptGenRandom.
- * On BSD, it uses getentropy(2) or arc4random_buf. On bare-metal,
- * it dispatches to the user-registered callback.
+ * On BSD, it uses getentropy(2) or arc4random_buf. On bare-metal or custom setups,
+ * it dispatches atomically to the user-registered callback.
  *
  * @param[out] buf  Buffer to fill with random bytes. Must not be NULL.
  * @param[in]  len  Number of bytes to generate.

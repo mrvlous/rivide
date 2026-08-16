@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This guide establishes the mandatory coding style, memory safety constraints, full SPDX/MIT license header requirements, and documentation standards across all C, Node.js, Rust, and Python code in **Rivide**.
 
----
-
 ## 1. Full MIT License & SPDX Header Standard
 
 Every source, header, script, and test file across the repository MUST include a standardized SPDX and full MIT copyright notice at the top:
@@ -74,8 +72,6 @@ Every source, header, script, and test file across the repository MUST include a
 # copies or substantial portions of the Software.
 ```
 
----
-
 ## 2. Memory & Zero-Allocation Constraints
 
 1. **Zero Dynamic Allocation (0 Malloc)**:
@@ -86,8 +82,6 @@ Every source, header, script, and test file across the repository MUST include a
 3. **No Prohibited Comment Banners**:
    - **NEVER** use ASCII divider lines such as `===` or `---` inside comments.
    - Use clean, minimal comment blocks.
-
----
 
 ## 3. Documentation Standards
 

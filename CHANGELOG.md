@@ -12,7 +12,29 @@ All notable changes to the **Rivide** Post-Quantum Cryptography library will be 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
----
+## [1.1.1] - 2026-08-16
+
+### Fixed
+- **Thread-Safe Atomic Custom RNG Callback**:
+  - Implemented atomic synchronization using C11 `<stdatomic.h>` (`atomic_store_explicit` / `atomic_load_explicit` with release-acquire semantics) and MSVC/GCC atomic intrinsics for `@ref rivide_set_rng_callback` and `@ref rivide_set_randombytes`.
+  - Guarantees zero data races during concurrent multi-threaded entropy queries across Rust Rayon, Node.js Worker Threads, Go cgo, and POSIX pthreads.
+
+### Added
+- **Constant-Time Statistical Timing Leakage Verification Subsystem (Dudect)**:
+  - Implemented standalone statistical test harness [`tests/timing/test_dudect_kem.c`](tests/timing/test_dudect_kem.c) based on the Dudect methodology and Welch's two-sample t-test.
+  - Formally asserts $|t| < 4.5$ over 10,000+ iterations for ML-KEM-768 decapsulation (valid ciphertext vs corrupted ciphertext) and constant-time memory comparison (`rivide_ct_memcmp`).
+  - Added master Makefile targets `make timing` and `make dudect`, and integrated `rivide_timing_tests` into CMake and CTest.
+
+### Security
+- **Side-Channel Hardening & Concurrency Threat Model**:
+  - Validated statistical timing leakage boundaries using Welch's t-test ($|t| < 4.5$, corresponding to confidence $p > 10^{-5}$ for no timing leakage).
+  - Documented formal concurrency guarantees and multi-threading execution boundaries in [`docs/security/threat_model.md`](docs/security/threat_model.md).
+
+### Documentation
+- **Testing & Security Assurance Guides**:
+  - Updated [`docs/security/constant_time.md`](docs/security/constant_time.md) with detailed Dudect statistical verification methodology.
+  - Enhanced [`docs/testing/fuzzing.md`](docs/testing/fuzzing.md) with LLVM coverage instrumentation (`llvm-cov`), continuous fuzzing duration standards, and ASan/UBSan configurations.
+  - Enhanced [`docs/testing/unit_tests.md`](docs/testing/unit_tests.md) and [`docs/testing/nist_kat.md`](docs/testing/nist_kat.md) with differential testing explanations against NIST reference implementations.
 
 ## [1.1.0] - 2026-08-14
 
@@ -92,8 +114,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Continuous Sanitizer & Static Analysis Conformance**:
   - Verified 100% clean passes with AddressSanitizer (`-fsanitize=address`), UndefinedBehaviorSanitizer (`-fsanitize=undefined`), `clang-format`, and `clang-tidy` across all library targets, tests, KAT vectors, examples, and benchmarks.
 
----
-
 ## [1.0.1] - 2026-08-14
 
 ### Fixed
@@ -117,8 +137,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **API Documentation Updates**:
   - Updated [`docs/api/ml_dsa.md`](docs/api/ml_dsa.md) documenting explicit `siglen` buffer requirements and `RIVIDE_ERR_VERIFICATION_FAILED` error return code for ML-DSA verification functions.
-
----
 
 ## [1.0.0] - 2026-08-13
 

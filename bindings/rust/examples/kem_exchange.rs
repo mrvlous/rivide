@@ -19,7 +19,7 @@ use rivide::kem::MlKem768;
 use rivide::utils::ct_memcmp;
 
 fn main() {
-    println!("=== Rivide Rust: ML-KEM-768 Key Exchange Demonstration ===");
+    println!("Rivide Rust: ML-KEM-768 Key Exchange Demonstration");
 
     // 1. [Alice] Generate ML-KEM-768 keypair
     println!("\n[Alice] Generating ML-KEM-768 keypair...");

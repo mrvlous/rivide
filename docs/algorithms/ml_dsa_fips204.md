@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This document provides the mathematical principles, parameter definitions, and signing/verification procedures for the **Module-Lattice-Based Digital Signature Algorithm (ML-DSA)** standard implemented in **Rivide**.
 
----
-
 ## 1. Mathematical Framework
 
 ML-DSA operates over the polynomial quotient ring:
@@ -24,8 +22,6 @@ $$q = 8380417 = 2^{23} - 2^{13} + 1$$
 The security of ML-DSA relies on the hardness of two related lattice problems:
 - **Module Learning With Errors (M-LWE)**
 - **Module Short Integer Solution (M-SIS)**
-
----
 
 ## 2. Parameter Sets
 
@@ -42,8 +38,6 @@ The security of ML-DSA relies on the hardness of two related lattice problems:
 | **Public Key Length** | `1952` bytes | `2592` bytes | Encoded $(\rho, \mathbf{t}_1)$ |
 | **Secret Key Length** | `4032` bytes | `4896` bytes | Encoded $(\rho, K, \text{tr}, \mathbf{s}_1, \mathbf{s}_2, \mathbf{t}_0)$ |
 | **Signature Length** | `3309` bytes | `4627` bytes | Encoded $(\tilde{c}, \mathbf{z}, \mathbf{h})$ |
-
----
 
 ## 3. Fiat-Shamir with Aborts Protocol
 
@@ -69,8 +63,6 @@ ML-DSA uses the **Fiat-Shamir with Aborts** paradigm to generate signatures with
                                              3. w'_1 = UseHint(h, A * z - c * t_1 * 2^d)
                                              4. Accept iff H(mu || w'_1) == c_tilde
 ```
-
----
 
 ## 4. Constant-Time & Strict Verification
 

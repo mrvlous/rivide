@@ -20,22 +20,54 @@
  * @brief Platform-dispatched cryptographically secure random byte generation.
  *
  * Provides implementations for Linux (getrandom), Windows (BCryptGenRandom),
- * BSD (getentropy), and bare-metal (user callback) environments.
+ * BSD (getentropy), and thread-safe atomic user-registered RNG callbacks.
  */
 
 #include "rivide/utils/random.h"
 
 #include "rivide/rivide_config.h"
 
-/** @brief User-registered RNG callback, or NULL for OS default. */
-static rivide_rng_callback_t g_rng_callback = (rivide_rng_callback_t)0;
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_ATOMICS__)
+#include <stdatomic.h>
+typedef _Atomic(rivide_rng_callback_t) atomic_rng_callback_t;
+#define RIVIDE_ATOMIC_STORE_RNG(dst, val) atomic_store_explicit(&(dst), (val), memory_order_release)
+#define RIVIDE_ATOMIC_LOAD_RNG(src) atomic_load_explicit(&(src), memory_order_acquire)
+#elif defined(__GNUC__) || defined(__clang__)
+typedef rivide_rng_callback_t atomic_rng_callback_t;
+#define RIVIDE_ATOMIC_STORE_RNG(dst, val) __atomic_store_n(&(dst), (val), __ATOMIC_RELEASE)
+#define RIVIDE_ATOMIC_LOAD_RNG(src) __atomic_load_n(&(src), __ATOMIC_ACQUIRE)
+#elif defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#define WIN32_NO_STATUS
+#include <windows.h>
+#undef WIN32_NO_STATUS
+#include <bcrypt.h>
+typedef rivide_rng_callback_t atomic_rng_callback_t;
+#define RIVIDE_ATOMIC_STORE_RNG(dst, val) \
+    ((void)InterlockedExchangePointer((PVOID volatile *)&(dst), (PVOID)(val)))
+#define RIVIDE_ATOMIC_LOAD_RNG(src) \
+    ((rivide_rng_callback_t)InterlockedCompareExchangePointer((PVOID volatile *)&(src), NULL, NULL))
+#else
+typedef volatile rivide_rng_callback_t atomic_rng_callback_t;
+#define RIVIDE_ATOMIC_STORE_RNG(dst, val) ((dst) = (val))
+#define RIVIDE_ATOMIC_LOAD_RNG(src) (src)
+#endif
+
+/** @brief User-registered RNG callback stored atomically for thread-safety. */
+static atomic_rng_callback_t g_rng_callback = (rivide_rng_callback_t)0;
 
 rivide_status_t rivide_set_rng_callback(rivide_rng_callback_t callback) {
     if (!callback) {
         return RIVIDE_ERR_NULL_PTR;
     }
-    g_rng_callback = callback;
+    RIVIDE_ATOMIC_STORE_RNG(g_rng_callback, callback);
     return RIVIDE_SUCCESS;
+}
+
+rivide_status_t rivide_set_randombytes(rivide_rng_callback_t callback) {
+    return rivide_set_rng_callback(callback);
 }
 
 #if defined(RIVIDE_PLATFORM_LINUX)
@@ -84,14 +116,16 @@ static rivide_status_t rivide_os_randombytes(uint8_t *buf, size_t len) {
 
 #elif defined(RIVIDE_PLATFORM_WINDOWS)
 
-/* clang-format off */
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#if !defined(_WIN32)
 #define WIN32_NO_STATUS
 #include <windows.h>
 #undef WIN32_NO_STATUS
-
-#include <ntstatus.h>
 #include <bcrypt.h>
-/* clang-format on */
+#endif
 
 #ifdef _MSC_VER
 #pragma comment(lib, "bcrypt.lib")
@@ -143,6 +177,8 @@ static rivide_status_t rivide_os_randombytes(uint8_t *buf, size_t len) {
 #endif
 
 rivide_status_t rivide_randombytes(uint8_t *buf, size_t len) {
+    rivide_rng_callback_t cb;
+
     if (!buf && len > 0) {
         return RIVIDE_ERR_NULL_PTR;
     }
@@ -151,9 +187,11 @@ rivide_status_t rivide_randombytes(uint8_t *buf, size_t len) {
         return RIVIDE_SUCCESS;
     }
 
-    /* Prefer user callback if registered. */
-    if (g_rng_callback) {
-        return g_rng_callback(buf, len);
+    /* Load user callback atomically to ensure thread safety without data races.
+     */
+    cb = RIVIDE_ATOMIC_LOAD_RNG(g_rng_callback);
+    if (cb) {
+        return cb(buf, len);
     }
 
     return rivide_os_randombytes(buf, len);

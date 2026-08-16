@@ -9,15 +9,11 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This document details the benchmarking framework, warmup protocol, timing precision, and statistical methods used across **Rivide**.
 
----
-
 ## 1. High-Precision Timing Sources
 
 - **C Native**: Uses POSIX `clock_gettime(CLOCK_MONOTONIC, &ts)` or platform cycle counters (`rdtsc`) with nanosecond resolution.
 - **Node.js**: Uses `process.hrtime.bigint()` nanosecond timers.
 - **Rust**: Uses `std::time::Instant` high-precision platform monotonic clocks.
-
----
 
 ## 2. Benchmark Protocol
 

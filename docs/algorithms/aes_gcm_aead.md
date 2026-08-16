@@ -9,15 +9,11 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This document details the **Galois/Counter Mode (GCM)** authenticated encryption with associated data (AEAD) implementation in **Rivide**.
 
----
-
 ## 1. AEAD Security Goals
 
 AES-GCM provides two simultaneous cryptographic guarantees:
 1. **Confidentiality**: Plaintext is encrypted using AES in Counter (CTR) mode.
 2. **Authenticity & Integrity**: Authenticates both ciphertext and unencrypted Additional Authenticated Data (AAD) using universal hashing over the finite field $\text{GF}(2^{128})$ via GHASH.
-
----
 
 ## 2. Supported Ciphers
 
@@ -25,8 +21,6 @@ AES-GCM provides two simultaneous cryptographic guarantees:
 | :--- | :--- | :--- | :--- | :--- |
 | **AES-128-GCM** | 16 bytes (128 bits) | 12 bytes (96 bits) | 16 bytes (128 bits) | NIST SP 800-38D |
 | **AES-256-GCM** | 32 bytes (256 bits) | 12 bytes (96 bits) | 16 bytes (128 bits) | NIST SP 800-38D |
-
----
 
 ## 3. GHASH Field Arithmetic in $\text{GF}(2^{128})$
 

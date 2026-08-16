@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This architectural blueprint demonstrates how to generate and verify post-quantum detached digital signatures for legally binding contracts, firmware binaries, and financial transactions using NIST FIPS 204 ML-DSA.
 
----
-
 ## 1. Architecture Overview
 
 In a detached signature workflow:
@@ -18,8 +16,6 @@ In a detached signature workflow:
 2. The signer generates an ML-DSA-65 signature over the document hash.
 3. The signature file (`document.pdf.pqc.sig`) is stored or transmitted alongside the original document.
 4. Any third party with the signer's public key can verify the integrity and non-repudiation of the document without altering the original file.
-
----
 
 ## 2. C99 Implementation Pattern
 

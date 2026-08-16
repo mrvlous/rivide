@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 Instructions for executing Node-API runtime benchmarks in JavaScript/TypeScript.
 
----
-
 ## 1. Execution
 
 From repository root:

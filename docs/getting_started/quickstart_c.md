@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This guide demonstrates how to integrate, compile, and link **Rivide** into standard C and C++ applications.
 
----
-
 ## 1. Building and Installing Rivide
 
 Clone the repository and compile static and shared library archives:
@@ -28,8 +26,6 @@ make test
 # Install headers to /usr/local/include and libraries to /usr/local/lib
 sudo make install
 ```
-
----
 
 ## 2. Minimal C Application: ML-KEM-768 Key Encapsulation
 
@@ -83,8 +79,6 @@ int main(void) {
     return 0;
 }
 ```
-
----
 
 ## 3. Compiling the Application
 

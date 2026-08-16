@@ -27,6 +27,18 @@
 #ifndef RIVIDE_CONFIG_H
 #define RIVIDE_CONFIG_H
 
+/** @brief Major version number. */
+#define RIVIDE_VERSION_MAJOR 1
+
+/** @brief Minor version number. */
+#define RIVIDE_VERSION_MINOR 1
+
+/** @brief Patch version number. */
+#define RIVIDE_VERSION_PATCH 1
+
+/** @brief Complete version string constant. */
+#define RIVIDE_VERSION_STRING "1.1.1"
+
 /**
  * @defgroup config_feature_flags Feature Flags
  * @brief Compile-time toggles for cryptographic modules.

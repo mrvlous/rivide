@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This document details the Keccak permutation engine and hash/XOF primitive implementations in **Rivide**.
 
----
-
 ## 1. Keccak Sponge Construction
 
 The sponge construction operates on a 1600-bit state organized as a $5 \times 5$ array of 64-bit lanes:
@@ -21,8 +19,6 @@ The total state size $b = 1600$ is divided into:
 - **Bitrate ($r$)**: Data absorption block size.
 - **Capacity ($c$)**: Security parameter ($r + c = 1600$).
 
----
-
 ## 2. Supported Hash and XOF Primitives
 
 | Function | Bitrate ($r$) | Capacity ($c$) | Output Size | NIST Specification |
@@ -31,8 +27,6 @@ The total state size $b = 1600$ is divided into:
 | **SHA3-512** | `576` bits (72 bytes) | `1024` bits | 64 bytes | High-security fixed-length digest |
 | **SHAKE-128** | `1344` bits (168 bytes) | `256` bits | Arbitrary ($d$ bytes) | Extendable-output function (XOF) |
 | **SHAKE-256** | `1088` bits (136 bytes) | `512` bits | Arbitrary ($d$ bytes) | XOF used for lattice sampling |
-
----
 
 ## 3. Keccak-f[1600] Permutation Rounds
 

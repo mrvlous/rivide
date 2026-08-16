@@ -20,7 +20,7 @@ use rivide::kem::MlKem768;
 use rivide::utils::randombytes;
 
 fn main() {
-    println!("=== Rivide Rust: Hybrid PQC + AES-256-GCM Secure Channel ===");
+    println!("Rivide Rust: Hybrid PQC + AES-256-GCM Secure Channel");
 
     // 1. [Server] Provision ephemeral ML-KEM-768 keypair
     println!("\n[Server] Generating ephemeral ML-KEM-768 keypair...");

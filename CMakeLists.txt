@@ -14,7 +14,7 @@
 # copies or substantial portions of the Software.
 
 cmake_minimum_required(VERSION 3.10)
-project(rivide VERSION 1.1.0 LANGUAGES C)
+project(rivide VERSION 1.1.1 LANGUAGES C)
 
 # Export compilation commands database for clangd, IDEs, and linters
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -150,6 +150,23 @@ if(RIVIDE_BUILD_KAT)
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/kat
     )
     add_test(NAME rivide_kat_tests COMMAND rivide_kat_tests)
+endif()
+
+# Constant-Time Statistical Timing Leakage Subsystem (Dudect)
+option(RIVIDE_BUILD_TIMING "Build constant-time statistical timing leakage harness" ON)
+if(RIVIDE_BUILD_TIMING)
+    add_executable(rivide_timing_tests
+        tests/timing/test_dudect_kem.c
+    )
+    target_link_libraries(rivide_timing_tests PRIVATE rivide)
+    if(UNIX AND NOT APPLE)
+        target_link_libraries(rivide_timing_tests PRIVATE m)
+    endif()
+    target_include_directories(rivide_timing_tests PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/timing
+    )
+    add_test(NAME rivide_timing_tests COMMAND rivide_timing_tests)
 endif()
 
 # Dedicated Benchmark Subsystem Configuration

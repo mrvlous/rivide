@@ -12,7 +12,26 @@ All notable changes to the **`rivide`** Rust crate will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
----
+## [1.1.1] - 2026-08-16
+
+### Fixed
+- **Thread-Safe Atomic RNG Callback Registration**:
+  - Implemented atomic synchronization for custom entropy callbacks using release-acquire memory ordering, guaranteeing zero data races when invoked across multi-threaded Rayon workers or Tokio task pools.
+
+### Added
+- **Constant-Time Statistical Timing Verification**:
+  - Formally verified constant-time decapsulation and memory comparisons (`ct_memcmp`) using the Dudect Welch's t-test methodology ($|t| < 4.5$).
+  - Added dedicated Makefile targets `make timing` and `make rust-publish`.
+
+### Security
+- **Concurrency & Timing Attack Hardening**:
+  - Validated statistical timing leakage boundaries across safe Rust wrapper abstractions.
+  - Documented formal concurrency guarantees and thread-safety invariants.
+
+### Documentation
+- **API & Benchmark Guides**:
+  - Updated Rust crate documentation, doctests, and examples to version `1.1.1`.
+  - Added publishing instructions for crates.io and sandbox package verification guides.
 
 ## [1.1.0] - 2026-08-15
 

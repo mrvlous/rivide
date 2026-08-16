@@ -16,8 +16,6 @@ The Rust benchmark harness measures operations per second (`ops/sec`) and execut
 - **ML-DSA-65 & ML-DSA-87** (KeyGen, Sign, Verify)
 - **SHA3-256, SHAKE-256, & AES-256-GCM AEAD** (over 4 KB payload buffers)
 
----
-
 ## Executing Benchmarks
 
 ### Option 1: Via Cargo Bench
@@ -40,8 +38,6 @@ make rust-bench
 ```bash
 cargo run --release --example bench
 ```
-
----
 
 ## Benchmark Output Format
 
@@ -76,8 +72,6 @@ Symmetric Primitives Benchmarks:
 
 [SUCCESS] Rust Benchmark Suite Execution Complete.
 ```
-
----
 
 ## Performance Optimizations
 

@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This guide demonstrates how to load `librivide.so` or `librivide.dylib` in Python using standard `ctypes` without third-party C extension dependencies.
 
----
-
 ## 1. Compiling the Shared Library
 
 ```bash
@@ -18,8 +16,6 @@ This guide demonstrates how to load `librivide.so` or `librivide.dylib` in Pytho
 make build BUILD_SHARED_LIBS=ON
 # Produces build/librivide.so (Linux) or build/librivide.dylib (macOS)
 ```
-
----
 
 ## 2. Python Script (`rivide_pqc.py`)
 
@@ -72,8 +68,6 @@ lib.rivide_ml_kem_768_decaps(ss_alice, ct, sk)
 assert ss_alice.raw == ss_bob.raw
 print("[SUCCESS] Python ctypes established 256-bit quantum-safe key:", ss_alice.raw.hex()[:32] + "...")
 ```
-
----
 
 ## 3. Running the Script
 

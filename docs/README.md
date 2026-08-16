@@ -11,8 +11,6 @@ Welcome to the **Rivide Post-Quantum Cryptography (PQC) Library** comprehensive 
 
 Rivide is an industrial-grade, zero-allocation, constant-time C99 post-quantum cryptography library providing full implementations of the finalized NIST post-quantum standards (**NIST FIPS 203 ML-KEM** and **NIST FIPS 204 ML-DSA**) with native bindings for **Node.js / TypeScript**, **Rust**, and **Python**.
 
----
-
 ## Documentation Directory Index
 
 ### 1. [Getting Started](getting_started/overview.md)

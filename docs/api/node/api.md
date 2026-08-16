@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 Complete API documentation for the official **`rivide`** Node.js native Node-API bindings.
 
----
-
 ## 1. Module Import
 
 ```typescript
@@ -25,23 +23,17 @@ import {
 } from 'rivide';
 ```
 
----
-
 ## 2. Key Encapsulation (`mlKem768`, `mlKem1024`)
 
 - `keypair(): { publicKey: Buffer, secretKey: Buffer }`
 - `encaps(publicKey: Buffer): { ciphertext: Buffer, sharedSecret: Buffer }`
 - `decaps(ciphertext: Buffer, secretKey: Buffer): Buffer`
 
----
-
 ## 3. Digital Signatures (`mlDsa65`, `mlDsa87`)
 
 - `keypair(): { publicKey: Buffer, secretKey: Buffer }`
 - `sign(message: Buffer | Uint8Array, secretKey: Buffer): Buffer`
 - `verify(signature: Buffer | Uint8Array, message: Buffer | Uint8Array, publicKey: Buffer): boolean`
-
----
 
 ## 4. Symmetric Cryptography
 
@@ -56,8 +48,6 @@ import {
 - `decrypt128(key: Buffer, iv: Buffer, ciphertext: Buffer, tag: Buffer, aad?: Buffer): Buffer`
 - `encrypt256(key: Buffer, iv: Buffer, plaintext: Buffer, aad?: Buffer): { ciphertext: Buffer, tag: Buffer }`
 - `decrypt256(key: Buffer, iv: Buffer, ciphertext: Buffer, tag: Buffer, aad?: Buffer): Buffer`
-
----
 
 ## 5. Utilities (`utils`)
 

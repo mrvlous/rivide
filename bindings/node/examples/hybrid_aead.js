@@ -19,7 +19,7 @@
 
 const { mlKem768, aesGcm, utils } = require('../lib/index.js');
 
-console.log('=== Rivide Node.js: Hybrid PQC + AES-256-GCM Secure Channel ===\n');
+console.log('Rivide Node.js: Hybrid PQC + AES-256-GCM Secure Channel\n');
 
 // 1. [Server] Generate ephemeral ML-KEM-768 keypair
 console.log('[Server] Generating ephemeral ML-KEM-768 keypair...');

@@ -15,7 +15,7 @@ Add `rivide` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rivide = "1.1.0"
+rivide = "1.1.1"
 ```
 
 Or via `cargo add`:
@@ -23,8 +23,6 @@ Or via `cargo add`:
 ```bash
 cargo add rivide
 ```
-
----
 
 ## Module Structure
 
@@ -38,8 +36,6 @@ use rivide::{
     error::RivideError,
 };
 ```
-
----
 
 ## Constants & Buffer Dimensions
 
@@ -63,8 +59,6 @@ use rivide::{
 | `RIVIDE_SHA3_512_DIGEST_LENGTH` | `64` | SHA3-512 Output Digest Length |
 | `RIVIDE_AES_GCM_IV_BYTES` | `12` | AES-GCM Recommended Nonce (IV) Length |
 | `RIVIDE_AES_GCM_TAG_BYTES` | `16` | AES-GCM Authentication Tag Length |
-
----
 
 ## Key Encapsulation Mechanism (`rivide::kem`)
 
@@ -90,8 +84,6 @@ Encapsulates a 32-byte shared secret under the provided public key.
 #### `MlKem1024::decapsulate(ciphertext: &[u8; 1568], secret_key: &MlKem1024SecretKey) -> Result<[u8; 32], RivideError>`
 Decapsulates the 32-byte shared secret from the ciphertext in constant time.
 
----
-
 ## Digital Signature Algorithm (`rivide::dsa`)
 
 ### `MlDsa65` (NIST FIPS 204, Category 3)
@@ -116,8 +108,6 @@ Computes a 4627-byte digital signature over the message slice.
 #### `MlDsa87::verify(signature: &MlDsa87Signature, message: &[u8], public_key: &MlDsa87PublicKey) -> bool`
 Verifies signature validity in constant time. Returns `true` if authentic, `false` otherwise.
 
----
-
 ## Symmetric Primitives (`rivide::crypto`)
 
 ### `Sha3` (NIST FIPS 202)
@@ -131,8 +121,6 @@ Verifies signature validity in constant time. Returns `true` if authentic, `fals
 - `AesGcm::decrypt_128(key: &[u8; 16], iv: &[u8; 12], ciphertext: &[u8], tag: &[u8; 16], aad: Option<&[u8]>) -> Result<Vec<u8>, RivideError>`
 - `AesGcm::encrypt_256(key: &[u8; 32], iv: &[u8; 12], plaintext: &[u8], aad: Option<&[u8]>) -> Result<AesGcmResult, RivideError>`
 - `AesGcm::decrypt_256(key: &[u8; 32], iv: &[u8; 12], ciphertext: &[u8], tag: &[u8; 16], aad: Option<&[u8]>) -> Result<Vec<u8>, RivideError>`
-
----
 
 ## Utilities & Memory Safety (`rivide::utils`)
 

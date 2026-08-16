@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This document describes the memory allocation model, stack isolation, and memory zeroization guarantees enforced across **Rivide**.
 
----
-
 ## 1. The Zero-Malloc Guarantee (0 Malloc)
 
 In high-assurance cryptographic implementations, dynamic heap allocation (`malloc`, `calloc`, `realloc`, `free`) introduces several severe security and operational risks:
@@ -24,8 +22,6 @@ Rivide prohibits all dynamic memory allocation functions in its C core engine:
 - All cryptographic key generation, signing, verification, encapsulation, and hashing operations compute within fixed-size stack frames.
 - Key and ciphertext structures are passed via pointer to caller-allocated memory.
 - Peak stack usage per algorithm is strictly bounded and deterministic.
-
----
 
 ## 2. Volatile Memory Cleansing (`rivide_cleanse`)
 
@@ -54,8 +50,6 @@ void rivide_cleanse(void *ptr, size_t len) {
 ```
 
 The `volatile` pointer access combined with the `__asm__ __volatile__` clobber barrier ensures that the compiler treats the memory region as externally observable, preventing DSE under any compiler optimization level (`-O2`, `-O3`, `-Ofast`, `-flto`).
-
----
 
 ## 3. RAII Memory Safety in High-Level Bindings
 

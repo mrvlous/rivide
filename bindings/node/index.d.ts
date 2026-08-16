@@ -285,7 +285,7 @@ export namespace utils {
     export function getSimdCaps(): SimdCapabilities;
 
     /**
-     * Return the library version string (e.g. "1.1.0").
+     * Return the library version string (e.g. "1.1.1").
      */
     export function version(): string;
 }

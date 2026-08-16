@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This guide describes how to install and use the **Rivide** native Node-API bindings in JavaScript and TypeScript environments.
 
----
-
 ## 1. Installation
 
 Install the package using your package manager:
@@ -25,8 +23,6 @@ pnpm add rivide
 # yarn
 yarn add rivide
 ```
-
----
 
 ## 2. TypeScript / ES Modules Usage
 
@@ -65,8 +61,6 @@ function main() {
 
 main();
 ```
-
----
 
 ## 3. CommonJS Usage
 

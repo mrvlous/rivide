@@ -22,12 +22,13 @@ CMAKE_DIR     := .
 
 # Project metadata and versioning
 PROJECT_NAME  := rivide
-VERSION       := 1.1.0
+VERSION       := 1.1.1
 BUILD_TYPE    ?= Release
 
 # Configurable build options
 RIVIDE_BUILD_TESTS      ?= ON
 RIVIDE_BUILD_KAT        ?= ON
+RIVIDE_BUILD_TIMING     ?= ON
 RIVIDE_BUILD_BENCHMARKS ?= ON
 RIVIDE_BUILD_EXAMPLES   ?= ON
 
@@ -74,7 +75,7 @@ LOG_ERR     := printf "$(CLR_RED)$(CLR_BOLD)[ERR]$(CLR_RESET)   %s\n"
 LOG_CHECK   := printf "  $(CLR_GREEN)$(CLR_BOLD)[OK]$(CLR_RESET)    %s\n"
 LOG_MISS    := printf "  $(CLR_RED)$(CLR_BOLD)[MISS]$(CLR_RESET)  %s\n"
 
-.PHONY: all help info check config build test kat run-kat bench run-bench examples run-examples fuzz node-build node-test node-bench rust-build rust-test rust-examples rust-bench rust-pack rust-publish install clean format check-format lint
+.PHONY: all help info check config build test kat run-kat timing dudect bench run-bench examples run-examples fuzz node-build node-test node-bench node-publish rust-build rust-test rust-examples rust-bench rust-pack rust-publish install clean format check-format lint
 
 .DEFAULT_GOAL := all
 
@@ -117,6 +118,7 @@ config: ## Generate CMake build system files inside the build directory
 		-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
 		-DRIVIDE_BUILD_TESTS=$(RIVIDE_BUILD_TESTS) \
 		-DRIVIDE_BUILD_KAT=$(RIVIDE_BUILD_KAT) \
+		-DRIVIDE_BUILD_TIMING=$(RIVIDE_BUILD_TIMING) \
 		-DRIVIDE_BUILD_BENCHMARKS=$(RIVIDE_BUILD_BENCHMARKS) \
 		-DRIVIDE_BUILD_EXAMPLES=$(RIVIDE_BUILD_EXAMPLES)
 	$(Q)if [ -f $(BUILD_DIR)/compile_commands.json ]; then \
@@ -140,6 +142,13 @@ kat: build ## Execute the NIST Known Answer Test (KAT) validation suite
 	$(Q)$(LOG_DONE) "All NIST KAT validation vectors passed."
 
 run-kat: kat ## Alias for kat target
+
+timing: build ## Execute Dudect constant-time statistical timing leakage verification
+	$(Q)$(LOG_INFO) "Executing Dudect constant-time statistical timing verification..."
+	$(Q)./$(BUILD_DIR)/rivide_timing_tests
+	$(Q)$(LOG_DONE) "All statistical timing leakage tests passed."
+
+dudect: timing ## Alias for timing target
 
 bench: build ## Execute the dedicated PQC benchmark subsystem
 	$(Q)$(LOG_INFO) "Executing dedicated Rivide benchmark subsystem..."
@@ -198,6 +207,11 @@ node-test: node-build ## Run automated Node.js test suite
 node-bench: node-build ## Execute Node.js performance benchmarks
 	$(Q)$(LOG_INFO) "Executing Node.js benchmark suite..."
 	$(Q)cd bindings/node && node bench.js
+
+node-publish: node-test ## Publish Node.js native addon to npm registry
+	$(Q)$(LOG_INFO) "Publishing Node.js package to npm registry..."
+	$(Q)cd bindings/node && npm publish --access public
+	$(Q)$(LOG_DONE) "Node.js package published to npm successfully."
 
 rust-build: ## Build Rust native bindings using cargo
 	$(Q)$(LOG_INFO) "Building Rust native bindings in bindings/rust/..."

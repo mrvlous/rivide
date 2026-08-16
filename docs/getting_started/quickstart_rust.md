@@ -9,15 +9,13 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This guide details how to add and use the official **`rivide`** crate in Rust applications.
 
----
-
 ## 1. Adding Dependency
 
 Add `rivide` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rivide = "1.1.0"
+rivide = "1.1.1"
 ```
 
 Or via `cargo add`:
@@ -25,8 +23,6 @@ Or via `cargo add`:
 ```bash
 cargo add rivide
 ```
-
----
 
 ## 2. Idiomatic Rust Example: Hybrid PQC Channel
 
@@ -65,8 +61,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
-
----
 
 ## 3. Running the Project
 

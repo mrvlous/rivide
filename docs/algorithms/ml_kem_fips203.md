@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This document provides the mathematical foundation, parameter definitions, and algorithmic workflows for the **Module-Lattice-Based Key-Encapsulation Mechanism (ML-KEM)** standard implemented in **Rivide**.
 
----
-
 ## 1. Mathematical Framework
 
 ML-KEM operates over the cyclotomic polynomial quotient ring:
@@ -22,8 +20,6 @@ where the prime modulus is:
 $$q = 3329$$
 
 The ring degree is $n = 256$. Elements in $\mathcal{R}_q$ are represented by vectors of polynomials of dimension $k \in \{3, 4\}$ depending on the targeted NIST security level.
-
----
 
 ## 2. Parameter Sets
 
@@ -40,8 +36,6 @@ The ring degree is $n = 256$. Elements in $\mathcal{R}_q$ are represented by vec
 | **Ciphertext Length** | `1088` bytes | `1568` bytes | Encoded $(\mathbf{u}, v)$ |
 | **Shared Secret Length** | `32` bytes | `32` bytes | Derived symmetric session key $K$ |
 
----
-
 ## 3. Centered Binomial Distribution ($\text{CBD}_\eta$)
 
 Small error vectors $\mathbf{s}, \mathbf{e}$ are sampled from the Centered Binomial Distribution $\text{CBD}_\eta$:
@@ -49,8 +43,6 @@ Small error vectors $\mathbf{s}, \mathbf{e}$ are sampled from the Centered Binom
 $$(a_1, \dots, a_\eta), (b_1, \dots, b_\eta) \xleftarrow{\$} \{0, 1\}^\eta, \quad x = \sum_{i=1}^\eta (a_i - b_i) \in [-\eta, \eta]$$
 
 For $\eta = 2$, each sample $x \in \{-2, -1, 0, 1, 2\}$ is generated from 4 pseudorandom bits derived via SHAKE-256 expansion.
-
----
 
 ## 4. Key Encapsulation Workflow
 

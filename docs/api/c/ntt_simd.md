@@ -11,8 +11,6 @@ Public C99 declarations for CPU feature querying and SIMD polynomial vector rout
 
 Header: `<rivide/rivide.h>`
 
----
-
 ## 1. Runtime CPU Feature Query
 
 ```c

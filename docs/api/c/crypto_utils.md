@@ -11,8 +11,6 @@ Public C99 declarations for SHA-3, SHAKE, AES-GCM AEAD, secure random generation
 
 Headers: `<rivide/crypto/sha3.h>`, `<rivide/crypto/aes.h>`, `<rivide/utils/mem.h>`, `<rivide/utils/random.h>`
 
----
-
 ## 1. SHA-3 & SHAKE Functions
 
 ```c
@@ -21,8 +19,6 @@ void rivide_sha3_512(uint8_t *out, const uint8_t *in, size_t inlen);
 void rivide_shake128(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen);
 void rivide_shake256(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen);
 ```
-
----
 
 ## 2. AES-GCM AEAD Functions
 
@@ -52,8 +48,6 @@ rivide_status_t rivide_aes_gcm_decrypt(
     uint8_t *pt
 );
 ```
-
----
 
 ## 3. Memory & Random Utilities
 

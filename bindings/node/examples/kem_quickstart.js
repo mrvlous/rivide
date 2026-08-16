@@ -19,7 +19,7 @@
 
 const { mlKem768, ctMemcmp, utils } = require('../lib/index.js');
 
-console.log('=== Rivide Node.js: ML-KEM-768 Key Exchange Demonstration ===\n');
+console.log('Rivide Node.js: ML-KEM-768 Key Exchange Demonstration\n');
 
 // 1. [Alice] Generate post-quantum ML-KEM-768 keypair
 console.log('[Alice] Generating ML-KEM-768 key pair...');

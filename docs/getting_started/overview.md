@@ -14,8 +14,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 - **NIST FIPS 202**: SHA-3 and SHAKE Extendable-Output Functions (**SHA3-256**, **SHA3-512**, **SHAKE-128**, **SHAKE-256**).
 - **NIST SP 800-38D**: Galois/Counter Mode Authenticated Encryption with Associated Data (**AES-128-GCM** and **AES-256-GCM**).
 
----
-
 ## Why Post-Quantum Cryptography?
 
 Modern public-key cryptographic infrastructure relies on mathematical hardness assumptions that can be solved in polynomial time by a sufficiently large quantum computer running **Shor's Algorithm**:
@@ -29,8 +27,6 @@ Once fault-tolerant quantum computers become reality, all historical and active 
 ### The Lattice-Based Defense
 
 Rivide implements lattice-based cryptographic schemes rooted in the hardness of the **Module Learning With Errors (M-LWE)** and **Module Short Integer Solution (M-SIS)** problems over polynomial quotient rings $\mathcal{R}_q = \mathbb{Z}_q[X]/(X^{256} + 1)$. These problems remain computationally intractable for both classical and quantum algorithms.
-
----
 
 ## Architectural Core Principles
 
@@ -46,8 +42,6 @@ Rivide implements lattice-based cryptographic schemes rooted in the hardness of 
    - Executes native 256-bit AVX2 and 128-bit ARM NEON vectorized Number Theoretic Transform (NTT) polynomial arithmetic.
 6. **Multi-Language Native Ecosystem**:
    - First-class support for **C99**, **Node.js / TypeScript** (`rivide`), **Rust** (`rivide`), and **Python** (ctypes FFI).
-
----
 
 ## Quick Navigation
 

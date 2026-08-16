@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 Complete API documentation for the official **`rivide`** Rust crate.
 
----
-
 ## 1. Module Structure
 
 ```rust
@@ -23,8 +21,6 @@ use rivide::{
 };
 ```
 
----
-
 ## 2. Key Encapsulation (`rivide::kem`)
 
 - `MlKem768::keypair() -> Result<MlKem768KeyPair, RivideError>`
@@ -34,8 +30,6 @@ use rivide::{
 - `MlKem1024::encapsulate(public_key: &MlKem1024PublicKey) -> Result<MlKem1024EncapsResult, RivideError>`
 - `MlKem1024::decapsulate(ciphertext: &[u8; 1568], secret_key: &MlKem1024SecretKey) -> Result<[u8; 32], RivideError>`
 
----
-
 ## 3. Digital Signatures (`rivide::dsa`)
 
 - `MlDsa65::keypair() -> Result<MlDsa65KeyPair, RivideError>`
@@ -44,8 +38,6 @@ use rivide::{
 - `MlDsa87::keypair() -> Result<MlDsa87KeyPair, RivideError>`
 - `MlDsa87::sign(message: &[u8], secret_key: &MlDsa87SecretKey) -> Result<MlDsa87Signature, RivideError>`
 - `MlDsa87::verify(signature: &MlDsa87Signature, message: &[u8], public_key: &MlDsa87PublicKey) -> bool`
-
----
 
 ## 4. RAII Drop Safety
 

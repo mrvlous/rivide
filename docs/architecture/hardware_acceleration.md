@@ -9,8 +9,6 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 This document details the Single Instruction, Multiple Data (SIMD) hardware vectorization engine and dynamic CPU feature detection architecture implemented in **Rivide**.
 
----
-
 ## 1. Vector Acceleration Strategies
 
 Lattice-based cryptography algorithms spend up to 70% of execution cycles performing polynomial arithmetic and NTT butterfly loops over vectors of length $n = 256$.
@@ -23,8 +21,6 @@ Rivide provides specialized SIMD vector implementations:
 | **x86_64** | AES-NI + PCLMULQDQ | 128 bits (`__m128i`) | Dedicated AES rounds & GHASH carryless multiplication |
 | **AArch64 / ARMv8** | ARM NEON | 128 bits (`int16x8_t`) | 8 $\times$ 16-bit integer coefficients |
 | **AArch64 / ARMv8** | ARM Cryptography Ext (ARM-CE) | 128 bits | Native AES and polynomial multiplication |
-
----
 
 ## 2. Dynamic Runtime CPU Feature Detection
 

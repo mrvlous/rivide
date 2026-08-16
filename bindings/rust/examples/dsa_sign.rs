@@ -18,7 +18,7 @@
 use rivide::dsa::MlDsa65;
 
 fn main() {
-    println!("=== Rivide Rust: ML-DSA-65 Digital Signature Demonstration ===");
+    println!("Rivide Rust: ML-DSA-65 Digital Signature Demonstration");
 
     // 1. Generate signing keypair
     println!("\n[Signer] Generating ML-DSA-65 signature keypair...");
