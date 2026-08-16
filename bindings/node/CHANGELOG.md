@@ -15,41 +15,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.1] - 2026-08-16
 
 ### Fixed
+
 - **Thread-Safe Atomic RNG Synchronization**:
-  - Synchronized underlying C custom entropy callbacks using C11 atomic acquire-release semantics for multi-threaded Node.js Worker Threads (`piscina`, `worker_threads`, cluster workers).
-  - Guarantees zero data races during concurrent asynchronous key generation across worker threads.
+    - Synchronized underlying C custom entropy callbacks using C11 atomic acquire-release semantics for multi-threaded Node.js Worker Threads (`piscina`, `worker_threads`, cluster workers).
+    - Guarantees zero data races during concurrent asynchronous key generation across worker threads.
 
 ### Added
+
 - **Constant-Time Statistical Timing Verification**:
-  - Verified constant-time execution for ML-KEM decapsulation and constant-time memory comparison (`utils.ctMemcmp`) using the Dudect Welch's t-test methodology ($|t| < 4.5$).
-  - Added dedicated Makefile targets `make timing` and `make node-publish`.
+    - Verified constant-time execution for ML-KEM decapsulation and constant-time memory comparison (`utils.ctMemcmp`) using the Dudect Welch's t-test methodology ($|t| < 4.5$).
+    - Added dedicated Makefile targets `make timing` and `make node-publish`.
 
 ### Security
+
 - **Concurrency & Timing Attack Hardening**:
-  - Validated statistical timing leakage boundaries across Node.js runtime bindings.
-  - Documented formal concurrency guarantees and worker thread safety invariants.
+    - Validated statistical timing leakage boundaries across Node.js runtime bindings.
+    - Documented formal concurrency guarantees and worker thread safety invariants.
 
 ### Documentation
+
 - **API & Benchmark Guides**:
-  - Updated Node.js API references and TypeScript declarations (`index.d.ts`) to version `1.1.1`.
-  - Added publishing instructions for npm registry and multi-platform compilation guides.
+    - Updated Node.js API references and TypeScript declarations (`index.d.ts`) to version `1.1.1`.
+    - Added publishing instructions for npm registry and multi-platform compilation guides.
 
 ## [1.1.0] - 2026-08-14
 
 ### Added
+
 - **Initial Release of Official Node.js Native Bindings (`rivide`)**:
-  - Direct, zero-dependency Node-API (N-API) C99 native integration with the Rivide Post-Quantum Cryptography engine.
+    - Direct, zero-dependency Node-API (N-API) C99 native integration with the Rivide Post-Quantum Cryptography engine.
 - **NIST Post-Quantum Cryptography Modules**:
-  - `mlKem768`: ML-KEM-768 keypair generation (`keypair`), encapsulation (`encaps`), and constant-time decapsulation (`decaps`).
-  - `mlKem1024`: ML-KEM-1024 keypair generation (`keypair`), encapsulation (`encaps`), and constant-time decapsulation (`decaps`).
-  - `mlDsa65`: ML-DSA-65 keypair generation (`keypair`), signing (`sign`), and strict signature verification (`verify`).
-  - `mlDsa87`: ML-DSA-87 keypair generation (`keypair`), signing (`sign`), and strict signature verification (`verify`).
+    - `mlKem768`: ML-KEM-768 keypair generation (`keypair`), encapsulation (`encaps`), and constant-time decapsulation (`decaps`).
+    - `mlKem1024`: ML-KEM-1024 keypair generation (`keypair`), encapsulation (`encaps`), and constant-time decapsulation (`decaps`).
+    - `mlDsa65`: ML-DSA-65 keypair generation (`keypair`), signing (`sign`), and strict signature verification (`verify`).
+    - `mlDsa87`: ML-DSA-87 keypair generation (`keypair`), signing (`sign`), and strict signature verification (`verify`).
 - **Symmetric Cryptography & Utility Modules**:
-  - `sha3`: SHA3-256, SHA3-512, SHAKE-128, and SHAKE-256 extendable-output hashing.
-  - `aesGcm`: AES-128-GCM and AES-256-GCM authenticated encryption and decryption.
-  - `utils`: Secure memory zeroization (`cleanse`), OS CSPRNG entropy generation (`randombytes`), constant-time memory comparison (`ctMemcmp`), and runtime hardware SIMD feature detection (`getSimdCaps`).
+    - `sha3`: SHA3-256, SHA3-512, SHAKE-128, and SHAKE-256 extendable-output hashing.
+    - `aesGcm`: AES-128-GCM and AES-256-GCM authenticated encryption and decryption.
+    - `utils`: Secure memory zeroization (`cleanse`), OS CSPRNG entropy generation (`randombytes`), constant-time memory comparison (`ctMemcmp`), and runtime hardware SIMD feature detection (`getSimdCaps`).
 - **Developer Ergonomics & Type Safety**:
-  - Universal package manager compatibility supporting `npm`, `pnpm`, and `yarn` installations.
-  - Full TypeScript declaration file (`index.d.ts`) with strict typing and JSDoc documentation.
-  - Dual module distribution with CommonJS (`lib/index.js`) and ECMAScript Modules (`lib/index.mjs`).
-  - Dedicated unit tests (`test/`) and interactive performance benchmark harness (`bench.js`).
+    - Universal package manager compatibility supporting `npm`, `pnpm`, and `yarn` installations.
+    - Full TypeScript declaration file (`index.d.ts`) with strict typing and JSDoc documentation.
+    - Dual module distribution with CommonJS (`lib/index.js`) and ECMAScript Modules (`lib/index.mjs`).
+    - Dedicated unit tests (`test/`) and interactive performance benchmark harness (`bench.js`).

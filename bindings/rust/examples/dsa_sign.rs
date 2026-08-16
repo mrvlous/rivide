@@ -23,8 +23,14 @@ fn main() {
     // 1. Generate signing keypair
     println!("\n[Signer] Generating ML-DSA-65 signature keypair...");
     let signer = MlDsa65::keypair().expect("Failed to generate signer keypair");
-    println!("  Public Key : {} bytes", signer.public_key.as_bytes().len());
-    println!("  Secret Key : {} bytes", signer.secret_key.as_bytes().len());
+    println!(
+        "  Public Key : {} bytes",
+        signer.public_key.as_bytes().len()
+    );
+    println!(
+        "  Secret Key : {} bytes",
+        signer.secret_key.as_bytes().len()
+    );
 
     // 2. Sign arbitrary message payload
     let message = b"Post-quantum signed contract payload: Transfer $100,000 to Bob.";

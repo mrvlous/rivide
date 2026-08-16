@@ -35,8 +35,8 @@ fn main() {
 
     // 3. [Alice] Decapsulate shared secret using her secret key
     println!("\n[Alice] Decapsulating shared secret from received ciphertext...");
-    let alice_shared_secret =
-        MlKem768::decapsulate(&bob.ciphertext, &alice.secret_key).expect("Alice decapsulation failed");
+    let alice_shared_secret = MlKem768::decapsulate(&bob.ciphertext, &alice.secret_key)
+        .expect("Alice decapsulation failed");
     println!("  Decaps Key : {:02x?}...", &alice_shared_secret[0..8]);
 
     // 4. Verify shared secret match in constant time

@@ -32,7 +32,10 @@ pub struct CpuFeatures {
 /// Securely zeroizes memory to prevent compiler dead-store elimination.
 pub fn cleanse(buffer: &mut [u8]) {
     unsafe {
-        rivide_cleanse(buffer.as_mut_ptr() as *mut std::os::raw::c_void, buffer.len());
+        rivide_cleanse(
+            buffer.as_mut_ptr() as *mut std::os::raw::c_void,
+            buffer.len(),
+        );
     }
 }
 

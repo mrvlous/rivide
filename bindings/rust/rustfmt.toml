@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+#
+# Rivide Post-Quantum Cryptography Library
+# Copyright (C) 2026 Moh. Ananda Firmansyah Putra
+
+edition = "2021"
+tab_spaces = 4
+max_width = 100
+newline_style = "Unix"
+use_field_init_shorthand = true

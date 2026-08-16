@@ -82,7 +82,10 @@ test('Utils: Randomness, Cleanse, CT Memcmp, and SIMD Capabilities', () => {
 
     const secret = Buffer.from('super-sensitive-master-private-key-material');
     utils.cleanse(secret);
-    assert.strictEqual(secret.every(b => b === 0), true);
+    assert.strictEqual(
+        secret.every((b) => b === 0),
+        true
+    );
 
     const a = Buffer.from([1, 2, 3, 4]);
     const b = Buffer.from([1, 2, 3, 4]);

@@ -20,7 +20,7 @@ export const {
     cleanse,
     randombytes,
     ctMemcmp,
-    getSimdCaps
+    getSimdCaps,
 } = cjsModule;
 
 export default cjsModule;

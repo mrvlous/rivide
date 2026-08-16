@@ -38,12 +38,14 @@ fn test_aes_256_gcm_roundtrip() {
     let plaintext = b"Rust Confidential Message for Post-Quantum Channel";
     let aad = b"Header:Rust-AESGCM";
 
-    let encrypted = AesGcm::encrypt_256(&key, &iv, plaintext, Some(aad)).expect("Encryption failed");
+    let encrypted =
+        AesGcm::encrypt_256(&key, &iv, plaintext, Some(aad)).expect("Encryption failed");
     assert_eq!(encrypted.ciphertext.len(), plaintext.len());
     assert_eq!(encrypted.tag.len(), 16);
 
-    let decrypted = AesGcm::decrypt_256(&key, &iv, &encrypted.ciphertext, &encrypted.tag, Some(aad))
-        .expect("Decryption failed");
+    let decrypted =
+        AesGcm::decrypt_256(&key, &iv, &encrypted.ciphertext, &encrypted.tag, Some(aad))
+            .expect("Decryption failed");
     assert_eq!(decrypted, plaintext);
 }
 

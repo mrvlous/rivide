@@ -31,7 +31,9 @@ console.log(`[Signer] Secret Key  : ${signer.secretKey.length} bytes\n`);
 const message = Buffer.from('Post-quantum signed contract payload: Transfer $50,000 to Alice.');
 console.log(`[Signer] Signing message: "${message.toString()}"...`);
 const signature = mlDsa65.sign(message, signer.secretKey);
-console.log(`[Signer] Generated Signature (${signature.length} bytes): ${signature.subarray(0, 32).toString('hex')}...\n`);
+console.log(
+    `[Signer] Generated Signature (${signature.length} bytes): ${signature.subarray(0, 32).toString('hex')}...\n`
+);
 
 // 3. [Auditor] Verify signature against message and public key
 console.log('[Auditor] Verifying digital signature...');
@@ -44,7 +46,9 @@ if (isValid) {
 }
 
 // 4. Test tamper resistance
-const tamperedMessage = Buffer.from('Post-quantum signed contract payload: Transfer $500,000 to Alice.');
+const tamperedMessage = Buffer.from(
+    'Post-quantum signed contract payload: Transfer $500,000 to Alice.'
+);
 console.log(`[Auditor] Testing tampered message: "${tamperedMessage.toString()}"...`);
 const isTamperedValid = mlDsa65.verify(signature, tamperedMessage, signer.publicKey);
 if (!isTamperedValid) {

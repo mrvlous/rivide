@@ -38,10 +38,14 @@ function benchmark(name, fn, iterations = 1000) {
     );
 }
 
-console.log(`Rivide Node.js (Node-API) Post-Quantum Cryptography Benchmark Suite v${utils.version()}\n`);
+console.log(
+    `Rivide Node.js (Node-API) Post-Quantum Cryptography Benchmark Suite v${utils.version()}\n`
+);
 console.log(`Node.js Runtime : ${process.version} (${process.arch}-${process.platform})`);
 const caps = utils.getSimdCaps();
-console.log(`Hardware SIMD   : AVX2: ${caps.hasAvx2 ? 'YES' : 'NO'}, AES-NI: ${caps.hasAesni ? 'YES' : 'NO'}, NEON: ${caps.hasNeon ? 'YES' : 'NO'}\n`);
+console.log(
+    `Hardware SIMD   : AVX2: ${caps.hasAvx2 ? 'YES' : 'NO'}, AES-NI: ${caps.hasAesni ? 'YES' : 'NO'}, NEON: ${caps.hasNeon ? 'YES' : 'NO'}\n`
+);
 
 const iters = 1000;
 
@@ -50,14 +54,22 @@ let kem768Kp = mlKem768.keypair();
 let kem768Enc = mlKem768.encaps(kem768Kp.publicKey);
 benchmark('ML-KEM-768 KeyGen', () => mlKem768.keypair(), iters);
 benchmark('ML-KEM-768 Encaps', () => mlKem768.encaps(kem768Kp.publicKey), iters);
-benchmark('ML-KEM-768 Decaps', () => mlKem768.decaps(kem768Enc.ciphertext, kem768Kp.secretKey), iters);
+benchmark(
+    'ML-KEM-768 Decaps',
+    () => mlKem768.decaps(kem768Enc.ciphertext, kem768Kp.secretKey),
+    iters
+);
 
 console.log('');
 let kem1024Kp = mlKem1024.keypair();
 let kem1024Enc = mlKem1024.encaps(kem1024Kp.publicKey);
 benchmark('ML-KEM-1024 KeyGen', () => mlKem1024.keypair(), iters);
 benchmark('ML-KEM-1024 Encaps', () => mlKem1024.encaps(kem1024Kp.publicKey), iters);
-benchmark('ML-KEM-1024 Decaps', () => mlKem1024.decaps(kem1024Enc.ciphertext, kem1024Kp.secretKey), iters);
+benchmark(
+    'ML-KEM-1024 Decaps',
+    () => mlKem1024.decaps(kem1024Enc.ciphertext, kem1024Kp.secretKey),
+    iters
+);
 
 console.log('\nNIST FIPS 204 ML-DSA Benchmarks:');
 let dsa65Kp = mlDsa65.keypair();
@@ -82,6 +94,10 @@ let encRes = aesGcm.encrypt256(key32, iv12, payload4KB);
 benchmark('SHA3-256 (4 KB)', () => sha3.sha3_256(payload4KB), iters);
 benchmark('SHAKE-256 (4 KB -> 32B)', () => sha3.shake256(payload4KB, 32), iters);
 benchmark('AES-256-GCM Encrypt (4 KB)', () => aesGcm.encrypt256(key32, iv12, payload4KB), iters);
-benchmark('AES-256-GCM Decrypt (4 KB)', () => aesGcm.decrypt256(key32, iv12, encRes.ciphertext, encRes.tag), iters);
+benchmark(
+    'AES-256-GCM Decrypt (4 KB)',
+    () => aesGcm.decrypt256(key32, iv12, encRes.ciphertext, encRes.tag),
+    iters
+);
 
 console.log('\n[SUCCESS] Node.js Benchmark Suite Execution Complete.');

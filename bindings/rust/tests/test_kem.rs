@@ -28,8 +28,8 @@ fn test_ml_kem_768_roundtrip() {
     assert_eq!(bob.ciphertext.len(), 1088);
     assert_eq!(bob.shared_secret.len(), 32);
 
-    let alice_ss =
-        MlKem768::decapsulate(&bob.ciphertext, &alice.secret_key).expect("ML-KEM-768 Decaps failed");
+    let alice_ss = MlKem768::decapsulate(&bob.ciphertext, &alice.secret_key)
+        .expect("ML-KEM-768 Decaps failed");
 
     assert_eq!(alice_ss, bob.shared_secret);
     assert_eq!(ct_memcmp(&alice_ss, &bob.shared_secret), 0);
@@ -43,8 +43,8 @@ fn test_ml_kem_768_implicit_rejection() {
     let mut tampered_ct = bob.ciphertext;
     tampered_ct[0] ^= 0x01; // Corrupt ciphertext byte
 
-    let alice_ss =
-        MlKem768::decapsulate(&tampered_ct, &alice.secret_key).expect("Decaps should succeed via implicit rejection");
+    let alice_ss = MlKem768::decapsulate(&tampered_ct, &alice.secret_key)
+        .expect("Decaps should succeed via implicit rejection");
 
     // Must NOT match bob's shared secret
     assert_ne!(alice_ss, bob.shared_secret);
@@ -60,8 +60,8 @@ fn test_ml_kem_1024_roundtrip() {
     assert_eq!(bob.ciphertext.len(), 1568);
     assert_eq!(bob.shared_secret.len(), 32);
 
-    let alice_ss =
-        MlKem1024::decapsulate(&bob.ciphertext, &alice.secret_key).expect("ML-KEM-1024 Decaps failed");
+    let alice_ss = MlKem1024::decapsulate(&bob.ciphertext, &alice.secret_key)
+        .expect("ML-KEM-1024 Decaps failed");
 
     assert_eq!(alice_ss, bob.shared_secret);
     assert_eq!(ct_memcmp(&alice_ss, &bob.shared_secret), 0);

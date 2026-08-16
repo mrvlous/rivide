@@ -159,7 +159,11 @@ export namespace mlDsa65 {
      * @param message Message payload
      * @param publicKey 1952-byte public key
      */
-    export function verify(signature: BinaryInput, message: BinaryInput, publicKey: BinaryInput): boolean;
+    export function verify(
+        signature: BinaryInput,
+        message: BinaryInput,
+        publicKey: BinaryInput
+    ): boolean;
 }
 
 /**
@@ -184,7 +188,11 @@ export namespace mlDsa87 {
      * @param message Message payload
      * @param publicKey 2592-byte public key
      */
-    export function verify(signature: BinaryInput, message: BinaryInput, publicKey: BinaryInput): boolean;
+    export function verify(
+        signature: BinaryInput,
+        message: BinaryInput,
+        publicKey: BinaryInput
+    ): boolean;
 }
 
 /**
@@ -227,7 +235,12 @@ export namespace aesGcm {
      * @param plaintext Data to encrypt
      * @param aad Optional additional authenticated data
      */
-    export function encrypt128(key: BinaryInput, iv: BinaryInput, plaintext: BinaryInput, aad?: BinaryInput | null): AesGcmResult;
+    export function encrypt128(
+        key: BinaryInput,
+        iv: BinaryInput,
+        plaintext: BinaryInput,
+        aad?: BinaryInput | null
+    ): AesGcmResult;
 
     /**
      * Decrypt and authenticate ciphertext using AES-128-GCM.
@@ -237,7 +250,13 @@ export namespace aesGcm {
      * @param tag 16-byte authentication tag
      * @param aad Optional additional authenticated data
      */
-    export function decrypt128(key: BinaryInput, iv: BinaryInput, ciphertext: BinaryInput, tag: BinaryInput, aad?: BinaryInput | null): Buffer;
+    export function decrypt128(
+        key: BinaryInput,
+        iv: BinaryInput,
+        ciphertext: BinaryInput,
+        tag: BinaryInput,
+        aad?: BinaryInput | null
+    ): Buffer;
 
     /**
      * Encrypt plaintext using AES-256-GCM.
@@ -246,7 +265,12 @@ export namespace aesGcm {
      * @param plaintext Data to encrypt
      * @param aad Optional additional authenticated data
      */
-    export function encrypt256(key: BinaryInput, iv: BinaryInput, plaintext: BinaryInput, aad?: BinaryInput | null): AesGcmResult;
+    export function encrypt256(
+        key: BinaryInput,
+        iv: BinaryInput,
+        plaintext: BinaryInput,
+        aad?: BinaryInput | null
+    ): AesGcmResult;
 
     /**
      * Decrypt and authenticate ciphertext using AES-256-GCM.
@@ -256,7 +280,13 @@ export namespace aesGcm {
      * @param tag 16-byte authentication tag
      * @param aad Optional additional authenticated data
      */
-    export function decrypt256(key: BinaryInput, iv: BinaryInput, ciphertext: BinaryInput, tag: BinaryInput, aad?: BinaryInput | null): Buffer;
+    export function decrypt256(
+        key: BinaryInput,
+        iv: BinaryInput,
+        ciphertext: BinaryInput,
+        tag: BinaryInput,
+        aad?: BinaryInput | null
+    ): Buffer;
 }
 
 /**

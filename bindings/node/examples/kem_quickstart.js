@@ -28,7 +28,7 @@ console.log(`[Alice] Public Key  : ${alice.publicKey.length} bytes`);
 console.log(`[Alice] Secret Key  : ${alice.secretKey.length} bytes\n`);
 
 // 2. [Bob] Encapsulate a shared secret using Alice's public key
-console.log('[Bob] Encapsulating shared secret using Alice\'s public key...');
+console.log("[Bob] Encapsulating shared secret using Alice's public key...");
 const bob = mlKem768.encaps(alice.publicKey);
 console.log(`[Bob] Ciphertext    : ${bob.ciphertext.length} bytes`);
 console.log(`[Bob] Shared Secret : ${bob.sharedSecret.toString('hex')}\n`);

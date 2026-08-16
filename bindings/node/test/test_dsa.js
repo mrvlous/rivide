@@ -26,7 +26,9 @@ test('ML-DSA-65: KeyGen, Sign, and Verify Roundtrip', () => {
     assert.strictEqual(signer.publicKey.length, constants.ML_DSA_65_PK_BYTES);
     assert.strictEqual(signer.secretKey.length, constants.ML_DSA_65_SK_BYTES);
 
-    const message = Buffer.from('Post-quantum signed message payload using Rivide Node.js bindings.');
+    const message = Buffer.from(
+        'Post-quantum signed message payload using Rivide Node.js bindings.'
+    );
     const signature = mlDsa65.sign(message, signer.secretKey);
     assert.strictEqual(signature.length, constants.ML_DSA_65_SIG_BYTES);
 

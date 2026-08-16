@@ -28,7 +28,7 @@ try {
     } catch (e2) {
         throw new Error(
             'Failed to load Rivide native binary. Please run "npm run build" or "node-gyp rebuild" in bindings/node.\n' +
-            e1.message
+                e1.message
         );
     }
 }
@@ -76,7 +76,7 @@ const constants = Object.freeze({
     SHA3_256_BYTES: 32,
     SHA3_512_BYTES: 64,
     AES_GCM_IV_BYTES: 12,
-    AES_GCM_TAG_BYTES: 16
+    AES_GCM_TAG_BYTES: 16,
 });
 
 /**
@@ -91,7 +91,7 @@ const mlKem768 = Object.freeze({
     },
     decaps: function (ciphertext, secretKey) {
         return native.mlKem768Decaps(toBuffer(ciphertext), toBuffer(secretKey));
-    }
+    },
 });
 
 /**
@@ -106,7 +106,7 @@ const mlKem1024 = Object.freeze({
     },
     decaps: function (ciphertext, secretKey) {
         return native.mlKem1024Decaps(toBuffer(ciphertext), toBuffer(secretKey));
-    }
+    },
 });
 
 /**
@@ -121,7 +121,7 @@ const mlDsa65 = Object.freeze({
     },
     verify: function (signature, message, publicKey) {
         return native.mlDsa65Verify(toBuffer(signature), toBuffer(message), toBuffer(publicKey));
-    }
+    },
 });
 
 /**
@@ -136,7 +136,7 @@ const mlDsa87 = Object.freeze({
     },
     verify: function (signature, message, publicKey) {
         return native.mlDsa87Verify(toBuffer(signature), toBuffer(message), toBuffer(publicKey));
-    }
+    },
 });
 
 /**
@@ -160,7 +160,7 @@ const sha3 = Object.freeze({
             throw new TypeError('outputLength must be a positive integer');
         }
         return native.shake256(toBuffer(data), outputLength);
-    }
+    },
 });
 
 /**
@@ -200,7 +200,7 @@ const aesGcm = Object.freeze({
             toBuffer(tag),
             aad ? toBuffer(aad) : null
         );
-    }
+    },
 });
 
 /**
@@ -228,7 +228,7 @@ const utils = Object.freeze({
     },
     version: function () {
         return native.version();
-    }
+    },
 });
 
 module.exports = {
@@ -245,5 +245,5 @@ module.exports = {
     cleanse: utils.cleanse,
     randombytes: utils.randombytes,
     ctMemcmp: utils.ctMemcmp,
-    getSimdCaps: utils.getSimdCaps
+    getSimdCaps: utils.getSimdCaps,
 };

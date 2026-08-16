@@ -130,7 +130,9 @@ impl MlKem768 {
     }
 
     /// Encapsulates a 32-byte shared secret under a recipient's public key.
-    pub fn encapsulate(public_key: &MlKem768PublicKey) -> Result<MlKem768EncapsResult, RivideError> {
+    pub fn encapsulate(
+        public_key: &MlKem768PublicKey,
+    ) -> Result<MlKem768EncapsResult, RivideError> {
         let mut ct = [0u8; RIVIDE_ML_KEM_768_CT_BYTES];
         let mut ss = [0u8; RIVIDE_ML_KEM_768_SS_BYTES];
 
@@ -266,7 +268,9 @@ impl MlKem1024 {
     }
 
     /// Encapsulates a 32-byte shared secret under an ML-KEM-1024 public key.
-    pub fn encapsulate(public_key: &MlKem1024PublicKey) -> Result<MlKem1024EncapsResult, RivideError> {
+    pub fn encapsulate(
+        public_key: &MlKem1024PublicKey,
+    ) -> Result<MlKem1024EncapsResult, RivideError> {
         let mut ct = [0u8; RIVIDE_ML_KEM_1024_CT_BYTES];
         let mut ss = [0u8; RIVIDE_ML_KEM_1024_SS_BYTES];
 

@@ -73,15 +73,17 @@ pub mod utils;
 // Re-exports for ergonomics
 pub use crypto::{AesGcm, AesGcmResult, Sha3};
 pub use dsa::{
-    MlDsa65, MlDsa65KeyPair, MlDsa65PublicKey, MlDsa65SecretKey, MlDsa65Signature,
-    MlDsa87, MlDsa87KeyPair, MlDsa87PublicKey, MlDsa87SecretKey, MlDsa87Signature,
+    MlDsa65, MlDsa65KeyPair, MlDsa65PublicKey, MlDsa65SecretKey, MlDsa65Signature, MlDsa87,
+    MlDsa87KeyPair, MlDsa87PublicKey, MlDsa87SecretKey, MlDsa87Signature,
 };
 pub use error::RivideError;
 pub use kem::{
-    MlKem768, MlKem768EncapsResult, MlKem768KeyPair, MlKem768PublicKey, MlKem768SecretKey,
     MlKem1024, MlKem1024EncapsResult, MlKem1024KeyPair, MlKem1024PublicKey, MlKem1024SecretKey,
+    MlKem768, MlKem768EncapsResult, MlKem768KeyPair, MlKem768PublicKey, MlKem768SecretKey,
 };
-pub use utils::{cleanse, ct_memcmp, get_cpu_features, randombytes, randombytes_into, version, CpuFeatures};
+pub use utils::{
+    cleanse, ct_memcmp, get_cpu_features, randombytes, randombytes_into, version, CpuFeatures,
+};
 
 /// Initializes the underlying Rivide C library subsystem.
 ///

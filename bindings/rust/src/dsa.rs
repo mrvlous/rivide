@@ -129,7 +129,10 @@ impl MlDsa65 {
     }
 
     /// Signs an arbitrary message payload with an ML-DSA-65 secret key.
-    pub fn sign(message: &[u8], secret_key: &MlDsa65SecretKey) -> Result<MlDsa65Signature, RivideError> {
+    pub fn sign(
+        message: &[u8],
+        secret_key: &MlDsa65SecretKey,
+    ) -> Result<MlDsa65Signature, RivideError> {
         let mut sig = [0u8; RIVIDE_ML_DSA_65_SIG_BYTES];
         let mut siglen: usize = 0;
 
@@ -276,7 +279,10 @@ impl MlDsa87 {
     }
 
     /// Signs an arbitrary message payload with an ML-DSA-87 secret key.
-    pub fn sign(message: &[u8], secret_key: &MlDsa87SecretKey) -> Result<MlDsa87Signature, RivideError> {
+    pub fn sign(
+        message: &[u8],
+        secret_key: &MlDsa87SecretKey,
+    ) -> Result<MlDsa87Signature, RivideError> {
         let mut sig = [0u8; RIVIDE_ML_DSA_87_SIG_BYTES];
         let mut siglen: usize = 0;
 

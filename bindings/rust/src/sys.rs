@@ -90,7 +90,11 @@ extern "C" {
     // Memory and random
     pub fn rivide_cleanse(ptr: *mut std::os::raw::c_void, len: usize);
     pub fn rivide_randombytes(buf: *mut u8, len: usize) -> rivide_status_t;
-    pub fn rivide_ct_memcmp(a: *const std::os::raw::c_void, b: *const std::os::raw::c_void, len: usize) -> i32;
+    pub fn rivide_ct_memcmp(
+        a: *const std::os::raw::c_void,
+        b: *const std::os::raw::c_void,
+        len: usize,
+    ) -> i32;
 
     // ML-KEM-768
     pub fn rivide_ml_kem_768_keygen(pk: *mut u8, sk: *mut u8) -> rivide_status_t;
@@ -104,13 +108,37 @@ extern "C" {
 
     // ML-DSA-65
     pub fn rivide_ml_dsa_65_keygen(pk: *mut u8, sk: *mut u8) -> rivide_status_t;
-    pub fn rivide_ml_dsa_65_sign(sig: *mut u8, siglen: *mut usize, msg: *const u8, msglen: usize, sk: *const u8) -> rivide_status_t;
-    pub fn rivide_ml_dsa_65_verify(sig: *const u8, siglen: usize, msg: *const u8, msglen: usize, pk: *const u8) -> rivide_status_t;
+    pub fn rivide_ml_dsa_65_sign(
+        sig: *mut u8,
+        siglen: *mut usize,
+        msg: *const u8,
+        msglen: usize,
+        sk: *const u8,
+    ) -> rivide_status_t;
+    pub fn rivide_ml_dsa_65_verify(
+        sig: *const u8,
+        siglen: usize,
+        msg: *const u8,
+        msglen: usize,
+        pk: *const u8,
+    ) -> rivide_status_t;
 
     // ML-DSA-87
     pub fn rivide_ml_dsa_87_keygen(pk: *mut u8, sk: *mut u8) -> rivide_status_t;
-    pub fn rivide_ml_dsa_87_sign(sig: *mut u8, siglen: *mut usize, msg: *const u8, msglen: usize, sk: *const u8) -> rivide_status_t;
-    pub fn rivide_ml_dsa_87_verify(sig: *const u8, siglen: usize, msg: *const u8, msglen: usize, pk: *const u8) -> rivide_status_t;
+    pub fn rivide_ml_dsa_87_sign(
+        sig: *mut u8,
+        siglen: *mut usize,
+        msg: *const u8,
+        msglen: usize,
+        sk: *const u8,
+    ) -> rivide_status_t;
+    pub fn rivide_ml_dsa_87_verify(
+        sig: *const u8,
+        siglen: usize,
+        msg: *const u8,
+        msglen: usize,
+        pk: *const u8,
+    ) -> rivide_status_t;
 
     // SHA-3 & SHAKE
     pub fn rivide_sha3_256(out: *mut u8, in_: *const u8, inlen: usize);

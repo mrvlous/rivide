@@ -129,3 +129,23 @@ All exported functions and interfaces MUST include typed JSDoc descriptions:
  */
 export function encaps(publicKey: Buffer): KemEncapsResult;
 ```
+
+## 4. Automated Code Formatting Tools
+
+To maintain formatting uniformity across all languages, Rivide provides unified formatting commands:
+
+- **C & C++**: Formatted with `clang-format` using `.clang-format`.
+- **Rust**: Formatted with `cargo fmt` using `bindings/rust/rustfmt.toml`.
+- **JavaScript & TypeScript**: Formatted with `prettier` using `bindings/node/.prettierrc.json`.
+
+Execute formatting across all languages simultaneously:
+
+```bash
+make format
+```
+
+Verify formatting compliance in CI pipelines:
+
+```bash
+make check-format
+```

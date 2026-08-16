@@ -38,7 +38,10 @@ fn main() {
     iv.copy_from_slice(&iv_bytes);
     let aad = b"Protocol:TLS1.3-PQC-Hybrid";
 
-    println!("\n[Client] Encrypting payload ({} bytes) with AES-256-GCM...", payload.len());
+    println!(
+        "\n[Client] Encrypting payload ({} bytes) with AES-256-GCM...",
+        payload.len()
+    );
     let encrypted = AesGcm::encrypt_256(&session_key, &iv, payload, Some(aad))
         .expect("AES-GCM encryption failed");
     println!("  Ciphertext : {} bytes", encrypted.ciphertext.len());

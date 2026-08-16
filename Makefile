@@ -260,15 +260,23 @@ clean: ## Remove build directories and generated compile_commands.json
 	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz compile_commands.json bindings/node/build bindings/rust/target
 	$(Q)$(LOG_DONE) "Clean finished."
 
-format: ## Format all source, header, test, benchmark, fuzz, and binding files using clang-format
-	$(Q)$(LOG_INFO) "Formatting code with clang-format..."
+format: ## Format all C, Rust, and Node.js files using clang-format, rustfmt, and prettier
+	$(Q)$(LOG_INFO) "Formatting C/H files with clang-format..."
 	$(Q)clang-format -i $(shell find include src tests benchmarks examples fuzz bindings/node/src -type f \( -name "*.c" -o -name "*.h" \))
-	$(Q)$(LOG_DONE) "Formatting complete."
+	$(Q)$(LOG_INFO) "Formatting Rust files with cargo fmt..."
+	$(Q)cd bindings/rust && cargo fmt
+	$(Q)$(LOG_INFO) "Formatting Node.js files with prettier..."
+	$(Q)cd bindings/node && npx --yes prettier --write .
+	$(Q)$(LOG_DONE) "Formatting complete across C, Rust, and Node.js."
 
-check-format: ## Verify code formatting compliance without modifying files
-	$(Q)$(LOG_INFO) "Checking code formatting compliance..."
+check-format: ## Verify code formatting compliance across C, Rust, and Node.js without modifying files
+	$(Q)$(LOG_INFO) "Checking C code formatting compliance..."
 	$(Q)clang-format --dry-run --Werror $(shell find include src tests benchmarks examples fuzz bindings/node/src -type f \( -name "*.c" -o -name "*.h" \))
-	$(Q)$(LOG_DONE) "Code formatting is fully compliant."
+	$(Q)$(LOG_INFO) "Checking Rust formatting compliance..."
+	$(Q)cd bindings/rust && cargo fmt -- --check
+	$(Q)$(LOG_INFO) "Checking Node.js formatting compliance..."
+	$(Q)cd bindings/node && npx --yes prettier --check .
+	$(Q)$(LOG_DONE) "Code formatting is fully compliant across C, Rust, and Node.js."
 
 lint: config ## Run static code analysis with clang-tidy
 	$(Q)$(LOG_INFO) "Running static analysis with clang-tidy..."
