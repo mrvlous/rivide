@@ -67,6 +67,7 @@ bindings/node/deps/
 *.node
 *.tgz
 .node-gyp/
+.npmrc
 package-lock.json
 npm-debug.log*
 yarn-debug.log*
