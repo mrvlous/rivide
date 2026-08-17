@@ -17,10 +17,16 @@
 
 /**
  * @file test_aes_gcm.c
- * @brief Unit tests for AES-128/256-GCM AEAD encryption and decryption.
+ * @brief Comprehensive unit tests for AES-128/256-GCM AEAD encryption, decryption,
+ * boundaries, in-place execution, overlap rejection, and key lifecycle.
  */
 
+#include <string.h>
+
+#include "rivide/crypto/aes.h"
 #include "rivide/crypto/aes_gcm.h"
+#include "rivide/utils/mem.h"
+#include "rivide/utils/random.h"
 
 #include "test_harness.h"
 
@@ -42,6 +48,7 @@ int test_aes128_gcm_roundtrip(void) {
 
     ASSERT_MEM_EQ(pt, recovered, sizeof(pt));
 
+    rivide_aes_key_cleanse(&key);
     return 0;
 }
 
@@ -61,6 +68,121 @@ int test_aes256_gcm_invalid_tag(void) {
     tag[0] ^= 0x01;
 
     ASSERT_FAIL(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(pt), tag, recovered));
+
+    rivide_aes_key_cleanse(&key);
+    return 0;
+}
+
+int test_aes_gcm_inplace(void) {
+    rivide_aes_key_t key;
+    uint8_t raw_key[32];
+    uint8_t iv[12];
+    uint8_t buf[64];
+    uint8_t original[64];
+    uint8_t tag[16];
+    uint8_t aad[20];
+
+    rivide_randombytes(raw_key, sizeof(raw_key));
+    rivide_randombytes(iv, sizeof(iv));
+    rivide_randombytes(buf, sizeof(buf));
+    rivide_randombytes(aad, sizeof(aad));
+    memcpy(original, buf, sizeof(buf));
+
+    ASSERT_OK(rivide_aes256_key_expand(&key, raw_key));
+
+    /* In-place encryption (pt == ct) */
+    ASSERT_OK(rivide_aes_gcm_encrypt(&key, iv, aad, sizeof(aad), buf, sizeof(buf), buf, tag));
+    ASSERT_MEM_NE(buf, original, sizeof(buf));
+
+    /* In-place decryption (ct == pt) */
+    ASSERT_OK(rivide_aes_gcm_decrypt(&key, iv, aad, sizeof(aad), buf, sizeof(buf), tag, buf));
+    ASSERT_MEM_EQ(buf, original, sizeof(buf));
+
+    rivide_aes_key_cleanse(&key);
+    return 0;
+}
+
+int test_aes_gcm_partial_overlap_rejection(void) {
+    rivide_aes_key_t key;
+    uint8_t raw_key[32];
+    uint8_t iv[12];
+    uint8_t memory[128];
+    uint8_t tag[16];
+
+    rivide_randombytes(raw_key, sizeof(raw_key));
+    rivide_randombytes(iv, sizeof(iv));
+    rivide_randombytes(memory, sizeof(memory));
+
+    ASSERT_OK(rivide_aes256_key_expand(&key, raw_key));
+
+    /* Partial overlap: pt starts at memory[0], ct starts at memory[8], length 32 */
+    uint8_t *pt = memory;
+    uint8_t *ct = memory + 8;
+    size_t len = 32;
+
+    ASSERT_EQ(rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, len, ct, tag),
+              RIVIDE_ERR_INVALID_PARAM);
+    ASSERT_EQ(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, len, tag, pt),
+              RIVIDE_ERR_INVALID_PARAM);
+
+    rivide_aes_key_cleanse(&key);
+    return 0;
+}
+
+int test_aes_gcm_boundary_lengths(void) {
+    rivide_aes_key_t key;
+    uint8_t raw_key[32];
+    uint8_t iv[12];
+    uint8_t pt_buf[64];
+    uint8_t ct_buf[64];
+    uint8_t dec_buf[64];
+    uint8_t tag[16];
+    static const size_t test_lens[] = {0, 1, 15, 16, 17, 31, 32, 33, 48, 64};
+    size_t idx;
+
+    rivide_randombytes(raw_key, sizeof(raw_key));
+    rivide_randombytes(iv, sizeof(iv));
+    rivide_randombytes(pt_buf, sizeof(pt_buf));
+
+    ASSERT_OK(rivide_aes256_key_expand(&key, raw_key));
+
+    for (idx = 0; idx < sizeof(test_lens) / sizeof(test_lens[0]); idx++) {
+        size_t l = test_lens[idx];
+        const uint8_t *in_pt = (l == 0) ? NULL : pt_buf;
+        uint8_t *out_ct = (l == 0) ? NULL : ct_buf;
+        uint8_t *out_dec = (l == 0) ? NULL : dec_buf;
+
+        ASSERT_OK(rivide_aes_gcm_encrypt(&key, iv, NULL, 0, in_pt, l, out_ct, tag));
+        ASSERT_OK(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, out_ct, l, tag, out_dec));
+        if (l > 0) {
+            ASSERT_MEM_EQ(pt_buf, dec_buf, l);
+        }
+    }
+
+    rivide_aes_key_cleanse(&key);
+    return 0;
+}
+
+int test_aes_key_cleanse(void) {
+    rivide_aes_key_t key;
+    uint8_t raw_key[32];
+    size_t i;
+    int all_zero = 1;
+
+    rivide_randombytes(raw_key, sizeof(raw_key));
+    ASSERT_OK(rivide_aes256_key_expand(&key, raw_key));
+    ASSERT_EQ(key.rounds, 14);
+
+    rivide_aes_key_cleanse(&key);
+    ASSERT_EQ(key.rounds, 0);
+
+    for (i = 0; i < sizeof(key.round_keys) / sizeof(key.round_keys[0]); i++) {
+        if (key.round_keys[i] != 0) {
+            all_zero = 0;
+            break;
+        }
+    }
+    ASSERT_EQ(all_zero, 1);
 
     return 0;
 }

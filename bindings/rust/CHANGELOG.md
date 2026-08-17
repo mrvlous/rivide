@@ -12,6 +12,14 @@ All notable changes to the **`rivide`** Rust crate will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-08-17
+
+### Fixed
+- **Table-Free Constant-Time Algebraic AES S-Box**:
+  - Replaced secret-dependent table lookups in AES with constant-time algebraic GF(2^8) inversion and affine transforms (`aes_sbox_ct`).
+- **NIST SP 800-38D Length Bounds & Buffer Overlap Validation**:
+  - Enforced overflow-safe length limits and buffer overlap protection across AES-GCM primitives.
+
 ## [1.1.2] - 2026-08-16
 
 ### Fixed

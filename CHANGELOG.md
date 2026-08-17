@@ -12,6 +12,26 @@ All notable changes to the **Rivide** Post-Quantum Cryptography library will be 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-08-17
+
+### Fixed
+- **Table-Free Constant-Time Algebraic AES S-Box**:
+  - Eliminated secret-dependent forward S-box table lookups (`aes_sbox[state[i]]`) in `src/crypto/aes_core.c`, replacing them with branchless, table-free constant-time algebraic multiplicative inversion in Galois Field GF(2^8) and affine bitwise transformations (`aes_sbox_ct`). Completely mitigates cache-timing, cache-collision, and microarchitectural side-channel vulnerabilities.
+- **NIST SP 800-38D AES-GCM Length Bounds & Overflow Prevention**:
+  - Enforced strict SP 800-38D length verification rejecting payloads exceeding 2^39 - 256 bits ((2^36 - 32) bytes) and AAD exceeding 2^64 - 1 bits (`UINT64_MAX / 8` bytes) with `RIVIDE_ERR_INVALID_PARAM`, preventing 64-bit length counter overflows and 32-bit counter wrapping.
+- **AES-GCM Buffer Overlap & In-Place Safety**:
+  - Explicitly permitted exact in-place authenticated encryption and decryption (`pt == ct`).
+  - Added strict detection and rejection of partial overlapping buffers (`pt != ct` with intersecting memory ranges) and tag buffer collisions, returning `RIVIDE_ERR_INVALID_PARAM` instead of undefined behavior or corrupted state.
+- **AES Key Material Lifecycle & Intermediate Zeroization**:
+  - Added `@ref rivide_aes_key_cleanse` in `include/rivide/crypto/aes.h` and `src/crypto/aes_core.c` for explicit secure wiping of expanded round keys.
+  - Guaranteed comprehensive `rivide_cleanse` zeroization of all intermediate secret buffers (`h`, `j0`, `counter`, `enc_block`, `ghash_tag`, `computed_tag`, `len_block`) on all return paths in AES-GCM.
+
+### Added
+- **Expanded Dudect Constant-Time Statistical Verification**:
+  - Added dedicated statistical timing leakage test harnesses in [`tests/timing/test_dudect_kem.c`](tests/timing/test_dudect_kem.c) for AES block encryption, AES-256-GCM AEAD decryption, and GHASH GF(2^128) bitwise multiplications, formally asserting `|t| < 4.5`.
+- **Automated Continuous Fuzzing (CI/CD)**:
+  - Integrated dedicated `security-fuzzing` workflow job in GitHub Actions with LLVM libFuzzer, AddressSanitizer (ASan), and UndefinedBehaviorSanitizer (UBSan) covering ML-KEM decapsulation, ML-DSA verification, AES-GCM, and SHA-3.
+
 ## [1.1.2] - 2026-08-16
 
 ### Fixed

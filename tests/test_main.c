@@ -49,6 +49,10 @@ extern int test_shake128_incremental(void);
 
 extern int test_aes128_gcm_roundtrip(void);
 extern int test_aes256_gcm_invalid_tag(void);
+extern int test_aes_gcm_inplace(void);
+extern int test_aes_gcm_partial_overlap_rejection(void);
+extern int test_aes_gcm_boundary_lengths(void);
+extern int test_aes_key_cleanse(void);
 
 extern int test_ct_memcmp(void);
 extern int test_ct_select(void);
@@ -89,6 +93,10 @@ int main(void) {
     RUN_TEST(test_shake128_incremental);
     RUN_TEST(test_aes128_gcm_roundtrip);
     RUN_TEST(test_aes256_gcm_invalid_tag);
+    RUN_TEST(test_aes_gcm_inplace);
+    RUN_TEST(test_aes_gcm_partial_overlap_rejection);
+    RUN_TEST(test_aes_gcm_boundary_lengths);
+    RUN_TEST(test_aes_key_cleanse);
 
     printf("\nUtility Tests:\n");
     RUN_TEST(test_ct_memcmp);

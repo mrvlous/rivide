@@ -26,7 +26,7 @@ Or via direct binary execution:
 ## 2. Benchmark Output Sample
 
 ```text
-Rivide Post-Quantum Cryptography Benchmark Suite v1.1.2
+Rivide Post-Quantum Cryptography Benchmark Suite v1.1.3
 
 Environment Information:
   Compiler             : GCC 16.2.1

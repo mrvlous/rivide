@@ -14,7 +14,7 @@ This document describes the design, directory structure, and execution model of 
 ```
 bindings/node/
 ├── binding.gyp          # Standard node-gyp native compilation manifest
-├── package.json         # Package manifest for npm module 'rivide' v1.1.2
+├── package.json         # Package manifest for npm module 'rivide' v1.1.3
 ├── index.d.ts           # Full TypeScript type definitions and JSDoc annotations
 ├── README.md            # Dedicated npm package documentation & quick start
 ├── CHANGELOG.md         # Dedicated release changelog for npm package

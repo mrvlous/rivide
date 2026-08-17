@@ -14,7 +14,7 @@
 # copies or substantial portions of the Software.
 
 cmake_minimum_required(VERSION 3.10)
-project(rivide VERSION 1.1.2 LANGUAGES C)
+project(rivide VERSION 1.1.3 LANGUAGES C)
 
 # Export compilation commands database for clangd, IDEs, and linters
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

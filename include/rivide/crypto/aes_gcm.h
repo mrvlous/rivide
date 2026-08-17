@@ -42,6 +42,12 @@ extern "C" {
 /** @brief GCM authentication tag size in bytes (128 bits). */
 #define RIVIDE_GCM_TAG_BYTES 16
 
+/** @brief Maximum AES-GCM payload length in bytes per NIST SP 800-38D (2^39 - 256 bits). */
+#define RIVIDE_GCM_MAX_PAYLOAD_BYTES ((uint64_t)0x0000000FFFFFFFF0ULL)
+
+/** @brief Maximum AES-GCM AAD length in bytes per NIST SP 800-38D (2^64 - 1 bits). */
+#define RIVIDE_GCM_MAX_AAD_BYTES ((uint64_t)0x1FFFFFFFFFFFFFFFULL)
+
 /**
  * @brief AES-GCM authenticated encryption.
  *

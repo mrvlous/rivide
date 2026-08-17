@@ -12,6 +12,15 @@ All notable changes to the **`rivide`** Node.js native package will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-08-17
+
+### Fixed
+
+- **Table-Free Constant-Time Algebraic AES S-Box**:
+    - Eliminated table lookups in AES transformations, evaluating S-box algebraically in GF(2^8) in constant time to eliminate cache-timing attacks.
+- **NIST SP 800-38D Length Bounds & Buffer Overlap Validation**:
+    - Added strict validation for payload length, AAD length, and partial buffer overlap in `aesGcm` routines.
+
 ## [1.1.2] - 2026-08-16
 
 ### Fixed

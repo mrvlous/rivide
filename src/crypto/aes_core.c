@@ -20,33 +20,15 @@
  * @brief AES block cipher S-box, round constants, key expansion, and single block encryption.
  *
  * Implements standard AES-128 and AES-256 Rijndael block cipher transformations
- * without precomputed T-tables to mitigate cache-timing side-channel attacks.
+ * with a strictly table-free, constant-time algebraic GF(2^8) S-box to completely
+ * mitigate cache-timing and microarchitectural side-channel attacks.
  */
 
 #include "rivide/crypto/aes.h"
 #include "rivide/rivide_config.h"
 #include "rivide/utils/mem.h"
 
-/** @brief Standard AES forward Substitution Box (S-box). */
-static const uint8_t aes_sbox[256] = {
-    0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
-    0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
-    0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
-    0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75,
-    0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84,
-    0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf,
-    0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8,
-    0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2,
-    0xcd, 0x0c, 0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73,
-    0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb,
-    0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79,
-    0xe7, 0xc8, 0x37, 0x6d, 0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08,
-    0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a,
-    0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e,
-    0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
-    0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16};
-
-/** @brief AES round constant table (rcon). */
+/** @brief AES round constant table (rcon) indexed solely by public round numbers. */
 static const uint8_t aes_rcon[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36};
 
 /**
@@ -55,20 +37,107 @@ static const uint8_t aes_rcon[10] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0
  * @param[in] p Input byte buffer.
  * @return Loaded 32-bit unsigned integer.
  */
-static uint32_t load32_be(const uint8_t *p) {
+static inline uint32_t load32_be(const uint8_t *p) {
     return ((uint32_t)p[0] << 24) | ((uint32_t)p[1] << 16) | ((uint32_t)p[2] << 8) | (uint32_t)p[3];
 }
 
 /**
- * @brief Substitute all 4 bytes of a 32-bit word using the AES S-box.
+ * @brief Branchless constant-time multiplication by x in GF(2^8) modulo 0x11B.
+ *
+ * @param[in] x Input byte.
+ * @return Product byte in GF(2^8).
+ */
+static inline uint8_t gf256_xtime(uint8_t x) {
+    return (uint8_t)((x << 1) ^ (((uint8_t)(0 - (x >> 7))) & 0x1B));
+}
+
+/**
+ * @brief Branchless constant-time multiplication of two elements in GF(2^8).
+ *
+ * @param[in] a First element in GF(2^8).
+ * @param[in] b Second element in GF(2^8).
+ * @return Product a * b in GF(2^8).
+ */
+static inline uint8_t gf256_mul(uint8_t a, uint8_t b) {
+    uint8_t p = 0;
+    int i;
+    for (i = 0; i < 8; i++) {
+        uint8_t mask = (uint8_t)(0 - (b & 1));
+        p ^= (a & mask);
+        a = gf256_xtime(a);
+        b >>= 1;
+    }
+    return p;
+}
+
+/**
+ * @brief Branchless constant-time squaring in GF(2^8).
+ *
+ * @param[in] a Element in GF(2^8).
+ * @return a^2 in GF(2^8).
+ */
+static inline uint8_t gf256_sqr(uint8_t a) {
+    return gf256_mul(a, a);
+}
+
+/**
+ * @brief Branchless constant-time multiplicative inversion in GF(2^8).
+ *
+ * Computes a^254 in GF(2^8) via addition chain. Maps 0 to 0 naturally.
+ *
+ * @param[in] a Element in GF(2^8).
+ * @return Multiplicative inverse of a in GF(2^8), or 0 if a == 0.
+ */
+static inline uint8_t gf256_inv(uint8_t a) {
+    uint8_t a2 = gf256_sqr(a);
+    uint8_t a3 = gf256_mul(a2, a);
+    uint8_t a6 = gf256_sqr(a3);
+    uint8_t a7 = gf256_mul(a6, a);
+    uint8_t a14 = gf256_sqr(a7);
+    uint8_t a15 = gf256_mul(a14, a);
+    uint8_t a30 = gf256_sqr(a15);
+    uint8_t a60 = gf256_sqr(a30);
+    uint8_t a63 = gf256_mul(a60, a3);
+    uint8_t a126 = gf256_sqr(a63);
+    uint8_t a127 = gf256_mul(a126, a);
+    return gf256_sqr(a127);
+}
+
+/**
+ * @brief 8-bit left circular rotation.
+ *
+ * @param[in] x Input byte.
+ * @param[in] n Rotation distance (1 to 7).
+ * @return Rotated byte.
+ */
+static inline uint8_t rotl8(uint8_t x, int n) {
+    return (uint8_t)((x << n) | (x >> (8 - n)));
+}
+
+/**
+ * @brief Table-free, branchless constant-time AES forward S-box evaluation.
+ *
+ * Performs algebraic inversion in GF(2^8) followed by the FIPS 197 affine transformation.
+ * Contains 0 table lookups and 0 secret-dependent branches.
+ *
+ * @param[in] in Input byte.
+ * @return Substituted byte.
+ */
+static inline uint8_t aes_sbox_ct(uint8_t in) {
+    uint8_t inv = gf256_inv(in);
+    return (uint8_t)(inv ^ rotl8(inv, 1) ^ rotl8(inv, 2) ^ rotl8(inv, 3) ^ rotl8(inv, 4) ^ 0x63);
+}
+
+/**
+ * @brief Substitute all 4 bytes of a 32-bit word using constant-time AES S-box.
  *
  * @param[in] w Input 32-bit word.
  * @return Substituted 32-bit word.
  */
 static uint32_t sub_word(uint32_t w) {
-    return ((uint32_t)aes_sbox[(w >> 24) & 0xFF] << 24) |
-           ((uint32_t)aes_sbox[(w >> 16) & 0xFF] << 16) |
-           ((uint32_t)aes_sbox[(w >> 8) & 0xFF] << 8) | ((uint32_t)aes_sbox[w & 0xFF]);
+    return ((uint32_t)aes_sbox_ct((uint8_t)(w >> 24)) << 24) |
+           ((uint32_t)aes_sbox_ct((uint8_t)(w >> 16)) << 16) |
+           ((uint32_t)aes_sbox_ct((uint8_t)(w >> 8)) << 8) | ((uint32_t)aes_sbox_ct((uint8_t)w));
 }
 
 /**
@@ -77,22 +146,12 @@ static uint32_t sub_word(uint32_t w) {
  * @param[in] w Input 32-bit word.
  * @return Rotated 32-bit word.
  */
-static uint32_t rot_word(uint32_t w) {
+static inline uint32_t rot_word(uint32_t w) {
     return (w << 8) | (w >> 24);
 }
 
 /**
- * @brief Multiply a byte by x in GF(2^8) modulo x^8 + x^4 + x^3 + x + 1 (0x1B).
- *
- * @param[in] x Input byte.
- * @return Product byte in GF(2^8).
- */
-static uint8_t xtime(uint8_t x) {
-    return (uint8_t)((x << 1) ^ (((x >> 7) & 1) * 0x1B));
-}
-
-/**
- * @brief Encrypt a single 16-byte block with AES.
+ * @brief Encrypt a single 16-byte block with AES in constant time.
  *
  * @param[in]  key_ctx Expanded AES key schedule context.
  * @param[in]  in      16-byte input block to encrypt.
@@ -113,7 +172,7 @@ void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in
         uint8_t tmp[16];
 
         for (i = 0; i < 16; i++) {
-            tmp[i] = aes_sbox[state[i]];
+            tmp[i] = aes_sbox_ct(state[i]);
         }
 
         state[0] = tmp[0];
@@ -135,20 +194,20 @@ void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in
 
         for (j = 0; j < 4; j++) {
             int base = j * 4;
-            t = state[base] ^ state[base + 1] ^ state[base + 2] ^ state[base + 3];
+            t = (uint8_t)(state[base] ^ state[base + 1] ^ state[base + 2] ^ state[base + 3]);
             u = state[base];
             v = (uint8_t)(state[base] ^ state[base + 1]);
-            v = xtime(v);
-            state[base] ^= v ^ t;
+            v = gf256_xtime(v);
+            state[base] ^= (uint8_t)(v ^ t);
             v = (uint8_t)(state[base + 1] ^ state[base + 2]);
-            v = xtime(v);
-            state[base + 1] ^= v ^ t;
+            v = gf256_xtime(v);
+            state[base + 1] ^= (uint8_t)(v ^ t);
             v = (uint8_t)(state[base + 2] ^ state[base + 3]);
-            v = xtime(v);
-            state[base + 2] ^= v ^ t;
+            v = gf256_xtime(v);
+            state[base + 2] ^= (uint8_t)(v ^ t);
             v = (uint8_t)(state[base + 3] ^ u);
-            v = xtime(v);
-            state[base + 3] ^= v ^ t;
+            v = gf256_xtime(v);
+            state[base + 3] ^= (uint8_t)(v ^ t);
         }
 
         for (i = 0; i < 16; i++) {
@@ -159,7 +218,7 @@ void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in
     {
         uint8_t tmp[16];
         for (i = 0; i < 16; i++) {
-            tmp[i] = aes_sbox[state[i]];
+            tmp[i] = aes_sbox_ct(state[i]);
         }
 
         state[0] = tmp[0];
@@ -189,6 +248,18 @@ void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in
     }
 
     rivide_cleanse(state, sizeof(state));
+}
+
+/**
+ * @brief Securely zeroize an expanded AES key context.
+ *
+ * @param[in,out] ctx Key context to cleanse.
+ */
+void rivide_aes_key_cleanse(rivide_aes_key_t *ctx) {
+    if (ctx) {
+        rivide_cleanse(ctx->round_keys, sizeof(ctx->round_keys));
+        ctx->rounds = 0;
+    }
 }
 
 /**

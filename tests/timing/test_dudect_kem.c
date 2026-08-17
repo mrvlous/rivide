@@ -16,12 +16,15 @@
  */
 
 /**
- * @file dudect_kem.c
- * @brief Statistical timing leakage verification harness based on Dudect / Welch's t-test.
+ * @file test_dudect_kem.c
+ * @brief Comprehensive statistical timing leakage verification harness (Dudect).
  *
  * Evaluates constant-time execution for sensitive cryptographic operations:
  * 1. ML-KEM-768 Decapsulation (Valid ciphertext vs Corrupted ciphertext)
  * 2. Constant-time memory compare (rivide_ct_memcmp)
+ * 3. AES-256 Block Encryption (Fixed secret vs Random secret)
+ * 4. AES-256-GCM AEAD Decryption (Valid tag vs Tampered tag)
+ * 5. GHASH GF(2^128) Multiplication (Sparse zero bits vs Dense random bits)
  *
  * Follows the Dudect methodology:
  * - Samples execution latency across two distinct input distributions (Class 0 vs Class 1).
@@ -36,6 +39,9 @@
 #include <string.h>
 #include <time.h>
 
+#include "rivide/crypto/aes.h"
+#include "rivide/crypto/aes_gcm.h"
+#include "rivide/crypto/ghash.h"
 #include "rivide/pqc/ml_kem.h"
 #include "rivide/rivide.h"
 #include "rivide/utils/mem.h"
@@ -53,13 +59,13 @@ typedef struct {
     double m2;
 } dudect_stats_t;
 
-static void stats_init(dudect_stats_t *s) {
+static inline void stats_init(dudect_stats_t *s) {
     s->count = 0.0;
     s->mean = 0.0;
     s->m2 = 0.0;
 }
 
-static void stats_update(dudect_stats_t *s, double x) {
+static inline void stats_update(dudect_stats_t *s, double x) {
     double delta;
     double delta2;
     s->count += 1.0;
@@ -69,14 +75,14 @@ static void stats_update(dudect_stats_t *s, double x) {
     s->m2 += delta * delta2;
 }
 
-static double stats_variance(const dudect_stats_t *s) {
+static inline double stats_variance(const dudect_stats_t *s) {
     if (s->count < 2.0) {
         return 0.0;
     }
     return s->m2 / (s->count - 1.0);
 }
 
-static double compute_t_statistic(const dudect_stats_t *s0, const dudect_stats_t *s1) {
+static inline double compute_t_statistic(const dudect_stats_t *s0, const dudect_stats_t *s1) {
     double var0 = stats_variance(s0);
     double var1 = stats_variance(s1);
     double denom;
@@ -222,9 +228,9 @@ static int test_dudect_ct_memcmp(void) {
     stats_init(&stats_class1);
 
     rivide_randombytes(buf_a, sizeof(buf_a));
-    memcpy(buf_b, buf_a, sizeof(buf_b)); /* Equal */
+    memcpy(buf_b, buf_a, sizeof(buf_b));
     memcpy(buf_c, buf_a, sizeof(buf_c));
-    buf_c[0] ^= 0xFF; /* Differs at first byte */
+    buf_c[0] ^= 0xFF;
 
     /* Warm up */
     for (i = 0; i < 100; i++) {
@@ -276,6 +282,232 @@ static int test_dudect_ct_memcmp(void) {
     return 0;
 }
 
+/**
+ * @brief Statistical timing leakage test for AES block encryption.
+ */
+static int test_dudect_aes_block(void) {
+    rivide_aes_key_t key;
+    uint8_t raw_key[32];
+    uint8_t pt_class0[16];
+    uint8_t pt_class1[16];
+    uint8_t ct_out[16];
+    dudect_stats_t stats_class0;
+    dudect_stats_t stats_class1;
+    double t_val;
+    size_t i;
+
+    printf("\n[Dudect] Testing AES Block Encryption Constant-Time Execution...\n");
+    stats_init(&stats_class0);
+    stats_init(&stats_class1);
+
+    rivide_randombytes(raw_key, sizeof(raw_key));
+    rivide_randombytes(pt_class0, sizeof(pt_class0));
+    rivide_randombytes(pt_class1, sizeof(pt_class1));
+    rivide_aes256_key_expand(&key, raw_key);
+
+    /* Warm up */
+    for (i = 0; i < 100; i++) {
+        rivide_aes_encrypt_block(&key, pt_class0, ct_out);
+        rivide_aes_encrypt_block(&key, pt_class1, ct_out);
+    }
+
+    /* Statistical sampling loop */
+    for (i = 0; i < DUDECT_SAMPLE_COUNT; i++) {
+        uint8_t coin;
+        const uint8_t *pt_target;
+        uint64_t t0;
+        uint64_t t1;
+        double diff;
+        int k;
+
+        rivide_randombytes(&coin, 1);
+        coin &= 1;
+        pt_target = (coin == 0) ? pt_class0 : pt_class1;
+
+        t0 = get_time_ticks();
+        for (k = 0; k < 16; k++) {
+            rivide_aes_encrypt_block(&key, pt_target, ct_out);
+        }
+        t1 = get_time_ticks();
+        diff = (double)(t1 - t0) / 16.0;
+
+        if (coin == 0) {
+            stats_update(&stats_class0, diff);
+        } else {
+            stats_update(&stats_class1, diff);
+        }
+    }
+
+    rivide_aes_key_cleanse(&key);
+    t_val = compute_t_statistic(&stats_class0, &stats_class1);
+    printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
+           (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
+    printf("  Mean Latency      : Class 0 = %.2f ticks, Class 1 = %.2f ticks\n", stats_class0.mean,
+           stats_class1.mean);
+    printf("  Welch's t-value   : %.4f (Threshold: |t| < %.2f)\n", t_val, DUDECT_MAX_T_THRESHOLD);
+
+    if (fabs(t_val) >= DUDECT_MAX_T_THRESHOLD) {
+        printf(
+            "  [FAIL] Observable timing leakage detected in AES Block Encryption (|t| >= 4.5)\n");
+        return -1;
+    }
+
+    printf("  [PASS] AES Block Encryption is strictly constant-time.\n");
+    return 0;
+}
+
+/**
+ * @brief Statistical timing leakage test for AES-256-GCM AEAD decryption.
+ */
+static int test_dudect_aes_gcm(void) {
+    rivide_aes_key_t key;
+    uint8_t raw_key[32];
+    uint8_t iv[12];
+    uint8_t pt[32];
+    uint8_t ct[32];
+    uint8_t tag_valid[16];
+    uint8_t tag_invalid[16];
+    uint8_t out[32];
+    dudect_stats_t stats_class0;
+    dudect_stats_t stats_class1;
+    double t_val;
+    size_t i;
+
+    printf("\n[Dudect] Testing AES-256-GCM Decryption Constant-Time Execution...\n");
+    stats_init(&stats_class0);
+    stats_init(&stats_class1);
+
+    rivide_randombytes(raw_key, sizeof(raw_key));
+    rivide_randombytes(iv, sizeof(iv));
+    rivide_randombytes(pt, sizeof(pt));
+
+    rivide_aes256_key_expand(&key, raw_key);
+    rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, sizeof(pt), ct, tag_valid);
+    memcpy(tag_invalid, tag_valid, sizeof(tag_invalid));
+    tag_invalid[15] ^= 0x01;
+
+    /* Warm up */
+    for (i = 0; i < 100; i++) {
+        rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag_valid, out);
+        rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag_invalid, out);
+    }
+
+    /* Statistical sampling loop */
+    for (i = 0; i < DUDECT_SAMPLE_COUNT; i++) {
+        uint8_t coin;
+        const uint8_t *tag_target;
+        uint64_t t0;
+        uint64_t t1;
+        double diff;
+        int k;
+
+        rivide_randombytes(&coin, 1);
+        coin &= 1;
+        tag_target = (coin == 0) ? tag_valid : tag_invalid;
+
+        t0 = get_time_ticks();
+        for (k = 0; k < 8; k++) {
+            rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag_target, out);
+        }
+        t1 = get_time_ticks();
+        diff = (double)(t1 - t0) / 8.0;
+
+        if (coin == 0) {
+            stats_update(&stats_class0, diff);
+        } else {
+            stats_update(&stats_class1, diff);
+        }
+    }
+
+    rivide_aes_key_cleanse(&key);
+    t_val = compute_t_statistic(&stats_class0, &stats_class1);
+    printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
+           (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
+    printf("  Mean Latency      : Class 0 = %.2f ticks, Class 1 = %.2f ticks\n", stats_class0.mean,
+           stats_class1.mean);
+    printf("  Welch's t-value   : %.4f (Threshold: |t| < %.2f)\n", t_val, DUDECT_MAX_T_THRESHOLD);
+
+    if (fabs(t_val) >= DUDECT_MAX_T_THRESHOLD) {
+        printf("  [FAIL] Observable timing leakage detected in AES-GCM Decryption (|t| >= 4.5)\n");
+        return -1;
+    }
+
+    printf("  [PASS] AES-256-GCM Decryption is strictly constant-time.\n");
+    return 0;
+}
+
+/**
+ * @brief Statistical timing leakage test for GHASH GF(2^128) multiplication.
+ */
+static int test_dudect_ghash(void) {
+    uint8_t h[16];
+    uint8_t data_class0[64];
+    uint8_t data_class1[64];
+    uint8_t tag_out[16];
+    dudect_stats_t stats_class0;
+    dudect_stats_t stats_class1;
+    double t_val;
+    size_t i;
+
+    printf("\n[Dudect] Testing GHASH Constant-Time Multiplications...\n");
+    stats_init(&stats_class0);
+    stats_init(&stats_class1);
+
+    rivide_randombytes(h, sizeof(h));
+    rivide_randombytes(data_class0, sizeof(data_class0));
+    rivide_randombytes(data_class1, sizeof(data_class1));
+
+    /* Warm up */
+    for (i = 0; i < 100; i++) {
+        memset(tag_out, 0, sizeof(tag_out));
+        rivide_ghash_update(h, data_class0, sizeof(data_class0), tag_out);
+        rivide_ghash_update(h, data_class1, sizeof(data_class1), tag_out);
+    }
+
+    /* Statistical sampling loop */
+    for (i = 0; i < DUDECT_SAMPLE_COUNT; i++) {
+        uint8_t coin;
+        const uint8_t *data_target;
+        uint64_t t0;
+        uint64_t t1;
+        double diff;
+        int k;
+
+        rivide_randombytes(&coin, 1);
+        coin &= 1;
+        data_target = (coin == 0) ? data_class0 : data_class1;
+
+        t0 = get_time_ticks();
+        for (k = 0; k < 16; k++) {
+            memset(tag_out, 0, sizeof(tag_out));
+            rivide_ghash_update(h, data_target, sizeof(data_class0), tag_out);
+        }
+        t1 = get_time_ticks();
+        diff = (double)(t1 - t0) / 16.0;
+
+        if (coin == 0) {
+            stats_update(&stats_class0, diff);
+        } else {
+            stats_update(&stats_class1, diff);
+        }
+    }
+
+    t_val = compute_t_statistic(&stats_class0, &stats_class1);
+    printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
+           (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
+    printf("  Mean Latency      : Class 0 = %.2f ticks, Class 1 = %.2f ticks\n", stats_class0.mean,
+           stats_class1.mean);
+    printf("  Welch's t-value   : %.4f (Threshold: |t| < %.2f)\n", t_val, DUDECT_MAX_T_THRESHOLD);
+
+    if (fabs(t_val) >= DUDECT_MAX_T_THRESHOLD) {
+        printf("  [FAIL] Observable timing leakage detected in GHASH (|t| >= 4.5)\n");
+        return -1;
+    }
+
+    printf("  [PASS] GHASH is strictly constant-time.\n");
+    return 0;
+}
+
 int main(void) {
     int ret = 0;
 
@@ -294,6 +526,18 @@ int main(void) {
     }
 
     if (test_dudect_ct_memcmp() != 0) {
+        ret = 1;
+    }
+
+    if (test_dudect_aes_block() != 0) {
+        ret = 1;
+    }
+
+    if (test_dudect_aes_gcm() != 0) {
+        ret = 1;
+    }
+
+    if (test_dudect_ghash() != 0) {
         ret = 1;
     }
 

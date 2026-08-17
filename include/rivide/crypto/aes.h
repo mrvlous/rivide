@@ -70,6 +70,13 @@ rivide_status_t rivide_aes256_key_expand(rivide_aes_key_t *ctx, const uint8_t *k
  */
 void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in, uint8_t *out);
 
+/**
+ * @brief Securely zeroize an expanded AES key context.
+ *
+ * @param[in,out] ctx Key context to cleanse.
+ */
+void rivide_aes_key_cleanse(rivide_aes_key_t *ctx);
+
 #ifdef __cplusplus
 }
 #endif
