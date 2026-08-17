@@ -8,6 +8,9 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 # Rivide: Post-Quantum Cryptography C99 Library
 
 [![Version](https://img.shields.io/badge/Version-v1.1.4-informational.svg)](CHANGELOG.md)
+[![npm version](https://img.shields.io/npm/v/rivide.svg?logo=npm&logoColor=white)](https://www.npmjs.com/package/rivide)
+[![Crates.io](https://img.shields.io/crates/v/rivide.svg?logo=rust&logoColor=white)](https://crates.io/crates/rivide)
+[![Documentation](https://docs.rs/rivide/badge.svg)](https://docs.rs/rivide)
 [![CI](https://github.com/mrvlous/rivide/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mrvlous/rivide/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/mrvlous/rivide/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/mrvlous/rivide/actions/workflows/codeql.yml)
 [![Linux](https://img.shields.io/badge/Linux-Ubuntu%20(GCC%20%7C%20Clang)-blue.svg?logo=ubuntu&logoColor=white)](https://github.com/mrvlous/rivide/actions/workflows/ci.yml)
@@ -15,8 +18,8 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 [![Windows](https://img.shields.io/badge/Windows-MSVC-0078D6.svg?logo=windows&logoColor=white)](https://github.com/mrvlous/rivide/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![C Standard](https://img.shields.io/badge/C-C99-green.svg)](docs/architecture/overview.md)
-[![Security](https://img.shields.io/badge/Security-Constant--Time-orange.svg)](docs/architecture/memory_random.md)
-[![Memory](https://img.shields.io/badge/Memory-0%20Malloc-purple.svg)](docs/architecture/overview.md)
+[![Security](https://img.shields.io/badge/Security-Constant--Time-orange.svg)](docs/security/constant_time.md)
+[![Memory](https://img.shields.io/badge/Memory-0%20Malloc-purple.svg)](docs/architecture/memory_model.md)
 
 **Rivide** is a high-performance, zero-dependency, constant-time C99 Post-Quantum Cryptography (PQC) library. It implements the official **NIST FIPS 203** (ML-KEM) and **NIST FIPS 204** (ML-DSA) standards, engineered specifically for embedded systems, network security protocols, operating system kernels, and security-critical applications.
 

@@ -7,7 +7,8 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 # Rivide: Post-Quantum Cryptography Rust Crate
 
-[![Crates.io](https://img.shields.io/crates/v/rivide.svg)](https://crates.io/crates/rivide)
+[![Crates.io](https://img.shields.io/crates/v/rivide.svg?logo=rust&logoColor=white)](https://crates.io/crates/rivide)
+[![Version](https://img.shields.io/badge/Version-v1.1.4-informational.svg)](CHANGELOG.md)
 [![Documentation](https://docs.rs/rivide/badge.svg)](https://docs.rs/rivide)
 [![CI](https://github.com/mrvlous/rivide/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mrvlous/rivide/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/mrvlous/rivide/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/mrvlous/rivide/actions/workflows/codeql.yml)
