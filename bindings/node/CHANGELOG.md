@@ -12,6 +12,15 @@ All notable changes to the **`rivide`** Node.js native package will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-08-17
+
+### Fixed
+
+- **AES-GCM In-Flight RUP Prevention**:
+    - Reordered authentication tag verification before CTR decryption in AES-GCM decryption routines, preventing in-flight unverified plaintext release.
+- **Node-API Memory Sanitization**:
+    - Guaranteed explicit `rivide_cleanse` memory zeroization of dynamic heap buffers prior to deallocation in AES-GCM and SHAKE routines.
+
 ## [1.1.3] - 2026-08-17
 
 ### Fixed

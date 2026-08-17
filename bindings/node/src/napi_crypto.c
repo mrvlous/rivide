@@ -99,6 +99,7 @@ static napi_value js_shake128(napi_env env, napi_callback_info info) {
 
     napi_value out_buf;
     napi_status st = napi_create_buffer_copy(env, out_len, out_data, NULL, &out_buf);
+    rivide_cleanse(out_data, out_len);
     free(out_data);
     if (st != napi_ok) {
         THROW_ERROR(env, "Failed to allocate return Buffer");
@@ -137,6 +138,7 @@ static napi_value js_shake256(napi_env env, napi_callback_info info) {
 
     napi_value out_buf;
     napi_status st = napi_create_buffer_copy(env, out_len, out_data, NULL, &out_buf);
+    rivide_cleanse(out_data, out_len);
     free(out_data);
     if (st != napi_ok) {
         THROW_ERROR(env, "Failed to allocate return Buffer");
@@ -212,8 +214,10 @@ static napi_value js_aes_gcm_encrypt_internal(napi_env env, napi_callback_info i
     rivide_cleanse(&key_schedule, sizeof(key_schedule));
 
     if (status != RIVIDE_SUCCESS) {
-        if (ct_data)
+        if (ct_data) {
+            rivide_cleanse(ct_data, pt_len);
             free(ct_data);
+        }
         THROW_ERROR(env, "AES-GCM encryption failed");
     }
 
@@ -225,8 +229,10 @@ static napi_value js_aes_gcm_encrypt_internal(napi_env env, napi_callback_info i
     NAPI_CHECK(env, napi_set_named_property(env, obj, "ciphertext", ct_buf));
     NAPI_CHECK(env, napi_set_named_property(env, obj, "tag", tag_buf));
 
-    if (ct_data)
+    if (ct_data) {
+        rivide_cleanse(ct_data, pt_len);
         free(ct_data);
+    }
     return obj;
 }
 
@@ -303,16 +309,20 @@ static napi_value js_aes_gcm_decrypt_internal(napi_env env, napi_callback_info i
     rivide_cleanse(&key_schedule, sizeof(key_schedule));
 
     if (status != RIVIDE_SUCCESS) {
-        if (pt_data)
+        if (pt_data) {
+            rivide_cleanse(pt_data, ct_len);
             free(pt_data);
+        }
         THROW_ERROR(env, "AES-GCM authentication verification failed (invalid ciphertext or tag)");
     }
 
     napi_value pt_buf;
     NAPI_CHECK(env, napi_create_buffer_copy(env, ct_len, pt_data ? pt_data : (const uint8_t *)"",
                                             NULL, &pt_buf));
-    if (pt_data)
+    if (pt_data) {
+        rivide_cleanse(pt_data, ct_len);
         free(pt_data);
+    }
     return pt_buf;
 }
 

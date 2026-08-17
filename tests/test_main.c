@@ -29,6 +29,7 @@ int g_tests_failed = 0;
 /* External test declarations from sub-modules. */
 extern int test_ml_kem_768_roundtrip(void);
 extern int test_ml_kem_768_invalid_ct(void);
+extern int test_ml_kem_768_invalid_sk_type_check(void);
 extern int test_ml_kem_1024_roundtrip(void);
 
 extern int test_ml_dsa_65_roundtrip(void);
@@ -71,6 +72,7 @@ int main(void) {
     printf("ML-KEM Tests:\n");
     RUN_TEST(test_ml_kem_768_roundtrip);
     RUN_TEST(test_ml_kem_768_invalid_ct);
+    RUN_TEST(test_ml_kem_768_invalid_sk_type_check);
     RUN_TEST(test_ml_kem_1024_roundtrip);
 
     printf("\nML-DSA Tests:\n");

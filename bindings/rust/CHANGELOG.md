@@ -12,6 +12,14 @@ All notable changes to the **`rivide`** Rust crate will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-08-17
+
+### Fixed
+- **AES Key Schedule Lifecycle & Zeroization**:
+  - Added explicit `rivide_aes_key_cleanse` round key zeroization across all `AesGcm` encryption and decryption methods.
+- **AES-GCM In-Flight RUP Prevention**:
+  - Authentication tag is verified prior to CTR plaintext release, eliminating in-flight unverified plaintext.
+
 ## [1.1.3] - 2026-08-17
 
 ### Fixed

@@ -13,7 +13,7 @@ This document describes the design, directory structure, memory safety guarantee
 
 ```
 bindings/rust/
-├── Cargo.toml           # Standard Rust crate manifest for 'rivide' v1.1.3
+├── Cargo.toml           # Standard Rust crate manifest for 'rivide' v1.1.4
 ├── build.rs             # C99 source compiler using cc crate
 ├── README.md            # Dedicated crates.io documentation & quick start
 ├── CHANGELOG.md         # Dedicated release changelog for Rust crate

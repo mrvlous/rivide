@@ -340,6 +340,16 @@ static rivide_status_t ml_kem_decaps(uint8_t *ss, const uint8_t *ct, const uint8
         return RIVIDE_ERR_NULL_PTR;
     }
 
+    /* NIST FIPS 203 Section 7.3: Type check on decapsulation key (coeffs of s_hat < 3329). */
+    {
+        polyvec_t s_hat_check;
+        if (polyvec_frombytes_check(&s_hat_check, sk, k) != 0) {
+            rivide_cleanse(&s_hat_check, sizeof(s_hat_check));
+            return RIVIDE_ERR_INVALID_PARAM;
+        }
+        rivide_cleanse(&s_hat_check, sizeof(s_hat_check));
+    }
+
     ml_kem_decrypt_internal(m_prime, ct, sk, k, du, dv);
 
     for (i = 0; i < 32; i++) {

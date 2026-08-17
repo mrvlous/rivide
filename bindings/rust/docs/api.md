@@ -15,7 +15,7 @@ Add `rivide` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rivide = "1.1.3"
+rivide = "1.1.4"
 ```
 
 Or via `cargo add`:
@@ -129,4 +129,4 @@ Verifies signature validity in constant time. Returns `true` if authentic, `fals
 - `randombytes_into(buffer: &mut [u8]) -> Result<(), RivideError>`: Fills an existing buffer with OS CSPRNG entropy.
 - `ct_memcmp(a: &[u8], b: &[u8]) -> i32`: Compares two byte slices in constant time. Returns `0` if equal.
 - `get_cpu_features() -> CpuFeatures`: Returns hardware SIMD acceleration capability bitmask.
-- `version() -> &'static str`: Returns library version string (`"1.1.0"`).
+- `version() -> &'static str`: Returns library version string (`"1.1.4"`).

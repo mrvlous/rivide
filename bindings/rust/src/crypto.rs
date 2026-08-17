@@ -88,7 +88,7 @@ impl AesGcm {
         let aad_len = aad.map(|a| a.len()).unwrap_or(0);
 
         let status = unsafe {
-            rivide_aes_gcm_encrypt(
+            let res = rivide_aes_gcm_encrypt(
                 &key_ctx,
                 iv.as_ptr(),
                 aad_ptr,
@@ -97,7 +97,9 @@ impl AesGcm {
                 plaintext.len(),
                 ciphertext.as_mut_ptr(),
                 tag.as_mut_ptr(),
-            )
+            );
+            rivide_aes_key_cleanse(&mut key_ctx);
+            res
         };
         RivideError::from_status(status).map(|_| AesGcmResult { ciphertext, tag })
     }
@@ -120,7 +122,7 @@ impl AesGcm {
         let aad_len = aad.map(|a| a.len()).unwrap_or(0);
 
         let status = unsafe {
-            rivide_aes_gcm_decrypt(
+            let res = rivide_aes_gcm_decrypt(
                 &key_ctx,
                 iv.as_ptr(),
                 aad_ptr,
@@ -129,7 +131,9 @@ impl AesGcm {
                 ciphertext.len(),
                 tag.as_ptr(),
                 plaintext.as_mut_ptr(),
-            )
+            );
+            rivide_aes_key_cleanse(&mut key_ctx);
+            res
         };
         RivideError::from_status(status).map(|_| plaintext)
     }
@@ -152,7 +156,7 @@ impl AesGcm {
         let aad_len = aad.map(|a| a.len()).unwrap_or(0);
 
         let status = unsafe {
-            rivide_aes_gcm_encrypt(
+            let res = rivide_aes_gcm_encrypt(
                 &key_ctx,
                 iv.as_ptr(),
                 aad_ptr,
@@ -161,7 +165,9 @@ impl AesGcm {
                 plaintext.len(),
                 ciphertext.as_mut_ptr(),
                 tag.as_mut_ptr(),
-            )
+            );
+            rivide_aes_key_cleanse(&mut key_ctx);
+            res
         };
         RivideError::from_status(status).map(|_| AesGcmResult { ciphertext, tag })
     }
@@ -184,7 +190,7 @@ impl AesGcm {
         let aad_len = aad.map(|a| a.len()).unwrap_or(0);
 
         let status = unsafe {
-            rivide_aes_gcm_decrypt(
+            let res = rivide_aes_gcm_decrypt(
                 &key_ctx,
                 iv.as_ptr(),
                 aad_ptr,
@@ -193,7 +199,9 @@ impl AesGcm {
                 ciphertext.len(),
                 tag.as_ptr(),
                 plaintext.as_mut_ptr(),
-            )
+            );
+            rivide_aes_key_cleanse(&mut key_ctx);
+            res
         };
         RivideError::from_status(status).map(|_| plaintext)
     }

@@ -167,4 +167,4 @@ Returns runtime CPU SIMD capability flags (`hasAvx2`, `hasAesni`, `hasNeon`, `ha
 
 ### `utils.version(): string`
 
-Returns library version string (e.g. `"1.1.0"`).
+Returns library version string (e.g. `"1.1.4"`).

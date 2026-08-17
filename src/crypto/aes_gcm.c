@@ -298,7 +298,20 @@ rivide_status_t rivide_aes_gcm_decrypt(const rivide_aes_key_t *key, const uint8_
         computed_tag[i] = (uint8_t)(ghash_tag[i] ^ enc_block[i]);
     }
 
-    /* 7. CTR decryption. */
+    /* 7. Constant-time tag verification BEFORE releasing plaintext (NIST SP 800-38D / RUP
+     * prevention). */
+    if (rivide_ct_memcmp(computed_tag, tag, 16) != 0) {
+        rivide_cleanse(h, sizeof(h));
+        rivide_cleanse(j0, sizeof(j0));
+        rivide_cleanse(counter, sizeof(counter));
+        rivide_cleanse(enc_block, sizeof(enc_block));
+        rivide_cleanse(ghash_tag, sizeof(ghash_tag));
+        rivide_cleanse(len_block, sizeof(len_block));
+        rivide_cleanse(computed_tag, sizeof(computed_tag));
+        return RIVIDE_ERR_VERIFICATION_FAILED;
+    }
+
+    /* 8. CTR decryption (only reached after authentication tag is fully verified). */
     for (i = 0; i < 16; i++) {
         counter[i] = j0[i];
     }
@@ -323,23 +336,13 @@ rivide_status_t rivide_aes_gcm_decrypt(const rivide_aes_key_t *key, const uint8_
         }
     }
 
-    /* 8. Cleanse all sensitive intermediate stack state. */
+    /* 9. Cleanse all sensitive intermediate stack state. */
     rivide_cleanse(h, sizeof(h));
     rivide_cleanse(j0, sizeof(j0));
     rivide_cleanse(counter, sizeof(counter));
     rivide_cleanse(enc_block, sizeof(enc_block));
     rivide_cleanse(ghash_tag, sizeof(ghash_tag));
     rivide_cleanse(len_block, sizeof(len_block));
-
-    /* 9. Constant-time tag comparison and conditional failure zeroization. */
-    if (rivide_ct_memcmp(computed_tag, tag, 16) != 0) {
-        if (pt && ct_len > 0) {
-            rivide_cleanse(pt, ct_len);
-        }
-        rivide_cleanse(computed_tag, sizeof(computed_tag));
-        return RIVIDE_ERR_VERIFICATION_FAILED;
-    }
-
     rivide_cleanse(computed_tag, sizeof(computed_tag));
 
     return RIVIDE_SUCCESS;

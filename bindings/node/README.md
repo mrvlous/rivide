@@ -7,7 +7,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 # Rivide: Post-Quantum Cryptography Node.js Bindings
 
-[![npm version](https://img.shields.io/badge/npm-v1.1.3-informational.svg)](CHANGELOG.md)
+[![npm version](https://img.shields.io/badge/npm-v1.1.4-informational.svg)](CHANGELOG.md)
 [![CI](https://github.com/mrvlous/rivide/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mrvlous/rivide/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/mrvlous/rivide/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/mrvlous/rivide/actions/workflows/codeql.yml)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D16.0.0-brightgreen.svg?logo=node.js&logoColor=white)](https://nodejs.org)

@@ -363,10 +363,12 @@ static int test_dudect_aes_gcm(void) {
     rivide_aes_key_t key;
     uint8_t raw_key[32];
     uint8_t iv[12];
-    uint8_t pt[32];
-    uint8_t ct[32];
-    uint8_t tag_valid[16];
-    uint8_t tag_invalid[16];
+    uint8_t pt0[32];
+    uint8_t pt1[32];
+    uint8_t ct0[32];
+    uint8_t ct1[32];
+    uint8_t tag0[16];
+    uint8_t tag1[16];
     uint8_t out[32];
     dudect_stats_t stats_class0;
     dudect_stats_t stats_class1;
@@ -379,22 +381,23 @@ static int test_dudect_aes_gcm(void) {
 
     rivide_randombytes(raw_key, sizeof(raw_key));
     rivide_randombytes(iv, sizeof(iv));
-    rivide_randombytes(pt, sizeof(pt));
+    memset(pt0, 0xAA, sizeof(pt0));
+    rivide_randombytes(pt1, sizeof(pt1));
 
     rivide_aes256_key_expand(&key, raw_key);
-    rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, sizeof(pt), ct, tag_valid);
-    memcpy(tag_invalid, tag_valid, sizeof(tag_invalid));
-    tag_invalid[15] ^= 0x01;
+    rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt0, sizeof(pt0), ct0, tag0);
+    rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt1, sizeof(pt1), ct1, tag1);
 
     /* Warm up */
     for (i = 0; i < 100; i++) {
-        rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag_valid, out);
-        rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag_invalid, out);
+        rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct0, sizeof(ct0), tag0, out);
+        rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct1, sizeof(ct1), tag1, out);
     }
 
     /* Statistical sampling loop */
     for (i = 0; i < DUDECT_SAMPLE_COUNT; i++) {
         uint8_t coin;
+        const uint8_t *ct_target;
         const uint8_t *tag_target;
         uint64_t t0;
         uint64_t t1;
@@ -403,11 +406,12 @@ static int test_dudect_aes_gcm(void) {
 
         rivide_randombytes(&coin, 1);
         coin &= 1;
-        tag_target = (coin == 0) ? tag_valid : tag_invalid;
+        ct_target = (coin == 0) ? ct0 : ct1;
+        tag_target = (coin == 0) ? tag0 : tag1;
 
         t0 = get_time_ticks();
         for (k = 0; k < 8; k++) {
-            rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag_target, out);
+            rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct_target, sizeof(ct0), tag_target, out);
         }
         t1 = get_time_ticks();
         diff = (double)(t1 - t0) / 8.0;

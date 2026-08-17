@@ -149,6 +149,7 @@ extern "C" {
     // AES-GCM
     pub fn rivide_aes128_key_expand(ctx: *mut rivide_aes_key_t, key: *const u8) -> rivide_status_t;
     pub fn rivide_aes256_key_expand(ctx: *mut rivide_aes_key_t, key: *const u8) -> rivide_status_t;
+    pub fn rivide_aes_key_cleanse(ctx: *mut rivide_aes_key_t);
 
     pub fn rivide_aes_gcm_encrypt(
         key: *const rivide_aes_key_t,

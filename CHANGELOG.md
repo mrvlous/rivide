@@ -12,6 +12,18 @@ All notable changes to the **Rivide** Post-Quantum Cryptography library will be 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-08-17
+
+### Fixed
+- **AES-GCM In-Flight RUP Prevention (SEC-01)**:
+  - Reordered constant-time authentication tag verification prior to CTR mode decryption in `rivide_aes_gcm_decrypt`, preventing in-flight release of unverified plaintext (RUP) and preserving caller buffers in case of tag mismatch.
+- **NIST FIPS 203 Section 7.3 Decapsulation Type Check (SEC-02)**:
+  - Enforced strict validation on secret key polynomial coefficients (`s_hat < 3329`) in `ml_kem_decaps`, returning `RIVIDE_ERR_INVALID_PARAM` on corrupted or non-canonical secret keys.
+- **Rust Key Lifecycle & RAII Cleansing (SEC-03)**:
+  - Added explicit `rivide_aes_key_cleanse` zeroization across all `AesGcm` encryption and decryption methods.
+- **Node-API Memory Sanitization (SEC-05)**:
+  - Enforced `rivide_cleanse` zeroization of dynamic heap buffers before deallocation in AES-GCM and SHAKE routines.
+
 ## [1.1.3] - 2026-08-17
 
 ### Fixed

@@ -76,3 +76,23 @@ int test_ml_kem_1024_roundtrip(void) {
 
     return 0;
 }
+
+int test_ml_kem_768_invalid_sk_type_check(void) {
+    uint8_t pk[RIVIDE_ML_KEM_768_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_KEM_768_SK_BYTES];
+    uint8_t ct[RIVIDE_ML_KEM_768_CT_BYTES];
+    uint8_t ss_encap[RIVIDE_ML_KEM_SS_BYTES];
+    uint8_t ss_decap[RIVIDE_ML_KEM_SS_BYTES];
+
+    ASSERT_OK(rivide_ml_kem_768_keygen(pk, sk));
+    ASSERT_OK(rivide_ml_kem_768_encaps(ct, ss_encap, pk));
+
+    /* Inject non-canonical coefficient >= 3329 (0x0FFF = 4095) into s portion of sk. */
+    sk[0] = 0xFF;
+    sk[1] = 0x0F;
+
+    /* Decapsulation must reject corrupted sk with RIVIDE_ERR_INVALID_PARAM. */
+    ASSERT_EQ(rivide_ml_kem_768_decaps(ss_decap, ct, sk), RIVIDE_ERR_INVALID_PARAM);
+
+    return 0;
+}
