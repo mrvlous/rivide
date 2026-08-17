@@ -16,10 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **AES-GCM In-Flight RUP Prevention**:
-    - Reordered authentication tag verification before CTR decryption in AES-GCM decryption routines, preventing in-flight unverified plaintext release.
-- **Node-API Memory Sanitization**:
-    - Guaranteed explicit `rivide_cleanse` memory zeroization of dynamic heap buffers prior to deallocation in AES-GCM and SHAKE routines.
+- **AES-GCM In-Flight Release of Unverified Plaintext (RUP) Prevention**:
+    - Reordered authentication tag verification before CTR decryption in Node.js AES-GCM native routines (`js_aes_gcm_decrypt_internal`), ensuring caller buffers are never populated with unverified plaintext in-flight.
+    - Preserves exact in-place buffer operations without premature buffer destruction on authentication failure.
+- **Node-API Memory Hygiene & Heap Buffer Sanitization**:
+    - Guaranteed explicit `rivide_cleanse` volatile memory zeroization on all temporary heap-allocated working buffers before calling `free()` in `napi_crypto.c` (across AES-GCM encryption/decryption and SHAKE-128/256 routines).
+- **NIST FIPS 203 Section 7.3 Decapsulation Type Check**:
+    - Bound ML-KEM secret key decoding to validate canonical polynomial coefficients ($\hat{s} < 3329$), throwing structured `ERR_INVALID_PARAM` errors on malformed secret keys.
 
 ## [1.1.3] - 2026-08-17
 

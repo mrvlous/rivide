@@ -15,10 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.4] - 2026-08-17
 
 ### Fixed
-- **AES Key Schedule Lifecycle & Zeroization**:
-  - Added explicit `rivide_aes_key_cleanse` round key zeroization across all `AesGcm` encryption and decryption methods.
-- **AES-GCM In-Flight RUP Prevention**:
-  - Authentication tag is verified prior to CTR plaintext release, eliminating in-flight unverified plaintext.
+- **AES-GCM In-Flight Release of Unverified Plaintext (RUP) Prevention**:
+  - Reordered authentication tag verification prior to CTR mode keystream generation and plaintext release in `AesGcm` decryption methods, preventing in-flight unverified plaintext leaks.
+- **AES Key Material Lifecycle & RAII Zeroization**:
+  - Bound explicit `rivide_aes_key_cleanse` round key zeroization across `AesGcm::encrypt_128`, `AesGcm::decrypt_128`, `AesGcm::encrypt_256`, and `AesGcm::decrypt_256` routines to securely wipe key schedules upon function exit.
+  - Exported `rivide_aes_key_cleanse` FFI binding symbol in `sys.rs`.
+- **NIST FIPS 203 Section 7.3 Decapsulation Type Check**:
+  - Enforced canonical coefficient range verification ($\hat{s} < 3329$) during ML-KEM decapsulation, returning `RivideError::InvalidParameter` on corrupted secret keys.
 
 ## [1.1.3] - 2026-08-17
 

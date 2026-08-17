@@ -15,14 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.4] - 2026-08-17
 
 ### Fixed
-- **AES-GCM In-Flight RUP Prevention (SEC-01)**:
-  - Reordered constant-time authentication tag verification prior to CTR mode decryption in `rivide_aes_gcm_decrypt`, preventing in-flight release of unverified plaintext (RUP) and preserving caller buffers in case of tag mismatch.
-- **NIST FIPS 203 Section 7.3 Decapsulation Type Check (SEC-02)**:
-  - Enforced strict validation on secret key polynomial coefficients (`s_hat < 3329`) in `ml_kem_decaps`, returning `RIVIDE_ERR_INVALID_PARAM` on corrupted or non-canonical secret keys.
-- **Rust Key Lifecycle & RAII Cleansing (SEC-03)**:
-  - Added explicit `rivide_aes_key_cleanse` zeroization across all `AesGcm` encryption and decryption methods.
-- **Node-API Memory Sanitization (SEC-05)**:
-  - Enforced `rivide_cleanse` zeroization of dynamic heap buffers before deallocation in AES-GCM and SHAKE routines.
+- **AES-GCM In-Flight Release of Unverified Plaintext (RUP) Prevention**:
+  - Reordered authentication verification before CTR decryption in `src/crypto/aes_gcm.c` (`rivide_aes_gcm_decrypt`). GHASH authentication tag is evaluated and verified in constant time prior to executing CTR keystream generation, guaranteeing that unverified plaintext is never released to the caller's output buffer in-flight.
+  - Preserves in-place ciphertext buffers (`pt == ct`) upon authentication failure without destructive premature zeroization, fully complying with NIST SP 800-38D Section 5.2.2 and CAESAR AEAD security guidelines.
+- **NIST FIPS 203 Section 7.3 ML-KEM Decapsulation Input Validation**:
+  - Added strict canonical coefficient range checks on secret key polynomials (`s_hat < 3329`) in `src/pqc/ml_kem/ml_kem.c` (`ml_kem_decaps`) via `polyvec_frombytes_check`. Rejects malformed, corrupted, or adversary-manipulated secret key inputs with `RIVIDE_ERR_INVALID_PARAM` before executing inverse NTT or matrix polynomial multiplications.
+- **Rust Native Bindings Key Material Lifecycle & RAII Cleansing**:
+  - Integrated explicit `rivide_aes_key_cleanse` round key zeroization across all AES-128-GCM and AES-256-GCM authenticated encryption and decryption routines in `bindings/rust/src/crypto.rs`.
+  - Exported `rivide_aes_key_cleanse` raw FFI symbol in `bindings/rust/src/sys.rs` for explicit key lifecycle management.
+- **Node-API Memory Hygiene & Heap Buffer Sanitization**:
+  - Enforced mandatory `rivide_cleanse` memory wiping prior to releasing temporary heap-allocated buffers (`free()`) in `bindings/node/src/napi_crypto.c` across AES-GCM encryption/decryption and SHAKE-128/256 extendable-output routines.
+  - Prevents heap residue exposure and memory remnants in Node.js server runtimes.
+
+### Added
+- **NIST FIPS 203 Decapsulation Type Check Unit Tests**:
+  - Added `test_ml_kem_768_invalid_sk_type_check` in `tests/pqc/test_ml_kem.c` and registered in `tests/test_main.c`, asserting rejection of tampered secret keys with non-canonical coefficients.
+- **Pre-Generated Dudect Statistical Sampling Vectors**:
+  - Refined AES-256-GCM AEAD decryption Dudect statistical timing harnesses in `tests/timing/test_dudect_kem.c` with pre-generated fixed vs random valid ciphertext vector pairs to ensure Welch's t-test statistical convergence (`|t| < 4.5`).
 
 ## [1.1.3] - 2026-08-17
 
