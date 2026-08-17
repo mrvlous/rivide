@@ -257,7 +257,7 @@ install: build ## Install public headers and libraries to system/DESTDIR
 
 clean: ## Remove build directories and generated compile_commands.json
 	$(Q)$(LOG_INFO) "Cleaning build artifacts..."
-	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz compile_commands.json bindings/node/build bindings/rust/target
+	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz compile_commands.json bindings/node/build bindings/node/deps bindings/rust/target bindings/rust/c_src
 	$(Q)$(LOG_DONE) "Clean finished."
 
 format: ## Format all C, Rust, and Node.js files using clang-format, rustfmt, and prettier
