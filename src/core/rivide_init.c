@@ -88,6 +88,24 @@ static inline int rivide_fallback_cas_int(atomic_init_flag_t *dst, int exp, int 
 #define RIVIDE_ATOMIC_STORE_UINT32(dst, val) ((dst) = (val))
 #endif
 
+#if defined(RIVIDE_ARCH_X86_64) || defined(RIVIDE_ARCH_X86)
+#if defined(__GNUC__) || defined(__clang__)
+#define RIVIDE_CPU_PAUSE() __builtin_ia32_pause()
+#elif defined(_MSC_VER)
+#define RIVIDE_CPU_PAUSE() _mm_pause()
+#else
+#define RIVIDE_CPU_PAUSE() ((void)0)
+#endif
+#elif defined(RIVIDE_ARCH_ARM64) || defined(__ARM_NEON)
+#if defined(__GNUC__) || defined(__clang__)
+#define RIVIDE_CPU_PAUSE() __asm__ volatile("yield" ::: "memory")
+#else
+#define RIVIDE_CPU_PAUSE() ((void)0)
+#endif
+#else
+#define RIVIDE_CPU_PAUSE() ((void)0)
+#endif
+
 /** @brief Tracks initialization state: 0 = uninit, 1 = initializing, 2 = initialized. */
 static atomic_init_flag_t g_rivide_init_state = 0;
 
@@ -135,18 +153,26 @@ static void rivide_cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *
  */
 static uint32_t rivide_detect_x86_features(void) {
     uint32_t eax, ebx, ecx, edx;
+    uint32_t max_leaf = 0;
     uint32_t feats = 0;
 
-    /* Leaf 1: ECX bit 25 = AES-NI */
-    rivide_cpuid(1, &eax, &ebx, &ecx, &edx);
-    if (ecx & (1u << 25)) {
-        feats |= 0x01u;
+    /* Leaf 0: EAX = maximum basic CPUID leaf supported */
+    rivide_cpuid(0, &max_leaf, &ebx, &ecx, &edx);
+
+    if (max_leaf >= 1) {
+        /* Leaf 1: ECX bit 25 = AES-NI */
+        rivide_cpuid(1, &eax, &ebx, &ecx, &edx);
+        if (ecx & (1u << 25)) {
+            feats |= 0x01u;
+        }
     }
 
-    /* Leaf 7, sub-leaf 0: EBX bit 5 = AVX2 */
-    rivide_cpuid(7, &eax, &ebx, &ecx, &edx);
-    if (ebx & (1u << 5)) {
-        feats |= 0x04u;
+    if (max_leaf >= 7) {
+        /* Leaf 7, sub-leaf 0: EBX bit 5 = AVX2 */
+        rivide_cpuid(7, &eax, &ebx, &ecx, &edx);
+        if (ebx & (1u << 5)) {
+            feats |= 0x04u;
+        }
     }
 
     return feats;
@@ -210,6 +236,7 @@ rivide_status_t rivide_init(void) {
 
     while ((int)RIVIDE_ATOMIC_LOAD_INT(g_rivide_init_state) != 2) {
         /* Spin until initialization is marked complete by the winning thread. */
+        RIVIDE_CPU_PAUSE();
     }
 
     return RIVIDE_SUCCESS;

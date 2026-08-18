@@ -72,3 +72,11 @@ test('ML-DSA: Strict siglen and Buffer Validation', () => {
     const invalidSig = Buffer.alloc(100);
     assert.strictEqual(mlDsa65.verify(invalidSig, message, signer.publicKey), false);
 });
+
+test('ML-DSA-65: Zero-length message sign and verify roundtrip', () => {
+    const signer = mlDsa65.keypair();
+    const emptyMessage = Buffer.alloc(0);
+    const signature = mlDsa65.sign(emptyMessage, signer.secretKey);
+    assert.strictEqual(signature.length, constants.ML_DSA_65_SIG_BYTES);
+    assert.strictEqual(mlDsa65.verify(signature, emptyMessage, signer.publicKey), true);
+});

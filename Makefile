@@ -22,7 +22,7 @@ CMAKE_DIR     := .
 
 # Project metadata and versioning
 PROJECT_NAME  := rivide
-VERSION       := 1.1.4
+VERSION       := 1.1.5
 BUILD_TYPE    ?= Release
 
 # Configurable build options

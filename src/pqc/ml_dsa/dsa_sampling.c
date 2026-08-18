@@ -225,6 +225,9 @@ void dsa_poly_challenge(dsa_poly_t *c, const uint8_t *seed, size_t len, unsigned
         c->coeffs[j] = (int32_t)(1 - 2 * (int32_t)(signs & 1));
         signs >>= 1;
     }
+
+    rivide_cleanse(buf, sizeof(buf));
+    rivide_cleanse(&state, sizeof(state));
 }
 
 /**

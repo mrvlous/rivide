@@ -12,6 +12,15 @@ All notable changes to the **`rivide`** Node.js native package will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2026-08-18
+
+### Fixed
+
+- **Strict Zero-Malloc Enforcement Across Native Addon**:
+    - Replaced all intermediate C heap allocations (`malloc()` and `free()`) in `src/napi_crypto.c` and `src/napi_utils.c` with direct `napi_create_buffer()` allocations. Node.js runtime buffers for SHAKE-128/256, AES-GCM ciphertext/plaintext/tags, and OS random bytes are written directly into V8 Buffer memory with 0 intermediate copies and 0 C heap allocations.
+- **NIST FIPS 204 Zero-Length Message Support**:
+    - Enabled signing and verification of empty (0-byte) Buffer messages in `mlDsa65` and `mlDsa87`.
+
 ## [1.1.4] - 2026-08-17
 
 ### Fixed

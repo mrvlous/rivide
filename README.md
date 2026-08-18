@@ -7,7 +7,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 # Rivide: Post-Quantum Cryptography C99 Library
 
-[![Version](https://img.shields.io/badge/Version-v1.1.4-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-v1.1.5-informational.svg)](CHANGELOG.md)
 [![npm version](https://img.shields.io/npm/v/rivide.svg?logo=npm&logoColor=white)](https://www.npmjs.com/package/rivide)
 [![Crates.io](https://img.shields.io/crates/v/rivide.svg?logo=rust&logoColor=white)](https://crates.io/crates/rivide)
 [![Documentation](https://docs.rs/rivide/badge.svg)](https://docs.rs/rivide)
@@ -34,7 +34,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 - **Secure Memory Cleansing**: Prevents compiler dead-store elimination via volatile barriers (`rivide_cleanse`) to guarantee zeroization of sensitive private keys in RAM.
 - **Multi-Platform OS CSPRNG Engine**: Queries kernel entropy sources natively (`getrandom` on Linux, `getentropy` on macOS/BSD, `BCryptGenRandom` on Windows).
 - **Built-in Symmetric Primitives**: Autonomous implementations of **Keccak-f[1600]** (SHA3-256/512, SHAKE-128/256) and **AES-128/256-GCM** AEAD.
-- **Node.js Native Bindings**: Zero-dependency, high-performance Node-API (N-API) bindings and npm package ([`rivide`](bindings/node/README.md)) with full TypeScript definitions.
+- **Cross-Language Ecosystem**: First-class native bindings and packages for **Node.js / TypeScript** ([`rivide`](bindings/node/README.md)) and **Rust** ([`rivide`](bindings/rust/README.md)).
 
 ## Table of Contents
 
@@ -307,8 +307,8 @@ The master [`Makefile`](Makefile) provides simple automation targets:
 | `make rust-bench` | Execute high-precision Rust performance benchmark suite |
 | `make rust-pack` | Package and verify Rust crate tarball for crates.io |
 | `make rust-publish` | Publish Rust crate to crates.io with bundled C source |
-| `make format` | Auto-format all C/H files using `.clang-format` |
-| `make check-format` | Verify code formatting against `.clang-format` rules |
+| `make format` | Automatically format all C, Rust, and Node.js sources |
+| `make check-format` | Verify formatting compliance across all languages without modifying files |
 | `make lint` | Run static code analysis using `clang-tidy` |
 | `make check` | Check system environment for required dependencies |
 | `make clean` | Delete build outputs and temporary artifacts |

@@ -28,7 +28,7 @@ const char *rivide_version_string(void);
 uint32_t rivide_version_number(void);
 ```
 
-- `rivide_version_string()`: Returns static semantic version string (e.g. `"1.1.4"`).
+- `rivide_version_string()`: Returns static semantic version string (e.g. `"1.1.5"`).
 - `rivide_version_number()`: Returns packed 32-bit integer version (`0x010104`).
 
 ## 3. Status Error Codes

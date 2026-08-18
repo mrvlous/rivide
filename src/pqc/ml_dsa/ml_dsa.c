@@ -156,7 +156,7 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
     size_t sig_offset;
     size_t z_bytes_per_poly;
 
-    if (!sig || !siglen || !msg || !sk) {
+    if (!sig || !siglen || !sk || (msglen > 0 && !msg)) {
         return RIVIDE_ERR_NULL_PTR;
     }
 
@@ -194,7 +194,9 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
         rivide_shake256_init(&hstate);
         rivide_shake_absorb(&hstate, tr, 64);
         rivide_shake_absorb(&hstate, pre, 2);
-        rivide_shake_absorb(&hstate, msg, msglen);
+        if (msglen > 0 && msg) {
+            rivide_shake_absorb(&hstate, msg, msglen);
+        }
         rivide_shake_squeeze(&hstate, mu, 64);
     }
 
@@ -215,11 +217,13 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
 
     /* Rejection sampling loop. */
     int loop_ctr = 0;
+    rivide_status_t status = RIVIDE_SUCCESS;
     do {
         reject = 0;
         loop_ctr++;
         if (loop_ctr > 10000) {
-            return RIVIDE_ERR_INTERNAL;
+            status = RIVIDE_ERR_INTERNAL;
+            goto cleanup;
         }
         /* Sample masking vector y from ExpandMask(rho', nonce). */
         for (i = 0; i < l; i++) {
@@ -399,6 +403,7 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
         *siglen = sig_offset;
     }
 
+cleanup:
     /* Cleanse sensitive data. */
     rivide_cleanse(&s1, sizeof(s1));
     rivide_cleanse(&s2, sizeof(s2));
@@ -412,7 +417,7 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
     rivide_cleanse(&y, sizeof(y));
     rivide_cleanse(mu, sizeof(mu));
 
-    return RIVIDE_SUCCESS;
+    return status;
 }
 
 /**
@@ -432,7 +437,7 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
     int i;
     int32_t beta;
 
-    if (!sig || !msg || !pk) {
+    if (!sig || !pk || (msglen > 0 && !msg)) {
         return RIVIDE_ERR_NULL_PTR;
     }
 
@@ -465,7 +470,9 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
         rivide_shake256_init(&hstate);
         rivide_shake_absorb(&hstate, tr, 64);
         rivide_shake_absorb(&hstate, pre, 2);
-        rivide_shake_absorb(&hstate, msg, msglen);
+        if (msglen > 0 && msg) {
+            rivide_shake_absorb(&hstate, msg, msglen);
+        }
         rivide_shake_squeeze(&hstate, mu, 64);
     }
 

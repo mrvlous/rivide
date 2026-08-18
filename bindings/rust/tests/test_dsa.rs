@@ -63,3 +63,15 @@ fn test_ml_dsa_87_roundtrip() {
     let is_valid = MlDsa87::verify(&signature, message, &signer.public_key);
     assert!(is_valid);
 }
+
+#[test]
+fn test_ml_dsa_65_empty_message() {
+    let signer = MlDsa65::keypair().expect("ML-DSA-65 KeyGen failed");
+    let empty_message = b"";
+    let signature =
+        MlDsa65::sign(empty_message, &signer.secret_key).expect("Signing empty message failed");
+    assert_eq!(signature.as_bytes().len(), 3309);
+
+    let is_valid = MlDsa65::verify(&signature, empty_message, &signer.public_key);
+    assert!(is_valid);
+}

@@ -61,25 +61,16 @@ static napi_value js_randombytes(napi_env env, napi_callback_info info) {
     }
 
     size_t len = (size_t)len_val;
+    napi_value out_buf;
     uint8_t *buf = NULL;
-    if (len > 0) {
-        buf = (uint8_t *)malloc(len);
-        if (!buf) {
-            THROW_ERROR(env, "Memory allocation failed");
-        }
-        if (rivide_randombytes(buf, len) != RIVIDE_SUCCESS) {
-            free(buf);
-            THROW_ERROR(env, "OS entropy generation failed");
-        }
+    if (napi_create_buffer(env, len, (void **)&buf, &out_buf) != napi_ok) {
+        THROW_ERROR(env, "Failed to create return Buffer");
     }
 
-    napi_value out_buf;
-    napi_status st =
-        napi_create_buffer_copy(env, len, buf ? buf : (const uint8_t *)"", NULL, &out_buf);
-    if (buf)
-        free(buf);
-    if (st != napi_ok) {
-        THROW_ERROR(env, "Failed to create return Buffer");
+    if (len > 0) {
+        if (rivide_randombytes(buf, len) != RIVIDE_SUCCESS) {
+            THROW_ERROR(env, "OS entropy generation failed");
+        }
     }
     return out_buf;
 }

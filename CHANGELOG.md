@@ -12,6 +12,26 @@ All notable changes to the **Rivide** Post-Quantum Cryptography library will be 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2026-08-18
+
+### Fixed
+- **ML-DSA Stack Key Material Zeroization on Rejection Loop Timeout**:
+  - Fixed early-exit bug in `src/pqc/ml_dsa/ml_dsa.c` (`ml_dsa_sign_internal`) where exceeding the rejection loop bound (`loop_ctr > 10000`) skipped `rivide_cleanse` zeroization of expanded secret polynomial vectors (`s1`, `s2`, `t0`), signing key `K`, private randomness `rho_prime`, masking vector `y`, and message digest `mu` on the stack.
+- **ML-DSA NIST FIPS 204 Zero-Length Message Support**:
+  - Updated pointer validation in `src/pqc/ml_dsa/ml_dsa.c` (`ml_dsa_sign_internal` and `ml_dsa_verify_internal`) to allow empty messages (`msg == NULL` when `msglen == 0`), fully complying with NIST FIPS 204 Section 5.3 arbitrary message length specifications ($\ge 0$ bytes).
+- **Node-API Native Addon Zero-Malloc Enforcement**:
+  - Eliminated intermediate dynamic memory allocations (`malloc()` and `free()`) in `bindings/node/src/napi_crypto.c` and `bindings/node/src/napi_utils.c`. Node.js runtime buffers for SHAKE-128/256, AES-GCM ciphertext/plaintext/tags, and OS entropy are now allocated directly in V8 memory via `napi_create_buffer`, satisfying the strict Zero-Malloc constraint across all language bindings.
+- **Sponge State Stack Cleansing in ML-DSA Challenge Generation**:
+  - Added explicit zeroization of temporary sponge state context and buffer in `src/pqc/ml_dsa/dsa_sampling.c` (`dsa_poly_challenge`) before returning.
+- **x86 CPUID Max Leaf Validation**:
+  - Probed CPUID basic leaf 0 in `src/core/rivide_init.c` (`rivide_detect_x86_features`) to validate processor maximum leaf support prior to querying leaf 1 (AES-NI) and leaf 7 (AVX2), preventing undefined reads on legacy hypervisors.
+- **CPU Pipeline Optimization in Multi-Threaded Initialization Spinloop**:
+  - Added architecture-specific CPU pause instructions (`__builtin_ia32_pause()` on x86, `yield` on ARM) to reduce memory bus contention in `src/core/rivide_init.c` during concurrent library initialization.
+
+### Added
+- **Multi-Language Zero-Length Message Unit Tests**:
+  - Added empty message signing and verification test cases in C (`tests/pqc/test_ml_dsa.c`), Node.js (`bindings/node/test/test_dsa.js`), and Rust (`bindings/rust/tests/test_dsa.rs`).
+
 ## [1.1.4] - 2026-08-17
 
 ### Fixed

@@ -176,13 +176,12 @@ int test_ml_dsa_boundary_fuzz(void) {
     corrupt_pk[0] ^= 0xFF;
     ASSERT_FAIL(rivide_ml_dsa_65_verify(sig, siglen, test_msg, sizeof(test_msg), corrupt_pk));
 
-    /* Empty message (msglen = 0) valid signature roundtrip. */
+    /* Empty message (msglen = 0, msg = NULL) valid signature roundtrip. */
     {
         uint8_t zero_sig[RIVIDE_ML_DSA_65_SIG_BYTES];
         size_t zero_siglen = sizeof(zero_sig);
-        uint8_t dummy = 0;
-        ASSERT_OK(rivide_ml_dsa_65_sign(zero_sig, &zero_siglen, &dummy, 0, sk));
-        ASSERT_OK(rivide_ml_dsa_65_verify(zero_sig, zero_siglen, &dummy, 0, pk));
+        ASSERT_OK(rivide_ml_dsa_65_sign(zero_sig, &zero_siglen, NULL, 0, sk));
+        ASSERT_OK(rivide_ml_dsa_65_verify(zero_sig, zero_siglen, NULL, 0, pk));
     }
 
     return 0;

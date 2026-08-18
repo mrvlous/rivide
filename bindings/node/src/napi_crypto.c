@@ -90,20 +90,13 @@ static napi_value js_shake128(napi_env env, napi_callback_info info) {
     }
     size_t out_len = (size_t)out_len_val;
 
-    uint8_t *out_data = (uint8_t *)malloc(out_len);
-    if (!out_data) {
-        THROW_ERROR(env, "Memory allocation failed");
+    napi_value out_buf;
+    uint8_t *out_data = NULL;
+    if (napi_create_buffer(env, out_len, (void **)&out_data, &out_buf) != napi_ok) {
+        THROW_ERROR(env, "Failed to allocate return Buffer");
     }
 
     rivide_shake128(out_data, out_len, in_data, in_len);
-
-    napi_value out_buf;
-    napi_status st = napi_create_buffer_copy(env, out_len, out_data, NULL, &out_buf);
-    rivide_cleanse(out_data, out_len);
-    free(out_data);
-    if (st != napi_ok) {
-        THROW_ERROR(env, "Failed to allocate return Buffer");
-    }
     return out_buf;
 }
 
@@ -129,20 +122,13 @@ static napi_value js_shake256(napi_env env, napi_callback_info info) {
     }
     size_t out_len = (size_t)out_len_val;
 
-    uint8_t *out_data = (uint8_t *)malloc(out_len);
-    if (!out_data) {
-        THROW_ERROR(env, "Memory allocation failed");
+    napi_value out_buf;
+    uint8_t *out_data = NULL;
+    if (napi_create_buffer(env, out_len, (void **)&out_data, &out_buf) != napi_ok) {
+        THROW_ERROR(env, "Failed to allocate return Buffer");
     }
 
     rivide_shake256(out_data, out_len, in_data, in_len);
-
-    napi_value out_buf;
-    napi_status st = napi_create_buffer_copy(env, out_len, out_data, NULL, &out_buf);
-    rivide_cleanse(out_data, out_len);
-    free(out_data);
-    if (st != napi_ok) {
-        THROW_ERROR(env, "Failed to allocate return Buffer");
-    }
     return out_buf;
 }
 
@@ -199,40 +185,37 @@ static napi_value js_aes_gcm_encrypt_internal(napi_env env, napi_callback_info i
         }
     }
 
-    uint8_t tag[RIVIDE_GCM_TAG_BYTES];
+    napi_value obj, ct_buf, tag_buf;
+    NAPI_CHECK(env, napi_create_object(env, &obj));
+
     uint8_t *ct_data = NULL;
-    if (pt_len > 0) {
-        ct_data = (uint8_t *)malloc(pt_len);
-        if (!ct_data) {
-            rivide_cleanse(&key_schedule, sizeof(key_schedule));
-            THROW_ERROR(env, "Memory allocation failed");
-        }
+    if (napi_create_buffer(env, pt_len, (void **)&ct_data, &ct_buf) != napi_ok) {
+        rivide_cleanse(&key_schedule, sizeof(key_schedule));
+        THROW_ERROR(env, "Failed to allocate ciphertext Buffer");
+    }
+
+    uint8_t *tag_data = NULL;
+    if (napi_create_buffer(env, RIVIDE_GCM_TAG_BYTES, (void **)&tag_data, &tag_buf) != napi_ok) {
+        rivide_cleanse(&key_schedule, sizeof(key_schedule));
+        THROW_ERROR(env, "Failed to allocate tag Buffer");
     }
 
     rivide_status_t status = rivide_aes_gcm_encrypt(&key_schedule, iv_data, aad_data, aad_len,
-                                                    pt_data, pt_len, ct_data, tag);
+                                                    pt_data, pt_len, ct_data, tag_data);
     rivide_cleanse(&key_schedule, sizeof(key_schedule));
 
     if (status != RIVIDE_SUCCESS) {
-        if (ct_data) {
+        if (ct_data && pt_len > 0) {
             rivide_cleanse(ct_data, pt_len);
-            free(ct_data);
+        }
+        if (tag_data) {
+            rivide_cleanse(tag_data, RIVIDE_GCM_TAG_BYTES);
         }
         THROW_ERROR(env, "AES-GCM encryption failed");
     }
 
-    napi_value obj, ct_buf, tag_buf;
-    NAPI_CHECK(env, napi_create_object(env, &obj));
-    NAPI_CHECK(env, napi_create_buffer_copy(env, pt_len, ct_data ? ct_data : (const uint8_t *)"",
-                                            NULL, &ct_buf));
-    NAPI_CHECK(env, napi_create_buffer_copy(env, sizeof(tag), tag, NULL, &tag_buf));
     NAPI_CHECK(env, napi_set_named_property(env, obj, "ciphertext", ct_buf));
     NAPI_CHECK(env, napi_set_named_property(env, obj, "tag", tag_buf));
-
-    if (ct_data) {
-        rivide_cleanse(ct_data, pt_len);
-        free(ct_data);
-    }
     return obj;
 }
 
@@ -295,13 +278,11 @@ static napi_value js_aes_gcm_decrypt_internal(napi_env env, napi_callback_info i
         }
     }
 
+    napi_value pt_buf;
     uint8_t *pt_data = NULL;
-    if (ct_len > 0) {
-        pt_data = (uint8_t *)malloc(ct_len);
-        if (!pt_data) {
-            rivide_cleanse(&key_schedule, sizeof(key_schedule));
-            THROW_ERROR(env, "Memory allocation failed");
-        }
+    if (napi_create_buffer(env, ct_len, (void **)&pt_data, &pt_buf) != napi_ok) {
+        rivide_cleanse(&key_schedule, sizeof(key_schedule));
+        THROW_ERROR(env, "Failed to allocate plaintext Buffer");
     }
 
     rivide_status_t status = rivide_aes_gcm_decrypt(&key_schedule, iv_data, aad_data, aad_len,
@@ -309,20 +290,12 @@ static napi_value js_aes_gcm_decrypt_internal(napi_env env, napi_callback_info i
     rivide_cleanse(&key_schedule, sizeof(key_schedule));
 
     if (status != RIVIDE_SUCCESS) {
-        if (pt_data) {
+        if (pt_data && ct_len > 0) {
             rivide_cleanse(pt_data, ct_len);
-            free(pt_data);
         }
         THROW_ERROR(env, "AES-GCM authentication verification failed (invalid ciphertext or tag)");
     }
 
-    napi_value pt_buf;
-    NAPI_CHECK(env, napi_create_buffer_copy(env, ct_len, pt_data ? pt_data : (const uint8_t *)"",
-                                            NULL, &pt_buf));
-    if (pt_data) {
-        rivide_cleanse(pt_data, ct_len);
-        free(pt_data);
-    }
     return pt_buf;
 }
 
