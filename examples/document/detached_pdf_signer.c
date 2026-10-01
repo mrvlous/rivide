@@ -32,7 +32,7 @@ int main(void) {
     uint8_t pk[RIVIDE_ML_DSA_87_PK_BYTES];
     uint8_t sk[RIVIDE_ML_DSA_87_SK_BYTES];
     uint8_t signature[RIVIDE_ML_DSA_87_SIG_BYTES];
-    size_t siglen = 0;
+    size_t siglen = sizeof(signature);
 
     const uint8_t document[] = "CONFIDENTIAL CONTRACT AGREEMENT 2026\n"
                                "Party A agrees to transfer Post-Quantum assets to Party B.";

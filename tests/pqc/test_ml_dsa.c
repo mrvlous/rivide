@@ -186,3 +186,36 @@ int test_ml_dsa_boundary_fuzz(void) {
 
     return 0;
 }
+
+int test_ml_dsa_null_and_buffer_bounds(void) {
+    uint8_t pk[RIVIDE_ML_DSA_65_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_DSA_65_SK_BYTES];
+    uint8_t sig[RIVIDE_ML_DSA_65_SIG_BYTES];
+    size_t siglen = sizeof(sig);
+
+    ASSERT_OK(rivide_ml_dsa_65_keygen(pk, sk));
+
+    /* NULL pointer checks in KeyGen */
+    ASSERT_EQ(rivide_ml_dsa_65_keygen(NULL, sk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_dsa_65_keygen(pk, NULL), RIVIDE_ERR_NULL_PTR);
+
+    /* NULL pointer checks in Sign */
+    ASSERT_EQ(rivide_ml_dsa_65_sign(NULL, &siglen, test_msg, sizeof(test_msg), sk),
+              RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_dsa_65_sign(sig, NULL, test_msg, sizeof(test_msg), sk),
+              RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_dsa_65_sign(sig, &siglen, test_msg, sizeof(test_msg), NULL),
+              RIVIDE_ERR_NULL_PTR);
+
+    /* Buffer capacity validation: siglen smaller than required must return RIVIDE_ERR_INVALID_PARAM
+     */
+    size_t small_len = RIVIDE_ML_DSA_65_SIG_BYTES - 1;
+    ASSERT_EQ(rivide_ml_dsa_65_sign(sig, &small_len, test_msg, sizeof(test_msg), sk),
+              RIVIDE_ERR_INVALID_PARAM);
+
+    small_len = 0;
+    ASSERT_EQ(rivide_ml_dsa_65_sign(sig, &small_len, test_msg, sizeof(test_msg), sk),
+              RIVIDE_ERR_INVALID_PARAM);
+
+    return 0;
+}

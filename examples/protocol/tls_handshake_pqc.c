@@ -44,7 +44,7 @@ int main(void) {
 
     /* Handshake signature authentication */
     uint8_t handshake_sig[RIVIDE_ML_DSA_65_SIG_BYTES];
-    size_t handshake_sig_len = 0;
+    size_t handshake_sig_len = sizeof(handshake_sig);
 
     rivide_status_t status;
 

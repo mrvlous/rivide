@@ -134,7 +134,7 @@ impl MlDsa65 {
         secret_key: &MlDsa65SecretKey,
     ) -> Result<MlDsa65Signature, RivideError> {
         let mut sig = [0u8; RIVIDE_ML_DSA_65_SIG_BYTES];
-        let mut siglen: usize = 0;
+        let mut siglen: usize = RIVIDE_ML_DSA_65_SIG_BYTES;
 
         let status = unsafe {
             rivide_ml_dsa_65_sign(
@@ -280,7 +280,7 @@ impl MlDsa87 {
         secret_key: &MlDsa87SecretKey,
     ) -> Result<MlDsa87Signature, RivideError> {
         let mut sig = [0u8; RIVIDE_ML_DSA_87_SIG_BYTES];
-        let mut siglen: usize = 0;
+        let mut siglen: usize = RIVIDE_ML_DSA_87_SIG_BYTES;
 
         let status = unsafe {
             rivide_ml_dsa_87_sign(

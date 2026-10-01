@@ -32,7 +32,7 @@ int main(void) {
     uint8_t pk[RIVIDE_ML_DSA_65_PK_BYTES];
     uint8_t sk[RIVIDE_ML_DSA_65_SK_BYTES];
     uint8_t sig[RIVIDE_ML_DSA_65_SIG_BYTES];
-    size_t siglen = 0;
+    size_t siglen = sizeof(sig);
     const uint8_t message[] = "Post-Quantum Signed Message Content";
     size_t message_len = sizeof(message) - 1;
     rivide_status_t status;

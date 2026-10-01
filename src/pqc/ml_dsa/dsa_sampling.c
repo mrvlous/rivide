@@ -97,6 +97,8 @@ void dsa_poly_uniform_eta(dsa_poly_t *p, const uint8_t seed[], size_t seedlen, u
     }
 
     rivide_cleanse(buf, sizeof(buf));
+    rivide_cleanse(extseed, sizeof(extseed));
+    rivide_cleanse(&state, sizeof(state));
 }
 
 /**
@@ -175,6 +177,7 @@ void dsa_poly_uniform_gamma1(dsa_poly_t *p, const uint8_t seed[], size_t seedlen
     rivide_shake256(buf, buflen, extseed, total);
     dsa_poly_unpack_z(p, buf, gamma1);
     rivide_cleanse(buf, sizeof(buf));
+    rivide_cleanse(extseed, sizeof(extseed));
 }
 
 /**
@@ -261,4 +264,7 @@ void dsa_expand_matrix_mul(dsa_polyveck_t *t, const uint8_t rho[32], const dsa_p
         }
         dsa_poly_reduce(&t->vec[i]);
     }
+
+    rivide_cleanse(&a_ij, sizeof(a_ij));
+    rivide_cleanse(&tmp, sizeof(tmp));
 }

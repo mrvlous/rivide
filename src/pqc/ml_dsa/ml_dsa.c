@@ -67,6 +67,7 @@ static rivide_status_t ml_dsa_keygen_internal(uint8_t *pk, uint8_t *sk, int k, i
         h_input[32] = (uint8_t)k;
         h_input[33] = (uint8_t)l;
         rivide_shake256(buf, 128, h_input, 34);
+        rivide_cleanse(h_input, sizeof(h_input));
     }
 
     for (i = 0; i < 32; i++)
@@ -131,6 +132,7 @@ static rivide_status_t ml_dsa_keygen_internal(uint8_t *pk, uint8_t *sk, int k, i
     rivide_cleanse(&s1, sizeof(s1));
     rivide_cleanse(&s1_hat, sizeof(s1_hat));
     rivide_cleanse(&s2, sizeof(s2));
+    rivide_cleanse(&t, sizeof(t));
     rivide_cleanse(&t0, sizeof(t0));
 
     return RIVIDE_SUCCESS;
@@ -154,10 +156,22 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
     unsigned int hint_count;
     uint16_t nonce = 0;
     size_t sig_offset;
-    size_t z_bytes_per_poly;
-
     if (!sig || !siglen || !sk || (msglen > 0 && !msg)) {
         return RIVIDE_ERR_NULL_PTR;
+    }
+
+    size_t z_bytes_per_poly;
+    if (gamma1 == (1 << 17)) {
+        z_bytes_per_poly = 576;
+    } else {
+        z_bytes_per_poly = 640;
+    }
+
+    /* Verify output buffer capacity to prevent stack/heap buffer overflow. */
+    size_t expected_siglen =
+        ctilde_bytes + (size_t)l * z_bytes_per_poly + (size_t)omega + (size_t)k;
+    if (*siglen < expected_siglen) {
+        return RIVIDE_ERR_INVALID_PARAM;
     }
 
     /* Unpack secret key. */
@@ -198,6 +212,7 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
             rivide_shake_absorb(&hstate, msg, msglen);
         }
         rivide_shake_squeeze(&hstate, mu, 64);
+        rivide_cleanse(&hstate, sizeof(hstate));
     }
 
     /* rho' = CRH(K || rnd || mu) for deterministic signing (rnd = 0^32). */
@@ -213,6 +228,8 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
         rivide_shake_absorb(&hstate, rnd, 32);
         rivide_shake_absorb(&hstate, mu, 64);
         rivide_shake_squeeze(&hstate, rho_prime, 64);
+        rivide_cleanse(&hstate, sizeof(hstate));
+        rivide_cleanse(rnd, sizeof(rnd));
     }
 
     /* Rejection sampling loop. */
@@ -293,6 +310,7 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
 
             uint8_t ctilde[64];
             rivide_shake_squeeze(&hstate, ctilde, ctilde_bytes);
+            rivide_cleanse(&hstate, sizeof(hstate));
 
             /* c = SampleInBall(c_tilde). */
             dsa_poly_challenge(&cp, ctilde, ctilde_bytes, tau);
@@ -301,6 +319,7 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
             for (i = 0; i < (int)ctilde_bytes; i++) {
                 sig[i] = ctilde[i];
             }
+            rivide_cleanse(ctilde, sizeof(ctilde));
         }
 
         /* z = y + c * s1. */
@@ -415,6 +434,9 @@ cleanup:
     rivide_cleanse(K, sizeof(K));
     rivide_cleanse(rho_prime, sizeof(rho_prime));
     rivide_cleanse(&y, sizeof(y));
+    rivide_cleanse(&z, sizeof(z));
+    rivide_cleanse(&cp, sizeof(cp));
+    rivide_cleanse(&h, sizeof(h));
     rivide_cleanse(mu, sizeof(mu));
 
     return status;
