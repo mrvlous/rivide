@@ -70,6 +70,9 @@ void poly_uniform(poly_t *p, const uint8_t seed[34]) {
             }
         }
     }
+
+    rivide_cleanse(&state, sizeof(state));
+    rivide_cleanse(buf, sizeof(buf));
 }
 
 /**
@@ -94,4 +97,5 @@ void poly_noise(poly_t *p, const uint8_t seed[32], uint8_t nonce, int eta) {
     rivide_shake256(buf, buflen, extseed, 33);
     poly_cbd(p, buf, eta);
     rivide_cleanse(buf, sizeof(buf));
+    rivide_cleanse(extseed, sizeof(extseed));
 }

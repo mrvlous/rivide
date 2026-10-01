@@ -96,3 +96,34 @@ int test_ml_kem_768_invalid_sk_type_check(void) {
 
     return 0;
 }
+
+int test_ml_kem_null_pointers(void) {
+    uint8_t pk[RIVIDE_ML_KEM_768_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_KEM_768_SK_BYTES];
+    uint8_t ct[RIVIDE_ML_KEM_768_CT_BYTES];
+    uint8_t ss[RIVIDE_ML_KEM_SS_BYTES];
+
+    ASSERT_EQ(rivide_ml_kem_768_keygen(NULL, sk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_768_keygen(pk, NULL), RIVIDE_ERR_NULL_PTR);
+
+    ASSERT_EQ(rivide_ml_kem_768_encaps(NULL, ss, pk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_768_encaps(ct, NULL, pk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_768_encaps(ct, ss, NULL), RIVIDE_ERR_NULL_PTR);
+
+    ASSERT_EQ(rivide_ml_kem_768_decaps(NULL, ct, sk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_768_decaps(ss, NULL, sk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_768_decaps(ss, ct, NULL), RIVIDE_ERR_NULL_PTR);
+
+    ASSERT_EQ(rivide_ml_kem_1024_keygen(NULL, sk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_1024_keygen(pk, NULL), RIVIDE_ERR_NULL_PTR);
+
+    ASSERT_EQ(rivide_ml_kem_1024_encaps(NULL, ss, pk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_1024_encaps(ct, NULL, pk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_1024_encaps(ct, ss, NULL), RIVIDE_ERR_NULL_PTR);
+
+    ASSERT_EQ(rivide_ml_kem_1024_decaps(NULL, ct, sk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_1024_decaps(ss, NULL, sk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_kem_1024_decaps(ss, ct, NULL), RIVIDE_ERR_NULL_PTR);
+
+    return 0;
+}

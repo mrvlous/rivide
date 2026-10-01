@@ -324,6 +324,10 @@ static rivide_status_t ml_kem_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk
 static rivide_status_t ml_kem_decaps(uint8_t *ss, const uint8_t *ct, const uint8_t *sk, int k,
                                      int eta1, int eta2, int du, int dv, size_t pk_bytes,
                                      size_t ct_bytes) {
+    if (!ss || !ct || !sk) {
+        return RIVIDE_ERR_NULL_PTR;
+    }
+
     size_t s_hat_bytes = 384 * (size_t)k;
     const uint8_t *pk = sk + s_hat_bytes;
     const uint8_t *h_pk = pk + pk_bytes;
@@ -335,10 +339,6 @@ static rivide_status_t ml_kem_decaps(uint8_t *ss, const uint8_t *ct, const uint8
     uint8_t k_reject[32];
     unsigned int i;
     int cmp;
-
-    if (!ss || !ct || !sk) {
-        return RIVIDE_ERR_NULL_PTR;
-    }
 
     /* NIST FIPS 203 Section 7.3: Type check on decapsulation key (coeffs of s_hat < 3329). */
     {
@@ -366,6 +366,7 @@ static rivide_status_t ml_kem_decaps(uint8_t *ss, const uint8_t *ct, const uint8
         rivide_shake_absorb(&jstate, z, 32);
         rivide_shake_absorb(&jstate, ct, ct_bytes);
         rivide_shake_squeeze(&jstate, k_reject, 32);
+        rivide_cleanse(&jstate, sizeof(jstate));
     }
 
     cmp = rivide_ct_memcmp(ct, ct_prime, ct_bytes);
@@ -375,7 +376,7 @@ static rivide_status_t ml_kem_decaps(uint8_t *ss, const uint8_t *ct, const uint8
     rivide_cleanse(m_prime, sizeof(m_prime));
     rivide_cleanse(g_input, sizeof(g_input));
     rivide_cleanse(g_output, sizeof(g_output));
-    rivide_cleanse(ct_prime, ct_bytes);
+    rivide_cleanse(ct_prime, sizeof(ct_prime));
     rivide_cleanse(k_reject, sizeof(k_reject));
 
     return RIVIDE_SUCCESS;
