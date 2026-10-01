@@ -42,7 +42,7 @@ cargo run --release --example bench
 ## Benchmark Output Format
 
 ```text
-Rivide Rust Post-Quantum Cryptography Benchmark Suite v1.1.5
+Rivide Rust Post-Quantum Cryptography Benchmark Suite v1.1.6
 
 Hardware Acceleration : AVX2: YES, AES-NI: YES, NEON: NO, ARM-CE: NO
 

@@ -76,7 +76,7 @@ rivide_status_t rivide_init(void);
  * @brief Retrieve the library version as a human-readable string.
  *
  * @return A pointer to a static, null-terminated version string
- *         (e.g., "0.4.0"). Valid for the lifetime of the program.
+ *         (e.g., "1.1.6"). Valid for the lifetime of the program.
  */
 const char *rivide_version_string(void);
 
