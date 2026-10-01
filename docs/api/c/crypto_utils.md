@@ -58,6 +58,10 @@ void rivide_cleanse(void *ptr, size_t len);
 /* OS CSPRNG entropy generation */
 rivide_status_t rivide_randombytes(uint8_t *buf, size_t len);
 
+/* Custom entropy callback registration and reset */
+rivide_status_t rivide_set_rng_callback(rivide_rng_callback_t callback);
+rivide_status_t rivide_reset_rng_callback(void);
+
 /* Constant-time memory comparison */
 int rivide_ct_memcmp(const void *a, const void *b, size_t len);
 

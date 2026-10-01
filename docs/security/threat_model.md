@@ -55,7 +55,7 @@ Rivide is engineered for safe deployment in high-throughput concurrent environme
    - All cryptographic routines (`rivide_ml_kem_*`, `rivide_ml_dsa_*`, `rivide_sha3_*`, `rivide_aes_gcm_*`) are purely stateless, thread-safe, and re-entrant.
    - Every operation executes exclusively on caller-provided buffers and local stack frames without global mutable state.
 2. **Atomic RNG Callback Registration**:
-   - Custom entropy callbacks registered via `rivide_set_rng_callback` are synchronized atomically via C11 `<stdatomic.h>` with release-acquire memory ordering.
+   - Custom entropy callbacks registered via `rivide_set_rng_callback` (and restored via `rivide_reset_rng_callback`) are synchronized atomically via C11 `<stdatomic.h>` with release-acquire memory ordering.
    - Eliminates data races and torn pointer reads during concurrent key generation across worker threads.
 3. **Thread-Local Volatile Memory Cleansing**:
    - Sensitive intermediate polynomial vectors and secrets are cleansed locally within each thread's stack frame prior to return, preventing cross-thread memory bleed.

@@ -30,6 +30,7 @@ Compiled with flags:
 | `fuzz_ml_dsa_verify` | ML-DSA-65 / 87 | Arbitrary signature parsing, hint vector unpacking, and verification |
 | `fuzz_aes_gcm` | AES-GCM AEAD | Malformed tag, IV, and payload parsing against authentication failures |
 | `fuzz_sha3` | SHA-3 / SHAKE | Arbitrary length input stream absorption and permutation transitions |
+| `fuzz_ntt` | NTT & Polynomial Arithmetic | Forward/inverse NTT invertibility, basemul, and modular reductions |
 
 ## 3. Running Continuous Fuzzing & Corpus Management
 
@@ -41,6 +42,10 @@ mkdir -p corpus_ml_kem
 # Run ML-DSA signature verification fuzzer
 mkdir -p corpus_ml_dsa
 ./build-fuzz/fuzz_ml_dsa_verify -runs=1000000 -max_len=5000 corpus_ml_dsa/
+
+# Run NTT and polynomial arithmetic fuzzer
+mkdir -p corpus_ntt
+./build-fuzz/fuzz_ntt -runs=1000000 -max_len=2048 corpus_ntt/
 ```
 
 ## 4. Measuring Code Coverage with LLVM Coverage Tools
@@ -64,7 +69,7 @@ llvm-cov show ./build-fuzz/fuzz_ml_kem_decaps \
 
 Rivide integrates automated continuous fuzzing into GitHub Actions (`.github/workflows/ci.yml`) under the `security-fuzzing` job:
 
-- **Target Engines**: `fuzz_ml_kem_decaps`, `fuzz_ml_dsa_verify`, `fuzz_aes_gcm`, and `fuzz_sha3`.
+- **Target Engines**: `fuzz_ml_kem_decaps`, `fuzz_ml_dsa_verify`, `fuzz_aes_gcm`, `fuzz_sha3`, and `fuzz_ntt`.
 - **Sanitizers**: AddressSanitizer (ASan) and UndefinedBehaviorSanitizer (UBSan).
 - **Execution Invariant**: Every pull request and commit to `main` executes continuous fuzzing with randomized malformed inputs to formally verify that no edge-case or corrupted payload can cause crashes, out-of-bounds reads/writes, integer overflows, or undefined behavior.
 
