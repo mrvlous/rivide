@@ -34,19 +34,36 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
 
     uint8_t ss[RIVIDE_ML_KEM_SS_BYTES];
+    uint8_t ct_out[RIVIDE_ML_KEM_1024_CT_BYTES];
 
-    /* Fuzz ML-KEM-768 Decapsulation */
+    /* 1. Fuzz ML-KEM-768 Decapsulation */
     if (size >= RIVIDE_ML_KEM_768_CT_BYTES + RIVIDE_ML_KEM_768_SK_BYTES) {
         const uint8_t *ct = data;
         const uint8_t *sk = data + RIVIDE_ML_KEM_768_CT_BYTES;
         rivide_ml_kem_768_decaps(ss, ct, sk);
+        rivide_cleanse(ss, sizeof(ss));
     }
 
-    /* Fuzz ML-KEM-1024 Decapsulation */
+    /* 2. Fuzz ML-KEM-1024 Decapsulation */
     if (size >= RIVIDE_ML_KEM_1024_CT_BYTES + RIVIDE_ML_KEM_1024_SK_BYTES) {
         const uint8_t *ct = data;
         const uint8_t *sk = data + RIVIDE_ML_KEM_1024_CT_BYTES;
         rivide_ml_kem_1024_decaps(ss, ct, sk);
+        rivide_cleanse(ss, sizeof(ss));
+    }
+
+    /* 3. Fuzz ML-KEM-768 Encapsulation with arbitrary public key (tests polyvec_frombytes_check) */
+    if (size >= RIVIDE_ML_KEM_768_PK_BYTES) {
+        rivide_ml_kem_768_encaps(ct_out, ss, data);
+        rivide_cleanse(ss, sizeof(ss));
+        rivide_cleanse(ct_out, sizeof(ct_out));
+    }
+
+    /* 4. Fuzz ML-KEM-1024 Encapsulation with arbitrary public key */
+    if (size >= RIVIDE_ML_KEM_1024_PK_BYTES) {
+        rivide_ml_kem_1024_encaps(ct_out, ss, data);
+        rivide_cleanse(ss, sizeof(ss));
+        rivide_cleanse(ct_out, sizeof(ct_out));
     }
 
     return 0;

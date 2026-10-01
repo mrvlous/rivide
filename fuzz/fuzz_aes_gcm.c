@@ -36,18 +36,23 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         initialized = 1;
     }
 
-    /* Need at least: 32 bytes key + 12 bytes IV + 16 bytes Tag + 8 bytes AAD = 68 bytes */
-    if (size < 68) {
+    /* Minimum: 32 key + 12 IV + 16 Tag + 1 AAD selector = 61 bytes */
+    if (size < 61) {
         return 0;
     }
 
     const uint8_t *key_raw = data;
     const uint8_t *iv = data + 32;
     const uint8_t *tag = data + 44;
-    const uint8_t *aad = data + 60;
-    size_t aad_len = 8;
-    const uint8_t *ct = data + 68;
-    size_t ct_len = size - 68;
+    uint8_t aad_sel = data[60];
+
+    size_t available_payload = size - 61;
+    size_t max_aad = (available_payload < 32) ? available_payload : 32;
+    size_t aad_len = (max_aad > 0) ? ((size_t)aad_sel % (max_aad + 1)) : 0;
+    const uint8_t *aad = (aad_len > 0) ? (data + 61) : NULL;
+
+    const uint8_t *ct = data + 61 + aad_len;
+    size_t ct_len = available_payload - aad_len;
 
     uint8_t plaintext[1024];
     uint8_t ciphertext[1024];
@@ -99,6 +104,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
         rivide_aes_key_cleanse(&key256);
     }
+
+    rivide_cleanse(plaintext, sizeof(plaintext));
+    rivide_cleanse(ciphertext, sizeof(ciphertext));
+    rivide_cleanse(generated_tag, sizeof(generated_tag));
 
     return 0;
 }

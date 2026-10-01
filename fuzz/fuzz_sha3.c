@@ -37,15 +37,28 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     rivide_shake128(out32, sizeof(out32), data, size);
     rivide_shake256(out64, sizeof(out64), data, size);
 
-    /* Incremental SHAKE absorption and squeezing */
-    rivide_keccak_state_t ctx;
-    rivide_shake256_init(&ctx);
+    /* Incremental SHAKE-256 absorption and squeezing */
+    rivide_keccak_state_t ctx256;
+    rivide_shake256_init(&ctx256);
     if (size > 0) {
         size_t half = size / 2;
-        rivide_shake_absorb(&ctx, data, half);
-        rivide_shake_absorb(&ctx, data + half, size - half);
+        rivide_shake_absorb(&ctx256, data, half);
+        rivide_shake_absorb(&ctx256, data + half, size - half);
     }
-    rivide_shake_squeeze(&ctx, out64, sizeof(out64));
+    rivide_shake_squeeze(&ctx256, out64, sizeof(out64));
+    rivide_cleanse(&ctx256, sizeof(ctx256));
+
+    /* Incremental SHAKE-128 absorption and squeezing */
+    rivide_keccak_state_t ctx128;
+    rivide_shake128_init(&ctx128);
+    if (size > 0) {
+        rivide_shake_absorb(&ctx128, data, size);
+    }
+    rivide_shake_squeeze(&ctx128, out32, sizeof(out32));
+    rivide_cleanse(&ctx128, sizeof(ctx128));
+
+    rivide_cleanse(out32, sizeof(out32));
+    rivide_cleanse(out64, sizeof(out64));
 
     return 0;
 }
