@@ -59,6 +59,10 @@
  */
 static void keccak_hash(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen,
                         uint8_t domain_sep, size_t rate) {
+    if (!out && outlen > 0) {
+        return;
+    }
+
     rivide_keccak_state_t ctx;
 
     rivide_keccak_init(&ctx, rate);
@@ -97,6 +101,10 @@ void rivide_shake_absorb(rivide_keccak_state_t *ctx, const uint8_t *in, size_t i
 }
 
 void rivide_shake_squeeze(rivide_keccak_state_t *ctx, uint8_t *out, size_t outlen) {
+    if (!ctx) {
+        return;
+    }
+
     if (!ctx->squeezing) {
         rivide_keccak_finalize(ctx, SHAKE_DOMAIN_SEP);
     }

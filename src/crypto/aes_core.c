@@ -158,6 +158,10 @@ static inline uint32_t rot_word(uint32_t w) {
  * @param[out] out     16-byte output ciphertext block.
  */
 void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in, uint8_t *out) {
+    if (!key_ctx || !in || !out) {
+        return;
+    }
+
     uint8_t state[16];
     int rounds = key_ctx->rounds;
     const uint32_t *rk = key_ctx->round_keys;

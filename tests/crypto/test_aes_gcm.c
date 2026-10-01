@@ -125,6 +125,12 @@ int test_aes_gcm_partial_overlap_rejection(void) {
     ASSERT_EQ(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, len, tag, pt),
               RIVIDE_ERR_INVALID_PARAM);
 
+    /* Tag collision with pt or ct must be rejected */
+    ASSERT_EQ(rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, len, ct, pt), RIVIDE_ERR_INVALID_PARAM);
+    ASSERT_EQ(rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, len, ct, ct), RIVIDE_ERR_INVALID_PARAM);
+    ASSERT_EQ(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, len, ct, pt), RIVIDE_ERR_INVALID_PARAM);
+    ASSERT_EQ(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, len, pt, pt), RIVIDE_ERR_INVALID_PARAM);
+
     rivide_aes_key_cleanse(&key);
     return 0;
 }

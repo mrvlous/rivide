@@ -109,6 +109,10 @@ void rivide_keccak_f1600(uint64_t s[25]) {
  * @param[in]  rate Sponge block rate in bytes.
  */
 void rivide_keccak_init(rivide_keccak_state_t *ctx, size_t rate) {
+    if (!ctx) {
+        return;
+    }
+
     size_t i;
     for (i = 0; i < 25; i++) {
         ctx->state[i] = 0;
@@ -126,6 +130,13 @@ void rivide_keccak_init(rivide_keccak_state_t *ctx, size_t rate) {
  * @param[in]     inlen Length of input message in bytes.
  */
 void rivide_keccak_absorb(rivide_keccak_state_t *ctx, const uint8_t *in, size_t inlen) {
+    if (!ctx || inlen == 0) {
+        return;
+    }
+    if (!in) {
+        return;
+    }
+
     size_t rate = ctx->rate;
     size_t absorbed = ctx->absorbed;
 
@@ -165,6 +176,10 @@ void rivide_keccak_absorb(rivide_keccak_state_t *ctx, const uint8_t *in, size_t 
  * @param[in]     domain_sep Domain separation byte (0x06 for SHA-3, 0x1F for SHAKE).
  */
 void rivide_keccak_finalize(rivide_keccak_state_t *ctx, uint8_t domain_sep) {
+    if (!ctx) {
+        return;
+    }
+
     size_t absorbed = ctx->absorbed;
     size_t rate = ctx->rate;
     size_t lane, offset;
@@ -191,6 +206,13 @@ void rivide_keccak_finalize(rivide_keccak_state_t *ctx, uint8_t domain_sep) {
  * @param[in]     outlen Number of bytes to squeeze.
  */
 void rivide_keccak_squeeze(rivide_keccak_state_t *ctx, uint8_t *out, size_t outlen) {
+    if (!ctx || outlen == 0) {
+        return;
+    }
+    if (!out) {
+        return;
+    }
+
     size_t rate = ctx->rate;
     size_t offset = ctx->absorbed;
 

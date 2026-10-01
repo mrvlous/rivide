@@ -96,6 +96,9 @@ static inline int buffers_overlap_partial(const void *a, const void *b, size_t l
     }
     const uintptr_t p1 = (uintptr_t)a;
     const uintptr_t p2 = (uintptr_t)b;
+    if (p1 + len < p1 || p2 + len < p2) {
+        return 1;
+    }
     return (p1 < p2 + len && p2 < p1 + len);
 }
 
@@ -114,6 +117,9 @@ static inline int buffer_ranges_overlap(const void *a, size_t len_a, const void 
     }
     const uintptr_t p1 = (uintptr_t)a;
     const uintptr_t p2 = (uintptr_t)b;
+    if (p1 + len_a < p1 || p2 + len_b < p2) {
+        return 1;
+    }
     return (p1 < p2 + len_b && p2 < p1 + len_a);
 }
 
@@ -145,14 +151,15 @@ rivide_status_t rivide_aes_gcm_encrypt(const rivide_aes_key_t *key, const uint8_
         return RIVIDE_ERR_INVALID_PARAM;
     }
 
-    /* 3. Buffer overlap validation (allow exact in-place pt == ct, reject partial overlap) */
+    /* 3. Buffer overlap validation (allow exact in-place pt == ct, reject partial overlap and tag
+     * collisions) */
     if (buffers_overlap_partial(pt, ct, pt_len)) {
         return RIVIDE_ERR_INVALID_PARAM;
     }
-    if (pt_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, pt, pt_len) && tag != pt) {
+    if (pt_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, pt, pt_len)) {
         return RIVIDE_ERR_INVALID_PARAM;
     }
-    if (pt_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, ct, pt_len) && tag != ct) {
+    if (pt_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, ct, pt_len)) {
         return RIVIDE_ERR_INVALID_PARAM;
     }
     if (aad_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, aad, aad_len)) {
@@ -255,14 +262,15 @@ rivide_status_t rivide_aes_gcm_decrypt(const rivide_aes_key_t *key, const uint8_
         return RIVIDE_ERR_INVALID_PARAM;
     }
 
-    /* 3. Buffer overlap validation (allow exact in-place ct == pt, reject partial overlap) */
+    /* 3. Buffer overlap validation (allow exact in-place ct == pt, reject partial overlap and tag
+     * collisions) */
     if (buffers_overlap_partial(ct, pt, ct_len)) {
         return RIVIDE_ERR_INVALID_PARAM;
     }
-    if (ct_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, pt, ct_len) && tag != pt) {
+    if (ct_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, pt, ct_len)) {
         return RIVIDE_ERR_INVALID_PARAM;
     }
-    if (ct_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, ct, ct_len) && tag != ct) {
+    if (ct_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, ct, ct_len)) {
         return RIVIDE_ERR_INVALID_PARAM;
     }
     if (aad_len > 0 && buffer_ranges_overlap(tag, RIVIDE_GCM_TAG_BYTES, aad, aad_len)) {

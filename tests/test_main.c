@@ -31,6 +31,7 @@ extern int test_ml_kem_768_roundtrip(void);
 extern int test_ml_kem_768_invalid_ct(void);
 extern int test_ml_kem_768_invalid_sk_type_check(void);
 extern int test_ml_kem_1024_roundtrip(void);
+extern int test_ml_kem_null_pointers(void);
 
 extern int test_ml_dsa_65_roundtrip(void);
 extern int test_ml_dsa_65_tampered_msg(void);
@@ -38,6 +39,7 @@ extern int test_ml_dsa_87_roundtrip(void);
 extern int test_ml_dsa_65_siglen_validation(void);
 extern int test_ml_dsa_87_siglen_validation(void);
 extern int test_ml_dsa_boundary_fuzz(void);
+extern int test_ml_dsa_null_and_buffer_bounds(void);
 
 extern int test_simd_poly_add_reduce(void);
 extern int test_simd_poly_sub_reduce(void);
@@ -74,6 +76,7 @@ int main(void) {
     RUN_TEST(test_ml_kem_768_invalid_ct);
     RUN_TEST(test_ml_kem_768_invalid_sk_type_check);
     RUN_TEST(test_ml_kem_1024_roundtrip);
+    RUN_TEST(test_ml_kem_null_pointers);
 
     printf("\nML-DSA Tests:\n");
     RUN_TEST(test_ml_dsa_65_roundtrip);
@@ -82,6 +85,7 @@ int main(void) {
     RUN_TEST(test_ml_dsa_65_siglen_validation);
     RUN_TEST(test_ml_dsa_87_siglen_validation);
     RUN_TEST(test_ml_dsa_boundary_fuzz);
+    RUN_TEST(test_ml_dsa_null_and_buffer_bounds);
 
     printf("\nSIMD & NTT Arithmetic Tests:\n");
     RUN_TEST(test_simd_poly_add_reduce);

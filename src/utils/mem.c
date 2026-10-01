@@ -23,6 +23,10 @@
 #include "rivide/utils/mem.h"
 
 void rivide_cleanse(void *ptr, size_t len) {
+    if (!ptr || len == 0) {
+        return;
+    }
+
     volatile unsigned char *p = (volatile unsigned char *)ptr;
     size_t i;
 
@@ -60,6 +64,10 @@ int rivide_ct_memcmp(const void *a, const void *b, size_t len) {
 }
 
 void rivide_ct_select(void *dst, const void *src_a, const void *src_b, size_t len, int selector) {
+    if (!dst || !src_a || !src_b || len == 0) {
+        return;
+    }
+
     const unsigned char *a = (const unsigned char *)src_a;
     const unsigned char *b = (const unsigned char *)src_b;
     unsigned char *d = (unsigned char *)dst;
