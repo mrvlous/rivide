@@ -183,3 +183,6 @@ jobs:
 
       - name: Fuzz SHA-3 / SHAKE (libFuzzer + ASan/UBSan)
         run: ./build-fuzz/fuzz_sha3 -max_total_time=15 -timeout=5
+
+      - name: Fuzz NTT & Polynomial Arithmetic (libFuzzer + ASan/UBSan)
+        run: ./build-fuzz/fuzz_ntt -max_total_time=15 -timeout=5

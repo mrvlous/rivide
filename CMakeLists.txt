@@ -234,6 +234,7 @@ if(RIVIDE_BUILD_FUZZERS)
         fuzz_ml_dsa_verify
         fuzz_aes_gcm
         fuzz_sha3
+        fuzz_ntt
     )
     foreach(TARGET ${FUZZ_TARGETS})
         add_executable(${TARGET} fuzz/${TARGET}.c)
