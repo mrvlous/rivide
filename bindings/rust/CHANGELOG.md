@@ -12,6 +12,14 @@ All notable changes to the **`rivide`** Rust crate will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.6] - 2026-10-01
+
+### Fixed
+- **ML-DSA Signature Buffer Capacity Initialization**:
+  - Corrected `siglen` initialization from 0 to destination buffer capacity (`RIVIDE_ML_DSA_65_SIG_BYTES` / `RIVIDE_ML_DSA_87_SIG_BYTES`) in `MlDsa65::sign` and `MlDsa87::sign` (`src/dsa.rs`), aligning with C API buffer capacity validation.
+- **Underlying C Core Hardening**:
+  - Inherited critical security fixes from core engine v1.1.6 including strict buffer capacity checks, undefined pointer arithmetic corrections, and non-elidable stack zeroization of secret seeds and sponge states.
+
 ## [1.1.5] - 2026-08-18
 
 ### Fixed

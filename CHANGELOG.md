@@ -12,6 +12,32 @@ All notable changes to the **Rivide** Post-Quantum Cryptography library will be 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.6] - 2026-10-01
+
+### Fixed
+- **ML-DSA Signature Buffer Bounds & Capacity Enforcement**:
+  - Added strict output buffer capacity checks (`if (*siglen < expected_siglen) return RIVIDE_ERR_INVALID_PARAM;`) in `src/pqc/ml_dsa/ml_dsa.c` (`ml_dsa_sign_internal`), preventing memory corruption and buffer overflow vulnerabilities when callers provide insufficient buffer space.
+  - Corrected Rust binding (`bindings/rust/src/dsa.rs`) and C examples (`examples/basic/dsa_digital_signature.c`, `examples/document/detached_pdf_signer.c`) where `siglen` was initialized to 0 instead of the destination buffer capacity.
+- **ML-KEM Decapsulation Pointer Arithmetic & Sponge Cleansing**:
+  - Fixed ISO C99 §6.5.6 undefined pointer arithmetic in `src/pqc/ml_kem/ml_kem.c` (`ml_kem_decaps`) where pointer offset calculations were executed prior to NULL pointer checks. Moved pointer validation to function entry.
+  - Added non-elidable stack zeroization for the intermediate rejection seed sponge context `jstate` holding private seed $z$.
+  - Ensured complete cleansing of the entire stack buffer `ct_prime` (`sizeof(ct_prime)` instead of `ct_bytes`).
+- **Cryptographic Memory Hygiene & Ephemeral Seed Cleansing**:
+  - Enforced zeroization of secret linear combination polynomial vector `t` ($A \cdot s_1 + s_2$) and secret seed digest buffer `h_input` in `src/pqc/ml_dsa/ml_dsa.c` (`ml_dsa_keygen_internal`).
+  - Added zeroization of private signing key hash state `hstate`, private randomness seed `rnd`, candidate signature vector `z`, challenge polynomial `cp`, and hint vector `h` in `src/pqc/ml_dsa/ml_dsa.c` (`ml_dsa_sign_internal`).
+  - Added zeroization of extended secret seeds, sponge states, and intermediate polynomials in `src/pqc/ml_kem/kem_sampling.c` (`poly_noise`, `poly_uniform`) and `src/pqc/ml_dsa/dsa_sampling.c` (`dsa_poly_uniform_eta`, `dsa_poly_uniform_gamma1`, `dsa_expand_matrix_mul`).
+- **AES-GCM Authentication Tag Collision & Pointer Wrap-Around Protection**:
+  - Hardened buffer overlap validation in `src/crypto/aes_gcm.c` (`rivide_aes_gcm_encrypt` and `rivide_aes_gcm_decrypt`), strictly rejecting collisions between the authentication tag and plaintext/ciphertext buffers.
+  - Added pointer wrap-around overflow guards in `buffers_overlap_partial` and `buffer_ranges_overlap`.
+- **Defensive NULL Pointer & Buffer Length Guards**:
+  - Added NULL and zero-length input guards across `rivide_cleanse` and `rivide_ct_select` (`src/utils/mem.c`), `rivide_keccak_init`, `rivide_keccak_finalize`, `rivide_keccak_absorb`, and `rivide_keccak_squeeze` (`src/crypto/keccak.c`), `rivide_shake_squeeze` and `keccak_hash` (`src/crypto/sha3.c`), and `rivide_aes_encrypt_block` (`src/crypto/aes_core.c`).
+
+### Added
+- **API Boundary & Negative Test Harnesses**:
+  - Added comprehensive NULL pointer validation unit test for ML-KEM-768 and ML-KEM-1024 (`test_ml_kem_null_pointers` in `tests/pqc/test_ml_kem.c`).
+  - Added buffer capacity boundary and NULL pointer unit test for ML-DSA-65 and ML-DSA-87 (`test_ml_dsa_null_and_buffer_bounds` in `tests/pqc/test_ml_dsa.c`).
+  - Added tag collision rejection assertions in AES-GCM overlap unit tests (`tests/crypto/test_aes_gcm.c`).
+
 ## [1.1.5] - 2026-08-18
 
 ### Fixed

@@ -80,12 +80,12 @@ pub fn get_cpu_features() -> CpuFeatures {
     }
 }
 
-/// Returns the Rivide library version string (e.g. `"1.1.5"`).
+/// Returns the Rivide library version string (e.g. `"1.1.6"`).
 pub fn version() -> &'static str {
     let ptr = unsafe { rivide_version_string() };
     if ptr.is_null() {
-        "1.1.5"
+        "1.1.6"
     } else {
-        unsafe { CStr::from_ptr(ptr).to_str().unwrap_or("1.1.5") }
+        unsafe { CStr::from_ptr(ptr).to_str().unwrap_or("1.1.6") }
     }
 }

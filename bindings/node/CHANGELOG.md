@@ -12,6 +12,13 @@ All notable changes to the **`rivide`** Node.js native package will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.6] - 2026-10-01
+
+### Fixed
+
+- **Underlying C Engine Hardening**:
+    - Inherited critical security fixes from core engine v1.1.6 including strict ML-DSA signature buffer capacity validation, ML-KEM decapsulation pointer arithmetic correction, and comprehensive non-elidable stack zeroization of secret seeds and sponge states.
+
 ## [1.1.5] - 2026-08-18
 
 ### Fixed
