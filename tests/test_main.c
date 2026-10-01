@@ -59,6 +59,7 @@ extern int test_aes_key_cleanse(void);
 
 extern int test_ct_memcmp(void);
 extern int test_ct_select(void);
+extern int test_random_bounds_and_callback(void);
 
 int main(void) {
     rivide_status_t ret;
@@ -107,6 +108,7 @@ int main(void) {
     printf("\nUtility Tests:\n");
     RUN_TEST(test_ct_memcmp);
     RUN_TEST(test_ct_select);
+    RUN_TEST(test_random_bounds_and_callback);
 
     printf("\nResults: %d/%d passed, %d failed\n", g_tests_passed, g_tests_run, g_tests_failed);
 

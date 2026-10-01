@@ -21,6 +21,7 @@
  */
 
 #include "rivide/utils/mem.h"
+#include "rivide/utils/random.h"
 
 #include "test_harness.h"
 
@@ -45,6 +46,60 @@ int test_ct_select(void) {
 
     rivide_ct_select(dst, a, b, 16, 1);
     ASSERT_MEM_EQ(dst, b, 16);
+
+    return 0;
+}
+
+static rivide_status_t mock_deterministic_rng(uint8_t *buf, size_t len) {
+    size_t i;
+    for (i = 0; i < len; i++) {
+        buf[i] = (uint8_t)(0xA5 ^ (uint8_t)i);
+    }
+    return RIVIDE_SUCCESS;
+}
+
+int test_random_bounds_and_callback(void) {
+    uint8_t buf1[32] = {0};
+    uint8_t buf2[32] = {0};
+    size_t i;
+    int is_different = 0;
+
+    /* 1. Zero length must be valid no-op */
+    ASSERT_EQ(rivide_randombytes(NULL, 0), RIVIDE_SUCCESS);
+    ASSERT_EQ(rivide_randombytes(buf1, 0), RIVIDE_SUCCESS);
+
+    /* 2. NULL pointer with non-zero length must fail */
+    ASSERT_EQ(rivide_randombytes(NULL, 16), RIVIDE_ERR_NULL_PTR);
+
+    /* 3. Normal OS randombytes generation */
+    ASSERT_EQ(rivide_randombytes(buf1, 32), RIVIDE_SUCCESS);
+    ASSERT_EQ(rivide_randombytes(buf2, 32), RIVIDE_SUCCESS);
+    for (i = 0; i < 32; i++) {
+        if (buf1[i] != buf2[i]) {
+            is_different = 1;
+            break;
+        }
+    }
+    ASSERT_EQ(is_different, 1);
+
+    /* 4. Custom RNG callback registration */
+    ASSERT_EQ(rivide_set_rng_callback(mock_deterministic_rng), RIVIDE_SUCCESS);
+    ASSERT_EQ(rivide_randombytes(buf1, 32), RIVIDE_SUCCESS);
+    for (i = 0; i < 32; i++) {
+        ASSERT_EQ(buf1[i], (uint8_t)(0xA5 ^ (uint8_t)i));
+    }
+
+    /* 5. Reset RNG callback back to OS default via rivide_reset_rng_callback */
+    ASSERT_EQ(rivide_reset_rng_callback(), RIVIDE_SUCCESS);
+    ASSERT_EQ(rivide_randombytes(buf1, 32), RIVIDE_SUCCESS);
+    /* Should no longer match deterministic mock */
+    ASSERT_EQ(buf1[0] == 0xA5 && buf1[1] == (0xA5 ^ 1) && buf1[2] == (0xA5 ^ 2), 0);
+
+    /* 6. Reset RNG callback via passing NULL to rivide_set_rng_callback */
+    ASSERT_EQ(rivide_set_rng_callback(mock_deterministic_rng), RIVIDE_SUCCESS);
+    ASSERT_EQ(rivide_set_rng_callback(NULL), RIVIDE_SUCCESS);
+    ASSERT_EQ(rivide_randombytes(buf1, 32), RIVIDE_SUCCESS);
+    ASSERT_EQ(buf1[0] == 0xA5 && buf1[1] == (0xA5 ^ 1) && buf1[2] == (0xA5 ^ 2), 0);
 
     return 0;
 }
