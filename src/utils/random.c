@@ -59,9 +59,6 @@ typedef volatile rivide_rng_callback_t atomic_rng_callback_t;
 static atomic_rng_callback_t g_rng_callback = (rivide_rng_callback_t)0;
 
 rivide_status_t rivide_set_rng_callback(rivide_rng_callback_t callback) {
-    if (!callback) {
-        return RIVIDE_ERR_NULL_PTR;
-    }
     RIVIDE_ATOMIC_STORE_RNG(g_rng_callback, callback);
     return RIVIDE_SUCCESS;
 }
@@ -70,22 +67,39 @@ rivide_status_t rivide_set_randombytes(rivide_rng_callback_t callback) {
     return rivide_set_rng_callback(callback);
 }
 
+rivide_status_t rivide_reset_rng_callback(void) {
+    RIVIDE_ATOMIC_STORE_RNG(g_rng_callback, (rivide_rng_callback_t)0);
+    return RIVIDE_SUCCESS;
+}
+
 #if defined(RIVIDE_PLATFORM_LINUX)
 
 #include <errno.h>
 #include <sys/random.h>
 
 /**
+ * @brief Maximum chunk size per getrandom(2) call.
+ *
+ * Linux getrandom(2) man page specifies a maximum of 33,554,431 bytes per call.
+ * We clamp to 16 MiB (16,777,216 bytes) per chunk to guarantee safety against EINVAL.
+ */
+#define RIVIDE_GETRANDOM_MAX_CHUNK (16 * 1024 * 1024)
+
+/**
  * @brief Linux implementation using getrandom(2).
  *
  * Loops until all requested bytes are filled, handling partial reads
  * and signal interruptions (EINTR/EAGAIN) from the kernel entropy pool.
+ * Clamps chunk requests to prevent EINVAL on large buffers and guards against
+ * zero-return infinite loops.
  */
 static rivide_status_t rivide_os_randombytes(uint8_t *buf, size_t len) {
     while (len > 0) {
-        ssize_t ret = getrandom(buf, len, 0);
-        if (ret < 0) {
-            if (errno == EINTR || errno == EAGAIN) {
+        size_t chunk =
+            (len > (size_t)RIVIDE_GETRANDOM_MAX_CHUNK) ? (size_t)RIVIDE_GETRANDOM_MAX_CHUNK : len;
+        ssize_t ret = getrandom(buf, chunk, 0);
+        if (ret <= 0) {
+            if (ret < 0 && (errno == EINTR || errno == EAGAIN)) {
                 continue;
             }
             return RIVIDE_ERR_RNG_FAILURE;
@@ -136,9 +150,14 @@ static rivide_status_t rivide_os_randombytes(uint8_t *buf, size_t len) {
 #endif
 
 static rivide_status_t rivide_os_randombytes(uint8_t *buf, size_t len) {
-    NTSTATUS status = BCryptGenRandom(NULL, buf, (ULONG)len, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
-    if (status != 0) {
-        return RIVIDE_ERR_RNG_FAILURE;
+    while (len > 0) {
+        ULONG chunk = (len > 0xFFFFFFFFUL) ? 0xFFFFFFFFUL : (ULONG)len;
+        NTSTATUS status = BCryptGenRandom(NULL, buf, chunk, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+        if (status != 0) {
+            return RIVIDE_ERR_RNG_FAILURE;
+        }
+        buf += chunk;
+        len -= chunk;
     }
     return RIVIDE_SUCCESS;
 }
@@ -183,12 +202,12 @@ static rivide_status_t rivide_os_randombytes(uint8_t *buf, size_t len) {
 rivide_status_t rivide_randombytes(uint8_t *buf, size_t len) {
     rivide_rng_callback_t cb;
 
-    if (!buf && len > 0) {
-        return RIVIDE_ERR_NULL_PTR;
-    }
-
     if (len == 0) {
         return RIVIDE_SUCCESS;
+    }
+
+    if (!buf) {
+        return RIVIDE_ERR_NULL_PTR;
     }
 
     /* Load user callback atomically to ensure thread safety without data races.

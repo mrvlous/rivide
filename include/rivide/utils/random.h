@@ -64,22 +64,32 @@ typedef rivide_status_t (*rivide_rng_callback_t)(uint8_t *buf, size_t len);
  * The registered callback is stored atomically and used by @ref rivide_randombytes
  * for all subsequent calls across all threads.
  *
- * @param[in] callback  Pointer to the RNG callback function.
+ * Passing @p callback as NULL resets the generator back to the platform's default CSPRNG.
  *
- * @return @ref RIVIDE_SUCCESS on success, or @ref RIVIDE_ERR_NULL_PTR if
- *         @p callback is NULL.
+ * @param[in] callback  Pointer to the RNG callback function, or NULL to reset.
+ *
+ * @return @ref RIVIDE_SUCCESS on success.
  */
 rivide_status_t rivide_set_rng_callback(rivide_rng_callback_t callback);
 
 /**
  * @brief Alias for @ref rivide_set_rng_callback (Thread-Safe Atomic).
  *
- * @param[in] callback  Pointer to the RNG callback function.
+ * @param[in] callback  Pointer to the RNG callback function, or NULL to reset.
  *
- * @return @ref RIVIDE_SUCCESS on success, or @ref RIVIDE_ERR_NULL_PTR if
- *         @p callback is NULL.
+ * @return @ref RIVIDE_SUCCESS on success.
  */
 rivide_status_t rivide_set_randombytes(rivide_rng_callback_t callback);
+
+/**
+ * @brief Reset custom random number generator callback back to OS default (Thread-Safe Atomic).
+ *
+ * Reverts @ref rivide_randombytes to dispatch to the platform's default CSPRNG.
+ * Equivalent to calling @ref rivide_set_rng_callback with NULL.
+ *
+ * @return @ref RIVIDE_SUCCESS on success.
+ */
+rivide_status_t rivide_reset_rng_callback(void);
 
 /**
  * @brief Fill a buffer with cryptographically secure random bytes.
