@@ -104,9 +104,12 @@ static void ml_kem_keypair_internal(uint8_t *pk, uint8_t *sk, const uint8_t seed
     rivide_cleanse(buf, sizeof(buf));
     rivide_cleanse(g_input, sizeof(g_input));
     rivide_cleanse(extseed, sizeof(extseed));
+    rivide_cleanse(rho, sizeof(rho));
     rivide_cleanse(sigma, sizeof(sigma));
+    rivide_cleanse(&a_row, sizeof(a_row));
     rivide_cleanse(&s, sizeof(s));
     rivide_cleanse(&e, sizeof(e));
+    rivide_cleanse(&t, sizeof(t));
 }
 
 /**
@@ -294,6 +297,7 @@ static rivide_status_t ml_kem_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk
 
     ret = rivide_randombytes(m, 32);
     if (ret != RIVIDE_SUCCESS) {
+        rivide_cleanse(m, sizeof(m));
         return ret;
     }
 
@@ -312,6 +316,7 @@ static rivide_status_t ml_kem_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk
     }
 
     rivide_cleanse(m, sizeof(m));
+    rivide_cleanse(h_pk, sizeof(h_pk));
     rivide_cleanse(g_input, sizeof(g_input));
     rivide_cleanse(g_output, sizeof(g_output));
 

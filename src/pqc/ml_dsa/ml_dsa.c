@@ -55,8 +55,10 @@ static rivide_status_t ml_dsa_keygen_internal(uint8_t *pk, uint8_t *sk, int k, i
     (void)gamma2;
 
     ret = rivide_randombytes(seed, 32);
-    if (ret != RIVIDE_SUCCESS)
+    if (ret != RIVIDE_SUCCESS) {
+        rivide_cleanse(seed, sizeof(seed));
         return ret;
+    }
 
     /* H(seed || k || l) -> rho, rho', K */
     {
@@ -129,10 +131,12 @@ static rivide_status_t ml_dsa_keygen_internal(uint8_t *pk, uint8_t *sk, int k, i
     rivide_cleanse(buf, sizeof(buf));
     rivide_cleanse(rho_prime, sizeof(rho_prime));
     rivide_cleanse(K, sizeof(K));
+    rivide_cleanse(tr, sizeof(tr));
     rivide_cleanse(&s1, sizeof(s1));
     rivide_cleanse(&s1_hat, sizeof(s1_hat));
     rivide_cleanse(&s2, sizeof(s2));
     rivide_cleanse(&t, sizeof(t));
+    rivide_cleanse(&t1, sizeof(t1));
     rivide_cleanse(&t0, sizeof(t0));
 
     return RIVIDE_SUCCESS;
@@ -430,9 +434,12 @@ cleanup:
     rivide_cleanse(&cs2, sizeof(cs2));
     rivide_cleanse(&ct0, sizeof(ct0));
     rivide_cleanse(&w0, sizeof(w0));
+    rivide_cleanse(&w1, sizeof(w1));
     rivide_cleanse(&w, sizeof(w));
     rivide_cleanse(K, sizeof(K));
     rivide_cleanse(rho_prime, sizeof(rho_prime));
+    rivide_cleanse(rho, sizeof(rho));
+    rivide_cleanse(tr, sizeof(tr));
     rivide_cleanse(&y, sizeof(y));
     rivide_cleanse(&z, sizeof(z));
     rivide_cleanse(&cp, sizeof(cp));
@@ -611,10 +618,13 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
         }
 
         rivide_shake_squeeze(&hstate, ctilde_prime, ctilde_bytes);
+        rivide_cleanse(&hstate, sizeof(hstate));
 
         if (rivide_ct_memcmp(sig, ctilde_prime, ctilde_bytes) != 0) {
+            rivide_cleanse(ctilde_prime, sizeof(ctilde_prime));
             return RIVIDE_ERR_VERIFICATION_FAILED;
         }
+        rivide_cleanse(ctilde_prime, sizeof(ctilde_prime));
     }
 
     return RIVIDE_SUCCESS;
