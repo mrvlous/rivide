@@ -97,6 +97,83 @@ int test_ml_kem_768_invalid_sk_type_check(void) {
     return 0;
 }
 
+int test_ml_kem_768_invalid_pk_type_check(void) {
+    uint8_t pk[RIVIDE_ML_KEM_768_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_KEM_768_SK_BYTES];
+    uint8_t ct[RIVIDE_ML_KEM_768_CT_BYTES];
+    uint8_t ss[RIVIDE_ML_KEM_SS_BYTES];
+
+    ASSERT_OK(rivide_ml_kem_768_keygen(pk, sk));
+
+    /* Inject non-canonical coefficient >= 3329 (0x0FFF = 4095) into t portion of pk. */
+    pk[0] = 0xFF;
+    pk[1] = 0x0F;
+
+    /* Encapsulation must reject corrupted pk with RIVIDE_ERR_INVALID_PARAM. */
+    ASSERT_EQ(rivide_ml_kem_768_encaps(ct, ss, pk), RIVIDE_ERR_INVALID_PARAM);
+
+    return 0;
+}
+
+int test_ml_kem_1024_invalid_ct(void) {
+    uint8_t pk[RIVIDE_ML_KEM_1024_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_KEM_1024_SK_BYTES];
+    uint8_t ct[RIVIDE_ML_KEM_1024_CT_BYTES];
+    uint8_t ss_encap[RIVIDE_ML_KEM_SS_BYTES];
+    uint8_t ss_decap[RIVIDE_ML_KEM_SS_BYTES];
+
+    ASSERT_OK(rivide_ml_kem_1024_keygen(pk, sk));
+    ASSERT_OK(rivide_ml_kem_1024_encaps(ct, ss_encap, pk));
+
+    /* Tamper with ciphertext. */
+    ct[0] ^= 0xFF;
+
+    ASSERT_OK(rivide_ml_kem_1024_decaps(ss_decap, ct, sk));
+
+    /* Implicit rejection: shared secret must NOT match. */
+    ASSERT_MEM_NE(ss_encap, ss_decap, RIVIDE_ML_KEM_SS_BYTES);
+
+    return 0;
+}
+
+int test_ml_kem_1024_invalid_sk_type_check(void) {
+    uint8_t pk[RIVIDE_ML_KEM_1024_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_KEM_1024_SK_BYTES];
+    uint8_t ct[RIVIDE_ML_KEM_1024_CT_BYTES];
+    uint8_t ss_encap[RIVIDE_ML_KEM_SS_BYTES];
+    uint8_t ss_decap[RIVIDE_ML_KEM_SS_BYTES];
+
+    ASSERT_OK(rivide_ml_kem_1024_keygen(pk, sk));
+    ASSERT_OK(rivide_ml_kem_1024_encaps(ct, ss_encap, pk));
+
+    /* Inject non-canonical coefficient >= 3329 (0x0FFF = 4095) into s portion of sk. */
+    sk[0] = 0xFF;
+    sk[1] = 0x0F;
+
+    /* Decapsulation must reject corrupted sk with RIVIDE_ERR_INVALID_PARAM. */
+    ASSERT_EQ(rivide_ml_kem_1024_decaps(ss_decap, ct, sk), RIVIDE_ERR_INVALID_PARAM);
+
+    return 0;
+}
+
+int test_ml_kem_1024_invalid_pk_type_check(void) {
+    uint8_t pk[RIVIDE_ML_KEM_1024_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_KEM_1024_SK_BYTES];
+    uint8_t ct[RIVIDE_ML_KEM_1024_CT_BYTES];
+    uint8_t ss[RIVIDE_ML_KEM_SS_BYTES];
+
+    ASSERT_OK(rivide_ml_kem_1024_keygen(pk, sk));
+
+    /* Inject non-canonical coefficient >= 3329 (0x0FFF = 4095) into t portion of pk. */
+    pk[0] = 0xFF;
+    pk[1] = 0x0F;
+
+    /* Encapsulation must reject corrupted pk with RIVIDE_ERR_INVALID_PARAM. */
+    ASSERT_EQ(rivide_ml_kem_1024_encaps(ct, ss, pk), RIVIDE_ERR_INVALID_PARAM);
+
+    return 0;
+}
+
 int test_ml_kem_null_pointers(void) {
     uint8_t pk[RIVIDE_ML_KEM_768_PK_BYTES];
     uint8_t sk[RIVIDE_ML_KEM_768_SK_BYTES];

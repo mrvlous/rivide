@@ -149,3 +149,28 @@ int test_modular_reductions(void) {
 
     return 0;
 }
+
+int test_simd_poly_pointwise_montgomery(void) {
+    int16_t a[256], b[256], r[256];
+    size_t i;
+
+    for (i = 0; i < 256; i++) {
+        a[i] = (int16_t)((i * 17) % 3329);
+        b[i] = (int16_t)((i * 23) % 3329);
+    }
+
+    rivide_simd_poly_pointwise_montgomery(r, a, b, 3329, 62209);
+
+    /* NULL pointer validation: must safely return without crash */
+    rivide_simd_poly_pointwise_montgomery(NULL, a, b, 3329, 62209);
+    rivide_simd_poly_pointwise_montgomery(r, NULL, b, 3329, 62209);
+    rivide_simd_poly_pointwise_montgomery(r, a, NULL, 3329, 62209);
+
+    for (i = 0; i < 256; i++) {
+        int32_t prod = (int32_t)a[i] * (int32_t)b[i];
+        int16_t expected = montgomery_reduce(prod);
+        ASSERT_EQ(r[i], expected);
+    }
+
+    return 0;
+}

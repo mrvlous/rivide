@@ -30,7 +30,11 @@ int g_tests_failed = 0;
 extern int test_ml_kem_768_roundtrip(void);
 extern int test_ml_kem_768_invalid_ct(void);
 extern int test_ml_kem_768_invalid_sk_type_check(void);
+extern int test_ml_kem_768_invalid_pk_type_check(void);
 extern int test_ml_kem_1024_roundtrip(void);
+extern int test_ml_kem_1024_invalid_ct(void);
+extern int test_ml_kem_1024_invalid_sk_type_check(void);
+extern int test_ml_kem_1024_invalid_pk_type_check(void);
 extern int test_ml_kem_null_pointers(void);
 
 extern int test_ml_dsa_65_roundtrip(void);
@@ -40,15 +44,20 @@ extern int test_ml_dsa_65_siglen_validation(void);
 extern int test_ml_dsa_87_siglen_validation(void);
 extern int test_ml_dsa_boundary_fuzz(void);
 extern int test_ml_dsa_null_and_buffer_bounds(void);
+extern int test_ml_dsa_87_boundary_fuzz(void);
+extern int test_ml_dsa_87_null_and_buffer_bounds(void);
 
 extern int test_simd_poly_add_reduce(void);
 extern int test_simd_poly_sub_reduce(void);
+extern int test_simd_poly_pointwise_montgomery(void);
 extern int test_ml_kem_ntt_invertibility(void);
 extern int test_ml_dsa_ntt_invertibility(void);
 extern int test_modular_reductions(void);
 
 extern int test_sha3_256_empty(void);
+extern int test_sha3_512_empty(void);
 extern int test_shake128_incremental(void);
+extern int test_shake256_incremental(void);
 
 extern int test_aes128_gcm_roundtrip(void);
 extern int test_aes256_gcm_invalid_tag(void);
@@ -76,7 +85,11 @@ int main(void) {
     RUN_TEST(test_ml_kem_768_roundtrip);
     RUN_TEST(test_ml_kem_768_invalid_ct);
     RUN_TEST(test_ml_kem_768_invalid_sk_type_check);
+    RUN_TEST(test_ml_kem_768_invalid_pk_type_check);
     RUN_TEST(test_ml_kem_1024_roundtrip);
+    RUN_TEST(test_ml_kem_1024_invalid_ct);
+    RUN_TEST(test_ml_kem_1024_invalid_sk_type_check);
+    RUN_TEST(test_ml_kem_1024_invalid_pk_type_check);
     RUN_TEST(test_ml_kem_null_pointers);
 
     printf("\nML-DSA Tests:\n");
@@ -87,17 +100,22 @@ int main(void) {
     RUN_TEST(test_ml_dsa_87_siglen_validation);
     RUN_TEST(test_ml_dsa_boundary_fuzz);
     RUN_TEST(test_ml_dsa_null_and_buffer_bounds);
+    RUN_TEST(test_ml_dsa_87_boundary_fuzz);
+    RUN_TEST(test_ml_dsa_87_null_and_buffer_bounds);
 
     printf("\nSIMD & NTT Arithmetic Tests:\n");
     RUN_TEST(test_simd_poly_add_reduce);
     RUN_TEST(test_simd_poly_sub_reduce);
+    RUN_TEST(test_simd_poly_pointwise_montgomery);
     RUN_TEST(test_ml_kem_ntt_invertibility);
     RUN_TEST(test_ml_dsa_ntt_invertibility);
     RUN_TEST(test_modular_reductions);
 
     printf("\nCrypto Primitives Tests:\n");
     RUN_TEST(test_sha3_256_empty);
+    RUN_TEST(test_sha3_512_empty);
     RUN_TEST(test_shake128_incremental);
+    RUN_TEST(test_shake256_incremental);
     RUN_TEST(test_aes128_gcm_roundtrip);
     RUN_TEST(test_aes256_gcm_invalid_tag);
     RUN_TEST(test_aes_gcm_inplace);

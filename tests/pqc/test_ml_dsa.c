@@ -219,3 +219,83 @@ int test_ml_dsa_null_and_buffer_bounds(void) {
 
     return 0;
 }
+
+int test_ml_dsa_87_boundary_fuzz(void) {
+    uint8_t pk[RIVIDE_ML_DSA_87_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_DSA_87_SK_BYTES];
+    uint8_t sig[RIVIDE_ML_DSA_87_SIG_BYTES];
+    uint8_t corrupt_sig[RIVIDE_ML_DSA_87_SIG_BYTES];
+    uint8_t corrupt_pk[RIVIDE_ML_DSA_87_PK_BYTES];
+    size_t siglen = sizeof(sig);
+
+    ASSERT_OK(rivide_ml_dsa_87_keygen(pk, sk));
+    ASSERT_OK(rivide_ml_dsa_87_sign(sig, &siglen, test_msg, sizeof(test_msg), sk));
+
+    /* NULL pointer tests. */
+    ASSERT_FAIL(rivide_ml_dsa_87_verify(NULL, siglen, test_msg, sizeof(test_msg), pk));
+    ASSERT_FAIL(rivide_ml_dsa_87_verify(sig, siglen, NULL, sizeof(test_msg), pk));
+    ASSERT_FAIL(rivide_ml_dsa_87_verify(sig, siglen, test_msg, sizeof(test_msg), NULL));
+
+    /* Corrupt challenge seed c_tilde (first 64 bytes). */
+    memcpy(corrupt_sig, sig, sizeof(sig));
+    corrupt_sig[0] ^= 0x01;
+    ASSERT_FAIL(rivide_ml_dsa_87_verify(corrupt_sig, siglen, test_msg, sizeof(test_msg), pk));
+
+    /* Corrupt z polynomial vector (middle section). */
+    memcpy(corrupt_sig, sig, sizeof(sig));
+    corrupt_sig[100] ^= 0x55;
+    ASSERT_FAIL(rivide_ml_dsa_87_verify(corrupt_sig, siglen, test_msg, sizeof(test_msg), pk));
+
+    /* Corrupt hint vector (tail section). */
+    memcpy(corrupt_sig, sig, sizeof(sig));
+    corrupt_sig[RIVIDE_ML_DSA_87_SIG_BYTES - 1] ^= 0x80;
+    ASSERT_FAIL(rivide_ml_dsa_87_verify(corrupt_sig, siglen, test_msg, sizeof(test_msg), pk));
+
+    /* Corrupt public key. */
+    memcpy(corrupt_pk, pk, sizeof(pk));
+    corrupt_pk[0] ^= 0xFF;
+    ASSERT_FAIL(rivide_ml_dsa_87_verify(sig, siglen, test_msg, sizeof(test_msg), corrupt_pk));
+
+    /* Empty message (msglen = 0, msg = NULL) valid signature roundtrip. */
+    {
+        uint8_t zero_sig[RIVIDE_ML_DSA_87_SIG_BYTES];
+        size_t zero_siglen = sizeof(zero_sig);
+        ASSERT_OK(rivide_ml_dsa_87_sign(zero_sig, &zero_siglen, NULL, 0, sk));
+        ASSERT_OK(rivide_ml_dsa_87_verify(zero_sig, zero_siglen, NULL, 0, pk));
+    }
+
+    return 0;
+}
+
+int test_ml_dsa_87_null_and_buffer_bounds(void) {
+    uint8_t pk[RIVIDE_ML_DSA_87_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_DSA_87_SK_BYTES];
+    uint8_t sig[RIVIDE_ML_DSA_87_SIG_BYTES];
+    size_t siglen = sizeof(sig);
+
+    ASSERT_OK(rivide_ml_dsa_87_keygen(pk, sk));
+
+    /* NULL pointer checks in KeyGen */
+    ASSERT_EQ(rivide_ml_dsa_87_keygen(NULL, sk), RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_dsa_87_keygen(pk, NULL), RIVIDE_ERR_NULL_PTR);
+
+    /* NULL pointer checks in Sign */
+    ASSERT_EQ(rivide_ml_dsa_87_sign(NULL, &siglen, test_msg, sizeof(test_msg), sk),
+              RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_dsa_87_sign(sig, NULL, test_msg, sizeof(test_msg), sk),
+              RIVIDE_ERR_NULL_PTR);
+    ASSERT_EQ(rivide_ml_dsa_87_sign(sig, &siglen, test_msg, sizeof(test_msg), NULL),
+              RIVIDE_ERR_NULL_PTR);
+
+    /* Buffer capacity validation: siglen smaller than required must return RIVIDE_ERR_INVALID_PARAM
+     */
+    size_t small_len = RIVIDE_ML_DSA_87_SIG_BYTES - 1;
+    ASSERT_EQ(rivide_ml_dsa_87_sign(sig, &small_len, test_msg, sizeof(test_msg), sk),
+              RIVIDE_ERR_INVALID_PARAM);
+
+    small_len = 0;
+    ASSERT_EQ(rivide_ml_dsa_87_sign(sig, &small_len, test_msg, sizeof(test_msg), sk),
+              RIVIDE_ERR_INVALID_PARAM);
+
+    return 0;
+}
