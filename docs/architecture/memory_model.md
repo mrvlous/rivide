@@ -33,23 +33,31 @@ Rivide implements a multi-layer secure zeroization primitive:
 
 ```c
 void rivide_cleanse(void *ptr, size_t len) {
-    if (ptr == NULL || len == 0) {
+    if (!ptr || len == 0) {
         return;
     }
 
-    volatile uint8_t *p = (volatile uint8_t *)ptr;
-    while (len--) {
-        *p++ = 0;
+    volatile unsigned char *p = (volatile unsigned char *)ptr;
+    size_t i;
+
+    for (i = 0; i < len; i++) {
+        p[i] = 0;
     }
 
-    /* Compiler memory clobber barrier */
+    /*
+     * Compiler memory barrier: ensures the compiler does not reorder or
+     * eliminate the preceding volatile writes, even if the buffer appears
+     * dead after this call.
+     */
 #if defined(__GNUC__) || defined(__clang__)
-    __asm__ __volatile__("" : : "r"(ptr) : "memory");
+    __asm__ volatile("" ::: "memory");
+#elif defined(_MSC_VER)
+    _ReadWriteBarrier();
 #endif
 }
 ```
 
-The `volatile` pointer access combined with the `__asm__ __volatile__` clobber barrier ensures that the compiler treats the memory region as externally observable, preventing DSE under any compiler optimization level (`-O2`, `-O3`, `-Ofast`, `-flto`).
+The `volatile` pointer access combined with the memory clobber barrier ensures that the compiler treats the memory region as externally observable, preventing DSE under any compiler optimization level (`-O2`, `-O3`, `-Ofast`, `-flto`).
 
 ## 3. RAII Memory Safety in High-Level Bindings
 

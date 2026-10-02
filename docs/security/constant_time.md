@@ -27,28 +27,45 @@ Standard `memcmp` returns early upon finding the first differing byte, leaking t
 
 ```c
 int rivide_ct_memcmp(const void *a, const void *b, size_t len) {
-    const uint8_t *pa = (const uint8_t *)a;
-    const uint8_t *pb = (const uint8_t *)b;
-    uint8_t diff = 0;
-
-    for (size_t i = 0; i < len; i++) {
-        diff |= (pa[i] ^ pb[i]);
+    if (len == 0) {
+        return 0;
+    }
+    if (!a || !b) {
+        return (a == b) ? 0 : 1;
     }
 
-    return (int)diff;
+    const unsigned char *pa = (const unsigned char *)a;
+    const unsigned char *pb = (const unsigned char *)b;
+    unsigned int diff = 0;
+
+    for (size_t i = 0; i < len; i++) {
+        diff |= (unsigned int)(pa[i] ^ pb[i]);
+    }
+
+    /* Collapse accumulated difference to 0 (equal) or 1 (different) */
+    return (int)((diff | (0u - diff)) >> 31);
 }
 ```
 
-This ensures that comparison latency is identical regardless of where mismatches occur.
+This ensures that comparison latency is identical regardless of where mismatches occur, while defensively guarding against null pointers.
 
 ### Constant-Time Multiplexer (`rivide_ct_select`)
 
-Selects between two byte buffers based on a mask without conditional branching:
+Selects between two byte buffers based on a selector flag without conditional branching:
 
 ```c
-void rivide_ct_select(uint8_t *dest, const uint8_t *a, const uint8_t *b, size_t len, uint8_t mask) {
+void rivide_ct_select(void *dst, const void *src_a, const void *src_b, size_t len, int selector) {
+    if (!dst || !src_a || !src_b || len == 0) {
+        return;
+    }
+
+    const unsigned char *a = (const unsigned char *)src_a;
+    const unsigned char *b = (const unsigned char *)src_b;
+    unsigned char *d = (unsigned char *)dst;
+    unsigned int mask = (unsigned int)(-(selector != 0)) & 0xFFu;
+
     for (size_t i = 0; i < len; i++) {
-        dest[i] = b[i] ^ (mask & (a[i] ^ b[i]));
+        d[i] = (unsigned char)((unsigned int)a[i] ^ (mask & ((unsigned int)a[i] ^ (unsigned int)b[i])));
     }
 }
 ```

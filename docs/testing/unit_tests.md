@@ -23,12 +23,12 @@ cd build && ctest --output-on-failure
 
 ## 2. Test Suite Coverage
 
-- **`test_ml_kem.c`**: KeyGen, encapsulation, decapsulation roundtrip, and implicit rejection validation on corrupted ciphertexts.
-- **`test_ml_dsa.c`**: KeyGen, signing, and verification roundtrip, and tamper rejection on modified messages or signatures.
-- **`test_ntt.c`**: Forward and inverse NTT invertibility, linearity, and point-wise multiplication correctness.
-- **`test_sha3.c`**: Known NIST test vectors for SHA3-256/512 and SHAKE-128/256.
-- **`test_aes_gcm.c`**: Known NIST vectors for AES-128-GCM and AES-256-GCM authenticated encryption and authentication failure rejection.
-- **`test_mem.c`**: Constant-time memory comparison (`rivide_ct_memcmp`), selection (`rivide_ct_select`), and zeroization barrier validation.
+- **`test_ml_kem.c`**: KeyGen, encapsulation, decapsulation roundtrip, secret key canonical coefficient validation, and implicit rejection validation on corrupted ciphertexts.
+- **`test_ml_dsa.c`**: KeyGen, signing, verification roundtrip, buffer capacity checks, and tamper rejection on modified messages or signatures.
+- **`test_ntt.c`**: Forward and inverse NTT invertibility, SIMD vector operations (`rivide_simd_poly_*`), linearity, and defensive NULL pointer checks.
+- **`test_sha3.c`**: Known NIST test vectors for SHA3-256/512, incremental SHAKE-128, and defensive NULL input parameter zeroization checks.
+- **`test_aes_gcm.c`**: Known NIST vectors for AES-128/256-GCM, in-place processing, partial overlap rejection, and boundary length validation.
+- **`test_mem.c`**: Constant-time memory comparison (`rivide_ct_memcmp`), conditional selection (`rivide_ct_select`), zeroization barriers, OS CSPRNG entropy bounds, and callback lifecycle reset verification.
 
 ## 3. Differential Testing Methodology
 

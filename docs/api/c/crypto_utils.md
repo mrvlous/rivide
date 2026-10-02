@@ -65,6 +65,6 @@ rivide_status_t rivide_reset_rng_callback(void);
 /* Constant-time memory comparison */
 int rivide_ct_memcmp(const void *a, const void *b, size_t len);
 
-/* Constant-time buffer selector */
-void rivide_ct_select(uint8_t *dest, const uint8_t *a, const uint8_t *b, size_t len, uint8_t mask);
+/* Constant-time conditional selector */
+void rivide_ct_select(void *dst, const void *src_a, const void *src_b, size_t len, int selector);
 ```
