@@ -47,6 +47,13 @@ void rivide_cleanse(void *ptr, size_t len) {
 }
 
 int rivide_ct_memcmp(const void *a, const void *b, size_t len) {
+    if (len == 0) {
+        return 0;
+    }
+    if (!a || !b) {
+        return (a == b) ? 0 : 1;
+    }
+
     const unsigned char *pa = (const unsigned char *)a;
     const unsigned char *pb = (const unsigned char *)b;
     unsigned int diff = 0;
@@ -71,7 +78,7 @@ void rivide_ct_select(void *dst, const void *src_a, const void *src_b, size_t le
     const unsigned char *a = (const unsigned char *)src_a;
     const unsigned char *b = (const unsigned char *)src_b;
     unsigned char *d = (unsigned char *)dst;
-    unsigned char mask;
+    unsigned int mask;
     size_t i;
 
     /*
@@ -79,9 +86,10 @@ void rivide_ct_select(void *dst, const void *src_a, const void *src_b, size_t le
      * If selector is 0, mask is 0x00 (select src_a).
      * If selector is non-zero, mask is 0xFF (select src_b).
      */
-    mask = (unsigned char)(-(selector != 0));
+    mask = (unsigned int)(-(selector != 0)) & 0xFFu;
 
     for (i = 0; i < len; i++) {
-        d[i] = (unsigned char)(a[i] ^ (mask & (a[i] ^ b[i])));
+        d[i] = (unsigned char)((unsigned int)a[i] ^
+                               (mask & ((unsigned int)a[i] ^ (unsigned int)b[i])));
     }
 }

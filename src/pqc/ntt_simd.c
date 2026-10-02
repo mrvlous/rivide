@@ -34,6 +34,9 @@
  * per iteration.
  */
 void rivide_simd_poly_add_reduce(int16_t *r, const int16_t *a, const int16_t *b, int16_t q) {
+    if (!r || !a || !b) {
+        return;
+    }
     size_t i;
     (void)q;
 #if defined(RIVIDE_NTT_AVX2_ENABLED)
@@ -66,6 +69,9 @@ void rivide_simd_poly_add_reduce(int16_t *r, const int16_t *a, const int16_t *b,
  * Performs branchless coefficient subtraction using SIMD registers or C99.
  */
 void rivide_simd_poly_sub_reduce(int16_t *r, const int16_t *a, const int16_t *b, int16_t q) {
+    if (!r || !a || !b) {
+        return;
+    }
     size_t i;
     (void)q;
 #if defined(RIVIDE_NTT_AVX2_ENABLED)
@@ -99,6 +105,9 @@ void rivide_simd_poly_sub_reduce(int16_t *r, const int16_t *a, const int16_t *b,
  */
 void rivide_simd_poly_pointwise_montgomery(int16_t *r, const int16_t *a, const int16_t *b,
                                            int16_t q, int32_t qinv) {
+    if (!r || !a || !b) {
+        return;
+    }
     size_t i;
     for (i = 0; i < 256; i++) {
         int32_t prod = (int32_t)a[i] * (int32_t)b[i];

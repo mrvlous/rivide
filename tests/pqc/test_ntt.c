@@ -42,6 +42,11 @@ int test_simd_poly_add_reduce(void) {
 
     rivide_simd_poly_add_reduce(r, a, b, 3329);
 
+    /* NULL pointer validation: must be safe no-op */
+    rivide_simd_poly_add_reduce(NULL, a, b, 3329);
+    rivide_simd_poly_add_reduce(r, NULL, b, 3329);
+    rivide_simd_poly_add_reduce(r, a, NULL, 3329);
+
     for (i = 0; i < 256; i++) {
         int16_t expected = (int16_t)(a[i] + b[i]);
         ASSERT_EQ(r[i], expected);
@@ -60,6 +65,11 @@ int test_simd_poly_sub_reduce(void) {
     }
 
     rivide_simd_poly_sub_reduce(r, a, b, 3329);
+
+    /* NULL pointer validation: must be safe no-op */
+    rivide_simd_poly_sub_reduce(NULL, a, b, 3329);
+    rivide_simd_poly_sub_reduce(r, NULL, b, 3329);
+    rivide_simd_poly_sub_reduce(r, a, NULL, 3329);
 
     for (i = 0; i < 256; i++) {
         int16_t expected = (int16_t)(a[i] - b[i]);

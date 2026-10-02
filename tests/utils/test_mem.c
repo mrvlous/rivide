@@ -32,6 +32,10 @@ int test_ct_memcmp(void) {
 
     ASSERT_EQ(rivide_ct_memcmp(a, b, 32), 0);
     ASSERT_EQ(rivide_ct_memcmp(a, c, 32) != 0, 1);
+    ASSERT_EQ(rivide_ct_memcmp(NULL, NULL, 0), 0);
+    ASSERT_EQ(rivide_ct_memcmp(a, b, 0), 0);
+    ASSERT_EQ(rivide_ct_memcmp(a, NULL, 32) != 0, 1);
+    ASSERT_EQ(rivide_ct_memcmp(NULL, b, 32) != 0, 1);
 
     return 0;
 }
@@ -46,6 +50,12 @@ int test_ct_select(void) {
 
     rivide_ct_select(dst, a, b, 16, 1);
     ASSERT_MEM_EQ(dst, b, 16);
+
+    /* NULL pointers and zero length must be safe no-ops */
+    rivide_ct_select(NULL, a, b, 16, 0);
+    rivide_ct_select(dst, NULL, b, 16, 0);
+    rivide_ct_select(dst, a, NULL, 16, 0);
+    rivide_ct_select(dst, a, b, 0, 0);
 
     return 0;
 }
