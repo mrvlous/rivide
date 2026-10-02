@@ -20,6 +20,8 @@
  * @brief Unit tests for SHA-3 and SHAKE functions.
  */
 
+#include <string.h>
+
 #include "rivide/crypto/sha3.h"
 
 #include "test_harness.h"
@@ -35,6 +37,12 @@ int test_sha3_256_empty(void) {
 
     rivide_sha3_256(out, (const uint8_t *)"", 0);
     ASSERT_MEM_EQ(out, expected, 32);
+
+    /* NULL input pointer with non-zero length must zeroize out and not forge empty hash */
+    memset(out, 0xEE, sizeof(out));
+    rivide_sha3_256(out, NULL, 32);
+    static const uint8_t zeroes[32] = {0};
+    ASSERT_MEM_EQ(out, zeroes, 32);
 
     return 0;
 }

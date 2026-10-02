@@ -62,6 +62,12 @@ static void keccak_hash(uint8_t *out, size_t outlen, const uint8_t *in, size_t i
     if (!out && outlen > 0) {
         return;
     }
+    if (!in && inlen > 0) {
+        if (out && outlen > 0) {
+            rivide_cleanse(out, outlen);
+        }
+        return;
+    }
 
     rivide_keccak_state_t ctx;
 
@@ -89,19 +95,28 @@ void rivide_shake256(uint8_t *out, size_t outlen, const uint8_t *in, size_t inle
 }
 
 void rivide_shake128_init(rivide_keccak_state_t *ctx) {
+    if (!ctx) {
+        return;
+    }
     rivide_keccak_init(ctx, SHAKE128_RATE);
 }
 
 void rivide_shake256_init(rivide_keccak_state_t *ctx) {
+    if (!ctx) {
+        return;
+    }
     rivide_keccak_init(ctx, SHAKE256_RATE);
 }
 
 void rivide_shake_absorb(rivide_keccak_state_t *ctx, const uint8_t *in, size_t inlen) {
+    if (!ctx || (!in && inlen > 0)) {
+        return;
+    }
     rivide_keccak_absorb(ctx, in, inlen);
 }
 
 void rivide_shake_squeeze(rivide_keccak_state_t *ctx, uint8_t *out, size_t outlen) {
-    if (!ctx) {
+    if (!ctx || (!out && outlen > 0)) {
         return;
     }
 

@@ -26,6 +26,8 @@
 
 #include "rivide/crypto/ghash.h"
 
+#include "rivide/utils/mem.h"
+
 /**
  * @brief Multiply two 128-bit blocks in GF(2^128).
  *
@@ -36,6 +38,10 @@
  * @param[in]     y Second 128-bit block.
  */
 void rivide_ghash_mult(uint8_t x[16], const uint8_t y[16]) {
+    if (!x || !y) {
+        return;
+    }
+
     uint8_t v[16];
     uint8_t z[16] = {0};
     int i, j;
@@ -67,6 +73,9 @@ void rivide_ghash_mult(uint8_t x[16], const uint8_t y[16]) {
     for (i = 0; i < 16; i++) {
         x[i] = z[i];
     }
+
+    rivide_cleanse(v, sizeof(v));
+    rivide_cleanse(z, sizeof(z));
 }
 
 /**
@@ -80,6 +89,10 @@ void rivide_ghash_mult(uint8_t x[16], const uint8_t y[16]) {
  * @param[in,out] tag  Accumulated 128-bit tag buffer.
  */
 void rivide_ghash_update(const uint8_t h[16], const uint8_t *data, size_t len, uint8_t tag[16]) {
+    if (!h || (!data && len > 0) || !tag) {
+        return;
+    }
+
     size_t i, j;
     uint8_t block[16];
 
@@ -101,4 +114,6 @@ void rivide_ghash_update(const uint8_t h[16], const uint8_t *data, size_t len, u
         data += chunk;
         len -= chunk;
     }
+
+    rivide_cleanse(block, sizeof(block));
 }
