@@ -158,7 +158,7 @@ static inline uint32_t rot_word(uint32_t w) {
  * @param[out] out     16-byte output ciphertext block.
  */
 void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in, uint8_t *out) {
-    if (!key_ctx || !in || !out) {
+    if (!key_ctx || !in || !out || (key_ctx->rounds != 10 && key_ctx->rounds != 14)) {
         return;
     }
 
