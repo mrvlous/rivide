@@ -192,3 +192,30 @@ int test_aes_key_cleanse(void) {
 
     return 0;
 }
+
+int test_aes_block_null_and_invalid_rounds(void) {
+    rivide_aes_key_t key;
+    static const uint8_t raw_key[16] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    uint8_t in[16] = {0};
+    uint8_t out[16] = {0xFF};
+
+    ASSERT_OK(rivide_aes128_key_expand(&key, raw_key));
+
+    /* NULL pointer safety */
+    rivide_aes_encrypt_block(NULL, in, out);
+    rivide_aes_encrypt_block(&key, NULL, out);
+    rivide_aes_encrypt_block(&key, in, NULL);
+
+    /* Invalid rounds safety: corrupted key context must not crash or read out-of-bounds */
+    key.rounds = 0;
+    rivide_aes_encrypt_block(&key, in, out);
+    key.rounds = -1;
+    rivide_aes_encrypt_block(&key, in, out);
+    key.rounds = 7;
+    rivide_aes_encrypt_block(&key, in, out);
+    key.rounds = 99;
+    rivide_aes_encrypt_block(&key, in, out);
+
+    rivide_aes_key_cleanse(&key);
+    return 0;
+}

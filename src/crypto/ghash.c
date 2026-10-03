@@ -37,6 +37,14 @@
  * @param[in,out] x First 128-bit block (in/out).
  * @param[in]     y Second 128-bit block.
  */
+#if defined(__GNUC__) || defined(__clang__)
+#define RIVIDE_CONSTTIME_BARRIER(var) __asm__ volatile("" : "+r"(var))
+#elif defined(_MSC_VER)
+#define RIVIDE_CONSTTIME_BARRIER(var) _ReadWriteBarrier()
+#else
+#define RIVIDE_CONSTTIME_BARRIER(var) ((void)0)
+#endif
+
 void rivide_ghash_mult(uint8_t x[16], const uint8_t y[16]) {
     if (!x || !y) {
         return;
@@ -54,6 +62,7 @@ void rivide_ghash_mult(uint8_t x[16], const uint8_t y[16]) {
         for (j = 7; j >= 0; j--) {
             uint8_t bit = (uint8_t)((x[i] >> j) & 1);
             uint8_t mask_bit = (uint8_t)(0 - bit);
+            RIVIDE_CONSTTIME_BARRIER(mask_bit);
             int k;
             for (k = 0; k < 16; k++) {
                 z[k] ^= (uint8_t)(v[k] & mask_bit);
@@ -62,6 +71,7 @@ void rivide_ghash_mult(uint8_t x[16], const uint8_t y[16]) {
             {
                 uint8_t carry = (uint8_t)(v[15] & 1);
                 uint8_t mask_carry = (uint8_t)(0 - carry);
+                RIVIDE_CONSTTIME_BARRIER(mask_carry);
                 for (k = 15; k > 0; k--) {
                     v[k] = (uint8_t)((v[k] >> 1) | ((v[k - 1] & 1) << 7));
                 }

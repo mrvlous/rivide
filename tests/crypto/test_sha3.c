@@ -22,6 +22,7 @@
 
 #include <string.h>
 
+#include "rivide/crypto/keccak.h"
 #include "rivide/crypto/sha3.h"
 
 #include "test_harness.h"
@@ -67,6 +68,7 @@ int test_shake128_incremental(void) {
 
 int test_sha3_512_empty(void) {
     uint8_t out[64];
+    static const uint8_t zeroes[64] = {0};
     /* NIST FIPS 202 SHA3-512("") answer:
      * a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a6
      * 15b2123af1f5f94c11e3e9402c3ac558f500199d95b6d3e301758586281dcd26 */
@@ -83,7 +85,6 @@ int test_sha3_512_empty(void) {
     /* NULL input pointer with non-zero length must zeroize out and not forge empty hash */
     memset(out, 0xEE, sizeof(out));
     rivide_sha3_512(out, NULL, 64);
-    static const uint8_t zeroes[64] = {0};
     ASSERT_MEM_EQ(out, zeroes, 64);
 
     return 0;
@@ -106,5 +107,41 @@ int test_shake256_incremental(void) {
 
     ASSERT_MEM_EQ(out_oneshot, out_inc, 64);
 
+    return 0;
+}
+
+int test_keccak_sponge_state_invariants(void) {
+    rivide_keccak_state_t ctx;
+    uint8_t buf[32];
+    uint8_t buf2[32];
+    static const uint8_t data[] = "Sponge State Test";
+
+    rivide_shake128_init(&ctx);
+    rivide_shake_absorb(&ctx, data, sizeof(data));
+    rivide_shake_squeeze(&ctx, buf, sizeof(buf));
+
+    /* Absorbing after squeezing must be rejected and not corrupt state */
+    rivide_shake_absorb(&ctx, data, sizeof(data));
+
+    rivide_shake_squeeze(&ctx, buf2, sizeof(buf2));
+
+    /* NULL context guards */
+    rivide_shake128_init(NULL);
+    rivide_shake256_init(NULL);
+    rivide_shake_absorb(NULL, data, sizeof(data));
+    rivide_shake_squeeze(NULL, buf, sizeof(buf));
+
+    /* Invalid rate bounds guards */
+    rivide_keccak_init(&ctx, 0);
+    rivide_keccak_absorb(&ctx, data, sizeof(data));
+    rivide_keccak_finalize(&ctx, 0x1F);
+    rivide_keccak_squeeze(&ctx, buf, sizeof(buf));
+
+    rivide_keccak_init(&ctx, 200);
+    rivide_keccak_absorb(&ctx, data, sizeof(data));
+    rivide_keccak_finalize(&ctx, 0x1F);
+    rivide_keccak_squeeze(&ctx, buf, sizeof(buf));
+
+    rivide_cleanse(&ctx, sizeof(ctx));
     return 0;
 }

@@ -22,9 +22,15 @@
  */
 
 #include "rivide/internal/dsa_ntt.h"
+#include "rivide/internal/dsa_packing.h"
 #include "rivide/internal/dsa_poly.h"
 #include "rivide/internal/dsa_reduce.h"
+#include "rivide/internal/dsa_rounding.h"
+#include "rivide/internal/dsa_sampling.h"
+#include "rivide/internal/kem_cbd.h"
+#include "rivide/internal/kem_encode.h"
 #include "rivide/internal/kem_ntt.h"
+#include "rivide/internal/kem_packing.h"
 #include "rivide/internal/kem_poly.h"
 #include "rivide/internal/kem_reduce.h"
 #include "rivide/pqc/ntt_simd.h"
@@ -171,6 +177,84 @@ int test_simd_poly_pointwise_montgomery(void) {
         int16_t expected = montgomery_reduce(prod);
         ASSERT_EQ(r[i], expected);
     }
+
+    return 0;
+}
+
+int test_pqc_internal_defensive_bounds(void) {
+    poly_t p = {0}, a = {0}, b = {0};
+    polyvec_t v = {0};
+    dsa_poly_t dp = {0}, da = {0}, db = {0};
+    dsa_polyveck_t h = {0};
+    uint8_t buf[1024] = {0};
+
+    /* NULL pointer validation for internal routines */
+    poly_add(NULL, &a, &b);
+    poly_add(&p, NULL, &b);
+    poly_add(&p, &a, NULL);
+
+    poly_sub(NULL, &a, &b);
+    poly_sub(&p, NULL, &b);
+    poly_sub(&p, &a, NULL);
+
+    poly_reduce(NULL);
+    poly_tomont(NULL);
+    poly_csubq(NULL);
+
+    polyvec_ntt(NULL, 3);
+    polyvec_ntt(&v, 0);
+    polyvec_ntt(&v, 5);
+
+    polyvec_pointwise_acc(NULL, &v, &v, 3);
+    polyvec_pointwise_acc(&p, NULL, &v, 3);
+    polyvec_pointwise_acc(&p, &v, NULL, 3);
+    polyvec_pointwise_acc(&p, &v, &v, 0);
+    polyvec_pointwise_acc(&p, &v, &v, 5);
+
+    /* Type check boundary */
+    ASSERT_EQ(polyvec_frombytes_check(NULL, buf, 3), -1);
+    ASSERT_EQ(polyvec_frombytes_check(&v, NULL, 3), -1);
+    ASSERT_EQ(polyvec_frombytes_check(&v, buf, 0), -1);
+    ASSERT_EQ(polyvec_frombytes_check(&v, buf, 5), -1);
+
+    /* CBD invalid eta */
+    poly_cbd(&p, buf, 1);
+    poly_cbd(&p, buf, 5);
+    poly_cbd(NULL, buf, 2);
+    poly_cbd(&p, NULL, 2);
+
+    /* Dilithium poly defensive checks */
+    dsa_poly_add(NULL, &da, &db);
+    dsa_poly_sub(NULL, &da, &db);
+    dsa_poly_reduce(NULL);
+    dsa_poly_caddq(NULL);
+    ASSERT_EQ(dsa_poly_chknorm(NULL, 100), 1);
+    ASSERT_EQ(dsa_poly_chknorm(&dp, -1), 1);
+
+    /* Dilithium rounding null pointer checks */
+    ASSERT_EQ(dsa_power2round(100, NULL), 0);
+    ASSERT_EQ(dsa_decompose(100, NULL, 1000), 0);
+
+    /* Dilithium unpack hint checks */
+    ASSERT_EQ(dsa_unpack_hint(NULL, buf, 6, 55), 1);
+    ASSERT_EQ(dsa_unpack_hint(&h, NULL, 6, 55), 1);
+    ASSERT_EQ(dsa_unpack_hint(&h, buf, 0, 55), 1);
+    ASSERT_EQ(dsa_unpack_hint(&h, buf, 9, 55), 1);
+    ASSERT_EQ(dsa_unpack_hint(&h, buf, 6, 0), 1);
+
+    /* NTT & INTT NULL checks */
+    poly_ntt(NULL);
+    poly_invntt(NULL);
+    poly_basemul(NULL, &a, &b);
+    poly_basemul(&p, NULL, &b);
+    poly_basemul(&p, &a, NULL);
+
+    dsa_poly_ntt(NULL);
+    dsa_poly_invntt(NULL);
+    dsa_poly_pointwise(NULL, &da, &db);
+    dsa_poly_pointwise(&dp, NULL, &db);
+    dsa_poly_pointwise(&dp, &da, NULL);
+    dsa_poly_tomont(NULL);
 
     return 0;
 }

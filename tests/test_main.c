@@ -53,11 +53,13 @@ extern int test_simd_poly_pointwise_montgomery(void);
 extern int test_ml_kem_ntt_invertibility(void);
 extern int test_ml_dsa_ntt_invertibility(void);
 extern int test_modular_reductions(void);
+extern int test_pqc_internal_defensive_bounds(void);
 
 extern int test_sha3_256_empty(void);
 extern int test_sha3_512_empty(void);
 extern int test_shake128_incremental(void);
 extern int test_shake256_incremental(void);
+extern int test_keccak_sponge_state_invariants(void);
 
 extern int test_aes128_gcm_roundtrip(void);
 extern int test_aes256_gcm_invalid_tag(void);
@@ -65,6 +67,7 @@ extern int test_aes_gcm_inplace(void);
 extern int test_aes_gcm_partial_overlap_rejection(void);
 extern int test_aes_gcm_boundary_lengths(void);
 extern int test_aes_key_cleanse(void);
+extern int test_aes_block_null_and_invalid_rounds(void);
 
 extern int test_ct_memcmp(void);
 extern int test_ct_select(void);
@@ -110,18 +113,21 @@ int main(void) {
     RUN_TEST(test_ml_kem_ntt_invertibility);
     RUN_TEST(test_ml_dsa_ntt_invertibility);
     RUN_TEST(test_modular_reductions);
+    RUN_TEST(test_pqc_internal_defensive_bounds);
 
     printf("\nCrypto Primitives Tests:\n");
     RUN_TEST(test_sha3_256_empty);
     RUN_TEST(test_sha3_512_empty);
     RUN_TEST(test_shake128_incremental);
     RUN_TEST(test_shake256_incremental);
+    RUN_TEST(test_keccak_sponge_state_invariants);
     RUN_TEST(test_aes128_gcm_roundtrip);
     RUN_TEST(test_aes256_gcm_invalid_tag);
     RUN_TEST(test_aes_gcm_inplace);
     RUN_TEST(test_aes_gcm_partial_overlap_rejection);
     RUN_TEST(test_aes_gcm_boundary_lengths);
     RUN_TEST(test_aes_key_cleanse);
+    RUN_TEST(test_aes_block_null_and_invalid_rounds);
 
     printf("\nUtility Tests:\n");
     RUN_TEST(test_ct_memcmp);
