@@ -54,6 +54,11 @@ static rivide_status_t ml_dsa_keygen_internal(uint8_t *pk, uint8_t *sk, int k, i
 
     (void)gamma2;
 
+    if (!pk || !sk || k <= 0 || k > DSA_K_MAX || l <= 0 || l > DSA_L_MAX ||
+        (eta != 2 && eta != 4)) {
+        return (!pk || !sk) ? RIVIDE_ERR_NULL_PTR : RIVIDE_ERR_INVALID_PARAM;
+    }
+
     ret = rivide_randombytes(seed, 32);
     if (ret != RIVIDE_SUCCESS) {
         rivide_cleanse(seed, sizeof(seed));
@@ -160,11 +165,17 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
     unsigned int hint_count;
     uint16_t nonce = 0;
     size_t sig_offset;
-    if (!sig || !siglen || !sk || (msglen > 0 && !msg)) {
-        return RIVIDE_ERR_NULL_PTR;
+    size_t z_bytes_per_poly;
+    size_t expected_siglen;
+    int loop_ctr = 0;
+    rivide_status_t status = RIVIDE_SUCCESS;
+
+    if (!sig || !siglen || !sk || (msglen > 0 && !msg) || k <= 0 || k > DSA_K_MAX || l <= 0 ||
+        l > DSA_L_MAX || (eta != 2 && eta != 4)) {
+        return (!sig || !siglen || !sk || (msglen > 0 && !msg)) ? RIVIDE_ERR_NULL_PTR
+                                                                : RIVIDE_ERR_INVALID_PARAM;
     }
 
-    size_t z_bytes_per_poly;
     if (gamma1 == (1 << 17)) {
         z_bytes_per_poly = 576;
     } else {
@@ -172,8 +183,7 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
     }
 
     /* Verify output buffer capacity to prevent stack/heap buffer overflow. */
-    size_t expected_siglen =
-        ctilde_bytes + (size_t)l * z_bytes_per_poly + (size_t)omega + (size_t)k;
+    expected_siglen = ctilde_bytes + (size_t)l * z_bytes_per_poly + (size_t)omega + (size_t)k;
     if (*siglen < expected_siglen) {
         return RIVIDE_ERR_INVALID_PARAM;
     }
@@ -237,8 +247,6 @@ static rivide_status_t ml_dsa_sign_internal(uint8_t *sig, size_t *siglen, const 
     }
 
     /* Rejection sampling loop. */
-    int loop_ctr = 0;
-    rivide_status_t status = RIVIDE_SUCCESS;
     do {
         reject = 0;
         loop_ctr++;
@@ -466,8 +474,9 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
     int i;
     int32_t beta;
 
-    if (!sig || !pk || (msglen > 0 && !msg)) {
-        return RIVIDE_ERR_NULL_PTR;
+    if (!sig || !pk || (msglen > 0 && !msg) || k <= 0 || k > DSA_K_MAX || l <= 0 || l > DSA_L_MAX) {
+        return (!sig || !pk || (msglen > 0 && !msg)) ? RIVIDE_ERR_NULL_PTR
+                                                     : RIVIDE_ERR_INVALID_PARAM;
     }
 
     if (gamma1 == (1 << 17)) {
@@ -521,8 +530,9 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
 
     /* Check ||z||_inf < gamma1 - beta. */
     beta = (int32_t)tau * RIVIDE_ML_DSA_65_ETA; /* Use appropriate eta. */
-    if (k == 8)
+    if (k == 8) {
         beta = (int32_t)tau * RIVIDE_ML_DSA_87_ETA;
+    }
     for (i = 0; i < l; i++) {
         if (dsa_poly_chknorm(&z.vec[i], gamma1 - beta)) {
             return RIVIDE_ERR_VERIFICATION_FAILED;

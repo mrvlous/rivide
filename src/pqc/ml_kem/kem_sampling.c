@@ -36,6 +36,10 @@
  * @param[in]  seed 34-byte seed consisting of rho (32 bytes) and matrix coordinates.
  */
 void poly_uniform(poly_t *p, const uint8_t seed[34]) {
+    if (!p || !seed) {
+        return;
+    }
+
     rivide_keccak_state_t state;
     uint8_t buf[168]; /* One SHAKE-128 block. */
     unsigned int ctr = 0;
@@ -84,6 +88,10 @@ void poly_uniform(poly_t *p, const uint8_t seed[34]) {
  * @param[in]  eta   CBD parameter (2 or 3).
  */
 void poly_noise(poly_t *p, const uint8_t seed[32], uint8_t nonce, int eta) {
+    if (!p || !seed || (eta != 2 && eta != 3)) {
+        return;
+    }
+
     uint8_t buf[3 * KEM_N]; /* Sufficient for eta=2 or eta=3. */
     uint8_t extseed[33];
     size_t buflen = (size_t)(64 * eta);

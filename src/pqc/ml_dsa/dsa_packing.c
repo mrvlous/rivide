@@ -34,6 +34,10 @@
  * @param[in]  p   Polynomial with coefficients in [0, 2^10 - 1].
  */
 void dsa_poly_pack_t1(uint8_t *buf, const dsa_poly_t *p) {
+    if (!buf || !p) {
+        return;
+    }
+
     unsigned int i;
     for (i = 0; i < DSA_N / 4; i++) {
         buf[5 * i] = (uint8_t)(p->coeffs[4 * i] & 0xFF);
@@ -53,6 +57,10 @@ void dsa_poly_pack_t1(uint8_t *buf, const dsa_poly_t *p) {
  * @param[in]  buf Input byte buffer (320 bytes).
  */
 void dsa_poly_unpack_t1(dsa_poly_t *p, const uint8_t *buf) {
+    if (!p || !buf) {
+        return;
+    }
+
     unsigned int i;
     for (i = 0; i < DSA_N / 4; i++) {
         p->coeffs[4 * i] = ((uint32_t)buf[5 * i] | ((uint32_t)buf[5 * i + 1] << 8)) & 0x3FF;
@@ -73,6 +81,10 @@ void dsa_poly_unpack_t1(dsa_poly_t *p, const uint8_t *buf) {
  * @param[in]  eta Bound parameter (2 for ML-DSA-87, 4 for ML-DSA-65).
  */
 void dsa_poly_pack_eta(uint8_t *buf, const dsa_poly_t *p, int eta) {
+    if (!buf || !p || (eta != 2 && eta != 4)) {
+        return;
+    }
+
     unsigned int i;
 
     if (eta == 2) {
@@ -104,6 +116,10 @@ void dsa_poly_pack_eta(uint8_t *buf, const dsa_poly_t *p, int eta) {
  * @param[in]  eta Bound parameter (2 for ML-DSA-87, 4 for ML-DSA-65).
  */
 void dsa_poly_unpack_eta(dsa_poly_t *p, const uint8_t *buf, int eta) {
+    if (!p || !buf || (eta != 2 && eta != 4)) {
+        return;
+    }
+
     unsigned int i;
 
     if (eta == 2) {
@@ -236,6 +252,10 @@ void dsa_poly_unpack_z(dsa_poly_t *p, const uint8_t *buf, int32_t gamma1) {
  * @param[in]  k   Module row dimension.
  */
 void dsa_pack_pk(uint8_t *pk, const uint8_t rho[32], const dsa_polyveck_t *t1, int k) {
+    if (!pk || !rho || !t1 || k <= 0 || k > DSA_K_MAX) {
+        return;
+    }
+
     unsigned int i;
     for (i = 0; i < 32; i++) {
         pk[i] = rho[i];
@@ -254,6 +274,10 @@ void dsa_pack_pk(uint8_t *pk, const uint8_t rho[32], const dsa_polyveck_t *t1, i
  * @param[in]  k   Module row dimension.
  */
 void dsa_unpack_pk(uint8_t rho[32], dsa_polyveck_t *t1, const uint8_t *pk, int k) {
+    if (!rho || !t1 || !pk || k <= 0 || k > DSA_K_MAX) {
+        return;
+    }
+
     unsigned int i;
     for (i = 0; i < 32; i++) {
         rho[i] = pk[i];
@@ -280,6 +304,11 @@ void dsa_unpack_pk(uint8_t rho[32], dsa_polyveck_t *t1, const uint8_t *pk, int k
 void dsa_pack_sk(uint8_t *sk, const uint8_t rho[32], const uint8_t tr[64], const uint8_t K[32],
                  const dsa_polyvecl_t *s1, const dsa_polyveck_t *s2, const dsa_polyveck_t *t0,
                  int k, int l, int eta) {
+    if (!sk || !rho || !tr || !K || !s1 || !s2 || !t0 || k <= 0 || k > DSA_K_MAX || l <= 0 ||
+        l > DSA_L_MAX || (eta != 2 && eta != 4)) {
+        return;
+    }
+
     unsigned int i;
     size_t offset = 0;
     size_t eta_bytes = (eta == 2) ? 96 : 128; /* per polynomial */
@@ -351,6 +380,11 @@ void dsa_pack_sk(uint8_t *sk, const uint8_t rho[32], const uint8_t tr[64], const
 void dsa_unpack_sk(uint8_t rho[32], uint8_t tr[64], uint8_t K[32], dsa_polyvecl_t *s1,
                    dsa_polyveck_t *s2, dsa_polyveck_t *t0, const uint8_t *sk, int k, int l,
                    int eta) {
+    if (!rho || !tr || !K || !s1 || !s2 || !t0 || !sk || k <= 0 || k > DSA_K_MAX || l <= 0 ||
+        l > DSA_L_MAX || (eta != 2 && eta != 4)) {
+        return;
+    }
+
     unsigned int i;
     size_t offset = 0;
     size_t eta_bytes = (eta == 2) ? 96 : 128;
@@ -405,6 +439,10 @@ void dsa_unpack_sk(uint8_t rho[32], uint8_t tr[64], uint8_t K[32], dsa_polyvecl_
  * @return Number of hint bytes packed.
  */
 size_t dsa_pack_hint(uint8_t *buf, const dsa_polyveck_t *h, int k, int omega) {
+    if (!buf || !h || k <= 0 || k > DSA_K_MAX || omega <= 0) {
+        return 0;
+    }
+
     unsigned int i, j;
     size_t idx = 0;
 
@@ -435,6 +473,10 @@ size_t dsa_pack_hint(uint8_t *buf, const dsa_polyveck_t *h, int k, int omega) {
  * @return 0 on success, or 1 if hint encoding is invalid.
  */
 int dsa_unpack_hint(dsa_polyveck_t *h, const uint8_t *buf, int k, int omega) {
+    if (!h || !buf || k <= 0 || k > DSA_K_MAX || omega <= 0) {
+        return 1;
+    }
+
     unsigned int i, j, prev;
 
     for (i = 0; i < (unsigned int)k; i++) {

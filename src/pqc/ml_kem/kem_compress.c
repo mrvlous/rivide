@@ -68,6 +68,10 @@ int16_t decompress_coeff(uint16_t x, int d) {
  * @param[in]  d   Target bit length per coefficient (d in {1, 4, 5, 10, 11}).
  */
 void poly_compress(uint8_t *buf, const poly_t *p, int d) {
+    if (!buf || !p) {
+        return;
+    }
+
     unsigned int i, j;
 
     if (d == 4) {
@@ -129,6 +133,10 @@ void poly_compress(uint8_t *buf, const poly_t *p, int d) {
  * @param[in]  d   Bit length per compressed coefficient.
  */
 void poly_decompress(poly_t *p, const uint8_t *buf, int d) {
+    if (!p || !buf) {
+        return;
+    }
+
     unsigned int i, j;
 
     if (d == 4) {
@@ -206,6 +214,10 @@ void poly_decompress(poly_t *p, const uint8_t *buf, int d) {
  * @param[in]  d   Target bit length per coefficient (10 or 11).
  */
 void polyvec_compress(uint8_t *buf, const polyvec_t *v, int k, int d) {
+    if (!buf || !v || k <= 0 || k > KEM_K_MAX) {
+        return;
+    }
+
     int i;
     size_t poly_bytes;
 
@@ -229,6 +241,10 @@ void polyvec_compress(uint8_t *buf, const polyvec_t *v, int k, int d) {
  * @param[in]  d   Bit length per compressed coefficient (10 or 11).
  */
 void polyvec_decompress(polyvec_t *v, const uint8_t *buf, int k, int d) {
+    if (!v || !buf || k <= 0 || k > KEM_K_MAX) {
+        return;
+    }
+
     int i;
     size_t poly_bytes;
 

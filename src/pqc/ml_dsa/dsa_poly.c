@@ -36,6 +36,9 @@
  * @param[in]  b Second operand polynomial.
  */
 void dsa_poly_add(dsa_poly_t *r, const dsa_poly_t *a, const dsa_poly_t *b) {
+    if (!r || !a || !b) {
+        return;
+    }
     unsigned int i;
     for (i = 0; i < DSA_N; i++) {
         r->coeffs[i] = a->coeffs[i] + b->coeffs[i];
@@ -50,6 +53,9 @@ void dsa_poly_add(dsa_poly_t *r, const dsa_poly_t *a, const dsa_poly_t *b) {
  * @param[in]  b Second operand polynomial.
  */
 void dsa_poly_sub(dsa_poly_t *r, const dsa_poly_t *a, const dsa_poly_t *b) {
+    if (!r || !a || !b) {
+        return;
+    }
     unsigned int i;
     for (i = 0; i < DSA_N; i++) {
         r->coeffs[i] = a->coeffs[i] - b->coeffs[i];
@@ -62,6 +68,9 @@ void dsa_poly_sub(dsa_poly_t *r, const dsa_poly_t *a, const dsa_poly_t *b) {
  * @param[in,out] p Polynomial to reduce in-place.
  */
 void dsa_poly_reduce(dsa_poly_t *p) {
+    if (!p) {
+        return;
+    }
     unsigned int i;
     for (i = 0; i < DSA_N; i++) {
         p->coeffs[i] = dsa_reduce32(p->coeffs[i]);
@@ -74,6 +83,9 @@ void dsa_poly_reduce(dsa_poly_t *p) {
  * @param[in,out] p Polynomial to normalize in-place.
  */
 void dsa_poly_caddq(dsa_poly_t *p) {
+    if (!p) {
+        return;
+    }
     unsigned int i;
     for (i = 0; i < DSA_N; i++) {
         p->coeffs[i] = dsa_caddq(p->coeffs[i]);
@@ -88,12 +100,12 @@ void dsa_poly_caddq(dsa_poly_t *p) {
  * @return 1 if any coefficient has absolute value >= bound, or 0 otherwise.
  */
 int dsa_poly_chknorm(const dsa_poly_t *p, int32_t bound) {
-    unsigned int i;
-    int32_t t;
-
-    if (bound > (DSA_Q / 2)) {
+    if (!p || bound < 0 || bound > (DSA_Q / 2)) {
         return 1;
     }
+
+    unsigned int i;
+    int32_t t;
 
     for (i = 0; i < DSA_N; i++) {
         t = dsa_reduce32(p->coeffs[i]);

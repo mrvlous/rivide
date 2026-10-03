@@ -26,6 +26,7 @@
 #include "rivide/internal/kem_packing.h"
 #include "rivide/internal/kem_reduce.h"
 #include "rivide/pqc/ntt_simd.h"
+#include "rivide/utils/mem.h"
 
 /**
  * @brief Add two polynomials coefficient-wise: r = a + b.
@@ -35,6 +36,9 @@
  * @param[in]  b Second operand polynomial.
  */
 void poly_add(poly_t *r, const poly_t *a, const poly_t *b) {
+    if (!r || !a || !b) {
+        return;
+    }
     rivide_simd_poly_add_reduce(r->coeffs, a->coeffs, b->coeffs, KEM_Q);
     poly_reduce(r);
 }
@@ -47,6 +51,9 @@ void poly_add(poly_t *r, const poly_t *a, const poly_t *b) {
  * @param[in]  b Second operand polynomial.
  */
 void poly_sub(poly_t *r, const poly_t *a, const poly_t *b) {
+    if (!r || !a || !b) {
+        return;
+    }
     rivide_simd_poly_sub_reduce(r->coeffs, a->coeffs, b->coeffs, KEM_Q);
     poly_reduce(r);
 }
@@ -57,6 +64,9 @@ void poly_sub(poly_t *r, const poly_t *a, const poly_t *b) {
  * @param[in,out] p Polynomial to reduce in-place.
  */
 void poly_reduce(poly_t *p) {
+    if (!p) {
+        return;
+    }
     unsigned int i;
     for (i = 0; i < KEM_N; i++) {
         p->coeffs[i] = barrett_reduce(p->coeffs[i]);
@@ -69,6 +79,9 @@ void poly_reduce(poly_t *p) {
  * @param[in,out] p Polynomial to scale in-place.
  */
 void poly_tomont(poly_t *p) {
+    if (!p) {
+        return;
+    }
     /* 1353 = 2^32 mod 3329 */
     const int16_t f = 1353;
     unsigned int i;
@@ -83,6 +96,9 @@ void poly_tomont(poly_t *p) {
  * @param[in,out] p Polynomial to normalize in-place.
  */
 void poly_csubq(poly_t *p) {
+    if (!p) {
+        return;
+    }
     unsigned int i;
     for (i = 0; i < KEM_N; i++) {
         p->coeffs[i] = cond_sub_q(p->coeffs[i]);
@@ -96,6 +112,9 @@ void poly_csubq(poly_t *p) {
  * @param[in]     k Module rank.
  */
 void polyvec_ntt(polyvec_t *v, int k) {
+    if (!v || k <= 0 || k > KEM_K_MAX) {
+        return;
+    }
     int i;
     for (i = 0; i < k; i++) {
         poly_ntt(&v->vec[i]);
@@ -111,6 +130,9 @@ void polyvec_ntt(polyvec_t *v, int k) {
  * @param[in]  k Module rank.
  */
 void polyvec_pointwise_acc(poly_t *r, const polyvec_t *a, const polyvec_t *b, int k) {
+    if (!r || !a || !b || k <= 0 || k > KEM_K_MAX) {
+        return;
+    }
     int i;
     poly_t tmp;
 
@@ -120,4 +142,5 @@ void polyvec_pointwise_acc(poly_t *r, const polyvec_t *a, const polyvec_t *b, in
         poly_add(r, r, &tmp);
     }
     poly_reduce(r);
+    rivide_cleanse(&tmp, sizeof(tmp));
 }

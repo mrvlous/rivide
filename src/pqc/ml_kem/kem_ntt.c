@@ -48,6 +48,10 @@ const int16_t zetas[128] = {
  * @param[in,out] p Polynomial to transform into the NTT domain.
  */
 void poly_ntt(poly_t *p) {
+    if (!p) {
+        return;
+    }
+
     unsigned int len, start, j, k;
     int16_t t, zeta;
 
@@ -70,6 +74,10 @@ void poly_ntt(poly_t *p) {
  * @param[in,out] p Polynomial to transform from the NTT domain back to spatial form.
  */
 void poly_invntt(poly_t *p) {
+    if (!p) {
+        return;
+    }
+
     static const int16_t zetas_inv[128] = {
         1628, 1522, 1869, 958,  991,  996,  3021, 3221, 478,  2459, 2475, 1819, 794,  2051, 1799,
         2144, 1670, 2142, 220,  2455, 1994, 1218, 3193, 2114, 384,  1864, 2044, 1322, 610,  603,
@@ -82,7 +90,7 @@ void poly_invntt(poly_t *p) {
         202,  287,  1422, 1493, 1812, 2970, 2571, 2285};
 
     unsigned int len, start, j, k;
-    int16_t t, zeta;
+    int16_t t, zeta, diff;
     const int16_t f = 1441; /* 128^{-1} mod q in Montgomery form. */
 
     k = 0;
@@ -92,7 +100,7 @@ void poly_invntt(poly_t *p) {
             for (j = start; j < start + len; j++) {
                 t = p->coeffs[j];
                 p->coeffs[j] = barrett_reduce((int16_t)(t + p->coeffs[j + len]));
-                int16_t diff = (int16_t)(p->coeffs[j + len] - t);
+                diff = (int16_t)(p->coeffs[j + len] - t);
                 p->coeffs[j + len] = montgomery_reduce((int32_t)zeta * (int32_t)diff);
             }
         }
@@ -111,6 +119,10 @@ void poly_invntt(poly_t *p) {
  * @param[in]  b Second input polynomial in NTT domain.
  */
 void poly_basemul(poly_t *r, const poly_t *a, const poly_t *b) {
+    if (!r || !a || !b) {
+        return;
+    }
+
     unsigned int i;
 
     for (i = 0; i < KEM_N / 4; i++) {

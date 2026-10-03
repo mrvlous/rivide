@@ -44,6 +44,10 @@
  */
 void dsa_poly_uniform_eta(dsa_poly_t *p, const uint8_t seed[], size_t seedlen, uint16_t nonce,
                           int eta) {
+    if (!p || !seed || seedlen > 64 || (eta != 2 && eta != 4)) {
+        return;
+    }
+
     uint8_t buf[136 * 2]; /* Large enough for rejection sampling. */
     uint8_t extseed[66];  /* Max seed + 2 bytes nonce. */
     rivide_keccak_state_t state;
@@ -109,6 +113,10 @@ void dsa_poly_uniform_eta(dsa_poly_t *p, const uint8_t seed[], size_t seedlen, u
  * @param[in]  nonce 16-bit nonce encoding matrix row and column indices.
  */
 void dsa_poly_uniform(dsa_poly_t *p, const uint8_t seed[32], uint16_t nonce) {
+    if (!p || !seed) {
+        return;
+    }
+
     rivide_keccak_state_t state;
     uint8_t buf[168 * 2];
     uint8_t extseed[34];
@@ -156,6 +164,10 @@ void dsa_poly_uniform(dsa_poly_t *p, const uint8_t seed[32], uint16_t nonce) {
  */
 void dsa_poly_uniform_gamma1(dsa_poly_t *p, const uint8_t seed[], size_t seedlen, uint16_t nonce,
                              int32_t gamma1) {
+    if (!p || !seed || seedlen > 64 || (gamma1 != (1 << 17) && gamma1 != (1 << 19))) {
+        return;
+    }
+
     uint8_t buf[640]; /* 5*N/2 bytes for gamma1=2^19. */
     uint8_t extseed[66];
     unsigned int i;
@@ -192,6 +204,10 @@ void dsa_poly_uniform_gamma1(dsa_poly_t *p, const uint8_t seed[], size_t seedlen
  * @param[in]  tau  Number of non-zero coefficients.
  */
 void dsa_poly_challenge(dsa_poly_t *c, const uint8_t *seed, size_t len, unsigned int tau) {
+    if (!c || !seed || len == 0 || tau == 0 || tau > 64) {
+        return;
+    }
+
     rivide_keccak_state_t state;
     uint8_t buf[136];
     unsigned int i, pos;
@@ -244,6 +260,10 @@ void dsa_poly_challenge(dsa_poly_t *c, const uint8_t *seed, size_t len, unsigned
  */
 void dsa_expand_matrix_mul(dsa_polyveck_t *t, const uint8_t rho[32], const dsa_polyvecl_t *s, int k,
                            int l) {
+    if (!t || !rho || !s || k <= 0 || k > DSA_K_MAX || l <= 0 || l > DSA_L_MAX) {
+        return;
+    }
+
     dsa_poly_t a_ij, tmp;
     int i, j;
 

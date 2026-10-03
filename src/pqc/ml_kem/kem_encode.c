@@ -34,6 +34,10 @@
  * @param[in]  p   Polynomial structure to encode.
  */
 void poly_tobytes(uint8_t *buf, const poly_t *p) {
+    if (!buf || !p) {
+        return;
+    }
+
     unsigned int i;
     for (i = 0; i < KEM_N / 2; i++) {
         uint16_t t0 = (uint16_t)((uint16_t)p->coeffs[2 * i] & 0x0FFF);
@@ -51,6 +55,10 @@ void poly_tobytes(uint8_t *buf, const poly_t *p) {
  * @param[in]  buf Input byte buffer (384 bytes).
  */
 void poly_frombytes(poly_t *p, const uint8_t *buf) {
+    if (!p || !buf) {
+        return;
+    }
+
     unsigned int i;
     for (i = 0; i < KEM_N / 2; i++) {
         p->coeffs[2 * i] =
@@ -67,6 +75,10 @@ void poly_frombytes(poly_t *p, const uint8_t *buf) {
  * @param[in]  msg Input 32-byte message buffer.
  */
 void poly_frommsg(poly_t *p, const uint8_t msg[32]) {
+    if (!p || !msg) {
+        return;
+    }
+
     unsigned int i, j;
     for (i = 0; i < 32; i++) {
         for (j = 0; j < 8; j++) {
@@ -82,6 +94,10 @@ void poly_frommsg(poly_t *p, const uint8_t msg[32]) {
  * @param[in]  p   Input polynomial structure.
  */
 void poly_tomsg(uint8_t msg[32], const poly_t *p) {
+    if (!msg || !p) {
+        return;
+    }
+
     unsigned int i, j;
     for (i = 0; i < 32; i++) {
         msg[i] = 0;
@@ -100,6 +116,10 @@ void poly_tomsg(uint8_t msg[32], const poly_t *p) {
  * @param[in]  k   Module rank.
  */
 void polyvec_tobytes(uint8_t *buf, const polyvec_t *v, int k) {
+    if (!buf || !v || k <= 0 || k > KEM_K_MAX) {
+        return;
+    }
+
     int i;
     for (i = 0; i < k; i++) {
         poly_tobytes(buf + 384 * i, &v->vec[i]);
@@ -114,6 +134,10 @@ void polyvec_tobytes(uint8_t *buf, const polyvec_t *v, int k) {
  * @param[in]  k   Module rank.
  */
 void polyvec_frombytes(polyvec_t *v, const uint8_t *buf, int k) {
+    if (!v || !buf || k <= 0 || k > KEM_K_MAX) {
+        return;
+    }
+
     int i;
     for (i = 0; i < k; i++) {
         poly_frombytes(&v->vec[i], buf + 384 * i);
@@ -129,6 +153,10 @@ void polyvec_frombytes(polyvec_t *v, const uint8_t *buf, int k) {
  * @return 0 on success, or -1 if any coefficient >= 3329.
  */
 int polyvec_frombytes_check(polyvec_t *v, const uint8_t *buf, int k) {
+    if (!v || !buf || k <= 0 || k > KEM_K_MAX) {
+        return -1;
+    }
+
     int i, j;
     polyvec_frombytes(v, buf, k);
     for (i = 0; i < k; i++) {

@@ -35,6 +35,10 @@
  * @return High bits t1 = (t - t0) / 2^d.
  */
 int32_t dsa_power2round(int32_t a, int32_t *a0) {
+    if (!a0) {
+        return 0;
+    }
+
     int32_t a1;
     a1 = (a + (1 << (DSA_D_BITS - 1)) - 1) >> DSA_D_BITS;
     *a0 = a - (a1 << DSA_D_BITS);
@@ -50,6 +54,10 @@ int32_t dsa_power2round(int32_t a, int32_t *a0) {
  * @return High part a1.
  */
 int32_t dsa_decompose(int32_t a, int32_t *a0, int32_t gamma2) {
+    if (!a0) {
+        return 0;
+    }
+
     int32_t a1;
     a1 = (a + 127) >> 7;
 

@@ -188,6 +188,10 @@ static void ml_kem_encrypt_internal(uint8_t *ct, const uint8_t *pk, const uint8_
     rivide_cleanse(&e2, sizeof(e2));
     rivide_cleanse(&v_poly, sizeof(v_poly));
     rivide_cleanse(&msg_poly, sizeof(msg_poly));
+    rivide_cleanse(&u, sizeof(u));
+    rivide_cleanse(&at_row, sizeof(at_row));
+    rivide_cleanse(rho, sizeof(rho));
+    rivide_cleanse(extseed, sizeof(extseed));
 }
 
 /**

@@ -71,6 +71,10 @@ const int32_t dsa_zetas[DSA_N] = {
  * @param[in,out] p Polynomial structure to transform in-place.
  */
 void dsa_poly_ntt(dsa_poly_t *p) {
+    if (!p) {
+        return;
+    }
+
     unsigned int len, start, j, k;
     int32_t zeta, t;
 
@@ -93,8 +97,12 @@ void dsa_poly_ntt(dsa_poly_t *p) {
  * @param[in,out] p Polynomial structure to transform in-place.
  */
 void dsa_poly_invntt(dsa_poly_t *p) {
+    if (!p) {
+        return;
+    }
+
     unsigned int len, start, j, k;
-    int32_t zeta, t;
+    int32_t zeta, t, diff;
     const int32_t f = 41978; /* 256^{-1} mod q in Montgomery form. */
 
     k = 256;
@@ -104,7 +112,7 @@ void dsa_poly_invntt(dsa_poly_t *p) {
             for (j = start; j < start + len; j++) {
                 t = p->coeffs[j];
                 p->coeffs[j] = t + p->coeffs[j + len];
-                int32_t diff = p->coeffs[j + len] - t;
+                diff = p->coeffs[j + len] - t;
                 p->coeffs[j + len] = dsa_montgomery_reduce((int64_t)zeta * diff);
             }
         }
@@ -123,6 +131,10 @@ void dsa_poly_invntt(dsa_poly_t *p) {
  * @param[in]  b Second input polynomial in NTT domain.
  */
 void dsa_poly_pointwise(dsa_poly_t *r, const dsa_poly_t *a, const dsa_poly_t *b) {
+    if (!r || !a || !b) {
+        return;
+    }
+
     unsigned int i;
     for (i = 0; i < DSA_N; i++) {
         r->coeffs[i] = dsa_montgomery_reduce((int64_t)a->coeffs[i] * b->coeffs[i]);
@@ -130,6 +142,10 @@ void dsa_poly_pointwise(dsa_poly_t *r, const dsa_poly_t *a, const dsa_poly_t *b)
 }
 
 void dsa_poly_tomont(dsa_poly_t *p) {
+    if (!p) {
+        return;
+    }
+
     static const int32_t r2 = 4193792;
     unsigned int i;
     for (i = 0; i < DSA_N; i++) {

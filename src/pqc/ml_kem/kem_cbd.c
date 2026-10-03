@@ -33,6 +33,10 @@
  * @param[in]  eta CBD parameter (2 or 3).
  */
 void poly_cbd(poly_t *p, const uint8_t *buf, int eta) {
+    if (!p || !buf || (eta != 2 && eta != 3)) {
+        return;
+    }
+
     unsigned int i, j;
 
     if (eta == 2) {
