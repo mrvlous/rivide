@@ -207,14 +207,38 @@ int test_aes_block_null_and_invalid_rounds(void) {
     rivide_aes_encrypt_block(&key, in, NULL);
 
     /* Invalid rounds safety: corrupted key context must not crash or read out-of-bounds */
+    uint8_t iv[12] = {0};
+    uint8_t tag[16] = {0};
+    uint8_t pt[16] = {0};
+    uint8_t ct[16] = {0};
+
     key.rounds = 0;
     rivide_aes_encrypt_block(&key, in, out);
+    ASSERT_EQ(rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, sizeof(pt), ct, tag),
+              RIVIDE_ERR_INVALID_PARAM);
+    ASSERT_EQ(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag, pt),
+              RIVIDE_ERR_INVALID_PARAM);
+
     key.rounds = -1;
     rivide_aes_encrypt_block(&key, in, out);
+    ASSERT_EQ(rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, sizeof(pt), ct, tag),
+              RIVIDE_ERR_INVALID_PARAM);
+    ASSERT_EQ(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag, pt),
+              RIVIDE_ERR_INVALID_PARAM);
+
     key.rounds = 7;
     rivide_aes_encrypt_block(&key, in, out);
+    ASSERT_EQ(rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, sizeof(pt), ct, tag),
+              RIVIDE_ERR_INVALID_PARAM);
+    ASSERT_EQ(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag, pt),
+              RIVIDE_ERR_INVALID_PARAM);
+
     key.rounds = 99;
     rivide_aes_encrypt_block(&key, in, out);
+    ASSERT_EQ(rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, sizeof(pt), ct, tag),
+              RIVIDE_ERR_INVALID_PARAM);
+    ASSERT_EQ(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(ct), tag, pt),
+              RIVIDE_ERR_INVALID_PARAM);
 
     rivide_aes_key_cleanse(&key);
     return 0;

@@ -25,9 +25,9 @@ cd build && ctest --output-on-failure
 
 - **`test_ml_kem.c`**: KeyGen, encapsulation, decapsulation roundtrip, secret key and public key canonical coefficient validation ($\ge 3329$), and implicit rejection validation on corrupted ciphertexts across ML-KEM-768 and ML-KEM-1024.
 - **`test_ml_dsa.c`**: KeyGen, signing, verification roundtrip, buffer capacity checks, signature length validation, NULL pointer guards, empty message roundtrip, and boundary bit-flip fuzzing across ML-DSA-65 and ML-DSA-87.
-- **`test_ntt.c`**: Forward and inverse NTT invertibility, SIMD vector operations (`rivide_simd_poly_*` addition, subtraction, pointwise Montgomery multiplication), modular reductions, internal polynomial arithmetic, and defensive parameter bounds.
+- **`test_ntt.c`**: Forward and inverse NTT invertibility, SIMD vector operations (`rivide_simd_poly_*` addition, subtraction, pointwise Montgomery multiplication), modular reductions, internal polynomial arithmetic, and defensive compression and rounding parameter bounds.
 - **`test_sha3.c`**: Known NIST test vectors for empty SHA3-256 and SHA3-512, incremental absorption and squeezing for SHAKE-128 and SHAKE-256, Keccak sponge state transition invariants, and defensive NULL input parameter zeroization checks.
-- **`test_aes_gcm.c`**: Known NIST vectors for AES-128/256-GCM, in-place processing, partial overlap rejection, boundary length validation, and AES block encryption invalid round and NULL pointer resilience.
+- **`test_aes_gcm.c`**: Known NIST vectors for AES-128/256-GCM, in-place processing, partial overlap rejection, boundary length validation, and AES block encryption and GCM mode invalid round and NULL pointer resilience.
 - **`test_mem.c`**: Constant-time memory comparison (`rivide_ct_memcmp`), conditional selection (`rivide_ct_select`), zeroization barriers, OS CSPRNG entropy bounds, and callback lifecycle reset verification.
 
 ## 3. Differential Testing Methodology

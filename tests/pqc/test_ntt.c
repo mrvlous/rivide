@@ -28,6 +28,7 @@
 #include "rivide/internal/dsa_rounding.h"
 #include "rivide/internal/dsa_sampling.h"
 #include "rivide/internal/kem_cbd.h"
+#include "rivide/internal/kem_compress.h"
 #include "rivide/internal/kem_encode.h"
 #include "rivide/internal/kem_ntt.h"
 #include "rivide/internal/kem_packing.h"
@@ -231,9 +232,49 @@ int test_pqc_internal_defensive_bounds(void) {
     ASSERT_EQ(dsa_poly_chknorm(NULL, 100), 1);
     ASSERT_EQ(dsa_poly_chknorm(&dp, -1), 1);
 
-    /* Dilithium rounding null pointer checks */
-    ASSERT_EQ(dsa_power2round(100, NULL), 0);
-    ASSERT_EQ(dsa_decompose(100, NULL, 1000), 0);
+    /* Compression & decompression bounds checks */
+    ASSERT_EQ(compress_coeff(100, 0), 0);
+    ASSERT_EQ(compress_coeff(100, 16), 0);
+    ASSERT_EQ(compress_coeff(100, -1), 0);
+    ASSERT_EQ(decompress_coeff(100, 0), 0);
+    ASSERT_EQ(decompress_coeff(100, 16), 0);
+    ASSERT_EQ(decompress_coeff(100, -1), 0);
+
+    poly_compress(NULL, &p, 10);
+    poly_compress(buf, NULL, 10);
+    poly_compress(buf, &p, 0);
+    poly_compress(buf, &p, 12);
+
+    poly_decompress(NULL, buf, 10);
+    poly_decompress(&p, NULL, 10);
+    poly_decompress(&p, buf, 0);
+    poly_decompress(&p, buf, 12);
+
+    polyvec_compress(NULL, &v, 3, 10);
+    polyvec_compress(buf, NULL, 3, 10);
+    polyvec_compress(buf, &v, 0, 10);
+    polyvec_compress(buf, &v, 5, 10);
+    polyvec_compress(buf, &v, 3, 0);
+    polyvec_compress(buf, &v, 3, 12);
+
+    polyvec_decompress(NULL, buf, 3, 10);
+    polyvec_decompress(&v, NULL, 3, 10);
+    polyvec_decompress(&v, buf, 0, 10);
+    polyvec_decompress(&v, buf, 5, 10);
+    polyvec_decompress(&v, buf, 3, 0);
+    polyvec_decompress(&v, buf, 3, 12);
+
+    /* Dilithium rounding null pointer checks and parameter guards */
+    {
+        int32_t a0_val = 0;
+        ASSERT_EQ(dsa_power2round(100, NULL), 0);
+        ASSERT_EQ(dsa_decompose(100, NULL, (DSA_Q - 1) / 32), 0);
+        ASSERT_EQ(dsa_decompose(100, &a0_val, 0), 0);
+        ASSERT_EQ(dsa_decompose(100, &a0_val, 1000), 0);
+        ASSERT_EQ(dsa_make_hint(100, 100, 0), 0);
+        ASSERT_EQ(dsa_use_hint(100, 2, (DSA_Q - 1) / 32), 0);
+        ASSERT_EQ(dsa_use_hint(100, 0, 0), 0);
+    }
 
     /* Dilithium unpack hint checks */
     ASSERT_EQ(dsa_unpack_hint(NULL, buf, 6, 55), 1);
