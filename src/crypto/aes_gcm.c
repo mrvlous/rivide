@@ -134,9 +134,12 @@ rivide_status_t rivide_aes_gcm_encrypt(const rivide_aes_key_t *key, const uint8_
     uint8_t len_block[16];
     size_t i;
 
-    /* 1. Pointer validation */
+    /* 1. Pointer and key validation */
     if (!key || !iv || !tag) {
         return RIVIDE_ERR_NULL_PTR;
+    }
+    if (key->rounds != 10 && key->rounds != 14) {
+        return RIVIDE_ERR_INVALID_PARAM;
     }
     if (pt_len > 0 && (!pt || !ct)) {
         return RIVIDE_ERR_NULL_PTR;
@@ -245,9 +248,12 @@ rivide_status_t rivide_aes_gcm_decrypt(const rivide_aes_key_t *key, const uint8_
     uint8_t computed_tag[16];
     size_t i;
 
-    /* 1. Pointer validation */
+    /* 1. Pointer and key validation */
     if (!key || !iv || !tag) {
         return RIVIDE_ERR_NULL_PTR;
+    }
+    if (key->rounds != 10 && key->rounds != 14) {
+        return RIVIDE_ERR_INVALID_PARAM;
     }
     if (ct_len > 0 && (!ct || !pt)) {
         return RIVIDE_ERR_NULL_PTR;
