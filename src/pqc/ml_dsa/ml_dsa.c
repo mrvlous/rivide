@@ -473,6 +473,7 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
     size_t expected_siglen;
     int i;
     int32_t beta;
+    rivide_status_t status = RIVIDE_SUCCESS;
 
     if (!sig || !pk || (msglen > 0 && !msg) || k <= 0 || k > DSA_K_MAX || l <= 0 || l > DSA_L_MAX) {
         return (!sig || !pk || (msglen > 0 && !msg)) ? RIVIDE_ERR_NULL_PTR
@@ -535,13 +536,15 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
     }
     for (i = 0; i < l; i++) {
         if (dsa_poly_chknorm(&z.vec[i], gamma1 - beta)) {
-            return RIVIDE_ERR_VERIFICATION_FAILED;
+            status = RIVIDE_ERR_VERIFICATION_FAILED;
+            goto cleanup;
         }
     }
 
     /* Unpack hints. */
     if (dsa_unpack_hint(&h, sig + sig_offset, k, omega)) {
-        return RIVIDE_ERR_VERIFICATION_FAILED;
+        status = RIVIDE_ERR_VERIFICATION_FAILED;
+        goto cleanup;
     }
 
     /* c = SampleInBall(c_tilde). */
@@ -592,6 +595,9 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
                                                          (unsigned int)h.vec[i].coeffs[j], gamma2);
             }
         }
+
+        rivide_cleanse(&z_hat, sizeof(z_hat));
+        rivide_cleanse(&cp_hat, sizeof(cp_hat));
     }
 
     /* Recompute c_tilde' = H(mu || w1_encode) and compare. */
@@ -632,12 +638,23 @@ static rivide_status_t ml_dsa_verify_internal(const uint8_t *sig, size_t siglen,
 
         if (rivide_ct_memcmp(sig, ctilde_prime, ctilde_bytes) != 0) {
             rivide_cleanse(ctilde_prime, sizeof(ctilde_prime));
-            return RIVIDE_ERR_VERIFICATION_FAILED;
+            status = RIVIDE_ERR_VERIFICATION_FAILED;
+            goto cleanup;
         }
         rivide_cleanse(ctilde_prime, sizeof(ctilde_prime));
     }
 
-    return RIVIDE_SUCCESS;
+cleanup:
+    rivide_cleanse(rho, sizeof(rho));
+    rivide_cleanse(tr, sizeof(tr));
+    rivide_cleanse(mu, sizeof(mu));
+    rivide_cleanse(&t1, sizeof(t1));
+    rivide_cleanse(&h, sizeof(h));
+    rivide_cleanse(&w1_prime, sizeof(w1_prime));
+    rivide_cleanse(&z, sizeof(z));
+    rivide_cleanse(&cp, sizeof(cp));
+
+    return status;
 }
 
 rivide_status_t rivide_ml_dsa_65_keygen(uint8_t *pk, uint8_t *sk) {

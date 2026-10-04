@@ -54,7 +54,7 @@ int32_t dsa_power2round(int32_t a, int32_t *a0) {
  * @return High part a1.
  */
 int32_t dsa_decompose(int32_t a, int32_t *a0, int32_t gamma2) {
-    if (!a0) {
+    if (!a0 || (gamma2 != (DSA_Q - 1) / 32 && gamma2 != (DSA_Q - 1) / 88)) {
         return 0;
     }
 
@@ -84,6 +84,9 @@ int32_t dsa_decompose(int32_t a, int32_t *a0, int32_t gamma2) {
  * @return 1 if a hint bit is required, or 0 otherwise.
  */
 unsigned int dsa_make_hint(int32_t a0, int32_t a1, int32_t gamma2) {
+    if (gamma2 != (DSA_Q - 1) / 32 && gamma2 != (DSA_Q - 1) / 88) {
+        return 0;
+    }
     if (a0 > gamma2 || a0 < -gamma2 || (a0 == -gamma2 && a1 != 0)) {
         return 1;
     }
@@ -99,6 +102,10 @@ unsigned int dsa_make_hint(int32_t a0, int32_t a1, int32_t gamma2) {
  * @return Corrected high bits a1.
  */
 int32_t dsa_use_hint(int32_t a, unsigned int hint, int32_t gamma2) {
+    if (hint > 1 || (gamma2 != (DSA_Q - 1) / 32 && gamma2 != (DSA_Q - 1) / 88)) {
+        return 0;
+    }
+
     int32_t a0, a1;
 
     a1 = dsa_decompose(a, &a0, gamma2);

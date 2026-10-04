@@ -241,6 +241,13 @@ static rivide_status_t ml_kem_keygen(uint8_t *pk, uint8_t *sk, int k, int eta1, 
 
     (void)sk_bytes;
 
+    if (!pk || !sk) {
+        return RIVIDE_ERR_NULL_PTR;
+    }
+    if ((k != 3 && k != 4) || (eta1 != 2 && eta1 != 3)) {
+        return RIVIDE_ERR_INVALID_PARAM;
+    }
+
     ret = rivide_randombytes(d, 32);
     if (ret != RIVIDE_SUCCESS) {
         return ret;
@@ -291,6 +298,10 @@ static rivide_status_t ml_kem_encaps(uint8_t *ct, uint8_t *ss, const uint8_t *pk
     if (!ct || !ss || !pk) {
         return RIVIDE_ERR_NULL_PTR;
     }
+    if ((k != 3 && k != 4) || (eta1 != 2 && eta1 != 3) || eta2 != 2 || (du != 10 && du != 11) ||
+        (dv != 4 && dv != 5)) {
+        return RIVIDE_ERR_INVALID_PARAM;
+    }
 
     /* NIST FIPS 203 Section 7.2: Type check on encapsulation key (coeffs of t_hat < 3329). */
     if (polyvec_frombytes_check(&t_hat_test, pk, k) != 0) {
@@ -335,6 +346,10 @@ static rivide_status_t ml_kem_decaps(uint8_t *ss, const uint8_t *ct, const uint8
                                      size_t ct_bytes) {
     if (!ss || !ct || !sk) {
         return RIVIDE_ERR_NULL_PTR;
+    }
+    if ((k != 3 && k != 4) || (eta1 != 2 && eta1 != 3) || eta2 != 2 || (du != 10 && du != 11) ||
+        (dv != 4 && dv != 5)) {
+        return RIVIDE_ERR_INVALID_PARAM;
     }
 
     size_t s_hat_bytes = 384 * (size_t)k;

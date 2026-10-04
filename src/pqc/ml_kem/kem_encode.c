@@ -26,6 +26,7 @@
 #include "rivide/internal/kem_encode.h"
 
 #include "rivide/internal/kem_compress.h"
+#include "rivide/utils/mem.h"
 
 /**
  * @brief Serialize a polynomial (12 bits per coefficient) to 384 bytes (ByteEncode_12).
@@ -158,13 +159,17 @@ int polyvec_frombytes_check(polyvec_t *v, const uint8_t *buf, int k) {
     }
 
     int i, j;
+    uint32_t bad = 0;
     polyvec_frombytes(v, buf, k);
     for (i = 0; i < k; i++) {
         for (j = 0; j < KEM_N; j++) {
-            if ((uint16_t)v->vec[i].coeffs[j] >= KEM_Q) {
-                return -1;
-            }
+            uint32_t c = (uint32_t)(uint16_t)v->vec[i].coeffs[j];
+            bad |= ((uint32_t)(KEM_Q - 1 - c)) >> 31;
         }
+    }
+    if (bad != 0) {
+        rivide_cleanse(v, sizeof(*v));
+        return -1;
     }
     return 0;
 }
