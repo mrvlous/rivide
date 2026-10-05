@@ -21,10 +21,12 @@
  *
  * Evaluates constant-time execution for sensitive cryptographic operations:
  * 1. ML-KEM-768 Decapsulation (Valid ciphertext vs Corrupted ciphertext)
- * 2. Constant-time memory compare (rivide_ct_memcmp)
- * 3. AES-256 Block Encryption (Fixed secret vs Random secret)
- * 4. AES-256-GCM AEAD Decryption (Valid tag vs Tampered tag)
- * 5. GHASH GF(2^128) Multiplication (Sparse zero bits vs Dense random bits)
+ * 2. ML-KEM-1024 Decapsulation (Valid ciphertext vs Corrupted ciphertext)
+ * 3. Constant-time memory compare (rivide_ct_memcmp)
+ * 4. Constant-time conditional select (rivide_ct_select)
+ * 5. AES-256 Block Encryption (Fixed secret vs Random secret)
+ * 6. AES-256-GCM AEAD Decryption (Valid tag vs Tampered tag)
+ * 7. GHASH GF(2^128) Multiplication (Sparse zero bits vs Dense random bits)
  *
  * Follows the Dudect methodology:
  * - Samples execution latency across two distinct input distributions (Class 0 vs Class 1).
@@ -194,6 +196,10 @@ static int test_dudect_ml_kem_768(void) {
         }
     }
 
+    rivide_cleanse(sk, sizeof(sk));
+    rivide_cleanse(ss, sizeof(ss));
+    rivide_cleanse(ss_temp, sizeof(ss_temp));
+
     t_val = compute_t_statistic(&stats_class0, &stats_class1);
     printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
            (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
@@ -207,6 +213,91 @@ static int test_dudect_ml_kem_768(void) {
     }
 
     printf("  [PASS] ML-KEM-768 Decapsulation is strictly constant-time.\n");
+    return 0;
+}
+
+/**
+ * @brief Statistical timing leakage test for ML-KEM-1024 decapsulation.
+ */
+static int test_dudect_ml_kem_1024(void) {
+    uint8_t pk[RIVIDE_ML_KEM_1024_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_KEM_1024_SK_BYTES];
+    uint8_t ct_valid[RIVIDE_ML_KEM_1024_CT_BYTES];
+    uint8_t ct_invalid[RIVIDE_ML_KEM_1024_CT_BYTES];
+    uint8_t ss[RIVIDE_ML_KEM_SS_BYTES];
+    uint8_t ss_temp[RIVIDE_ML_KEM_SS_BYTES];
+    dudect_stats_t stats_class0;
+    dudect_stats_t stats_class1;
+    double t_val;
+    size_t i;
+
+    printf("\n[Dudect] Testing ML-KEM-1024 Decapsulation Constant-Time Execution...\n");
+    stats_init(&stats_class0);
+    stats_init(&stats_class1);
+
+    if (rivide_ml_kem_1024_keygen(pk, sk) != RIVIDE_SUCCESS) {
+        fprintf(stderr, "Error: KeyGen failed\n");
+        return -1;
+    }
+
+    if (rivide_ml_kem_1024_encaps(ct_valid, ss, pk) != RIVIDE_SUCCESS) {
+        fprintf(stderr, "Error: Encaps failed\n");
+        rivide_cleanse(sk, sizeof(sk));
+        return -1;
+    }
+
+    /* Prepare invalid ciphertext (corrupted ciphertext triggering implicit rejection) */
+    memcpy(ct_invalid, ct_valid, sizeof(ct_invalid));
+    ct_invalid[0] ^= 0x55;
+    ct_invalid[sizeof(ct_invalid) / 2] ^= 0xAA;
+
+    /* Warm up */
+    for (i = 0; i < 100; i++) {
+        rivide_ml_kem_1024_decaps(ss_temp, ct_valid, sk);
+        rivide_ml_kem_1024_decaps(ss_temp, ct_invalid, sk);
+    }
+
+    /* Statistical sampling loop */
+    for (i = 0; i < DUDECT_SAMPLE_COUNT; i++) {
+        uint8_t coin;
+        const uint8_t *ct_target;
+        uint64_t t0;
+        uint64_t t1;
+        double diff;
+
+        rivide_randombytes(&coin, 1);
+        coin &= 1;
+        ct_target = (coin == 0) ? ct_valid : ct_invalid;
+
+        t0 = get_time_ticks();
+        rivide_ml_kem_1024_decaps(ss_temp, ct_target, sk);
+        t1 = get_time_ticks();
+        diff = (double)(t1 - t0);
+
+        if (coin == 0) {
+            stats_update(&stats_class0, diff);
+        } else {
+            stats_update(&stats_class1, diff);
+        }
+    }
+
+    rivide_cleanse(sk, sizeof(sk));
+    rivide_cleanse(ss, sizeof(ss));
+    rivide_cleanse(ss_temp, sizeof(ss_temp));
+
+    t_val = compute_t_statistic(&stats_class0, &stats_class1);
+    printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
+           (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
+    printf("  Mean Latency      : Class 0 = %.2f ticks, Class 1 = %.2f ticks\n", stats_class0.mean,
+           stats_class1.mean);
+    printf("  Welch's t-value   : %.4f (Threshold: |t| < %.2f)\n", t_val, DUDECT_MAX_T_THRESHOLD);
+
+    if (fabs(t_val) >= DUDECT_MAX_T_THRESHOLD) {
+        printf("  [FAIL] Observable timing leakage detected in ML-KEM-1024 Decaps (|t| >= 4.5)\n");
+        return -1;
+    }
+
+    printf("  [PASS] ML-KEM-1024 Decapsulation is strictly constant-time.\n");
     return 0;
 }
 
@@ -266,6 +357,10 @@ static int test_dudect_ct_memcmp(void) {
     }
 
     (void)dummy;
+    rivide_cleanse(buf_a, sizeof(buf_a));
+    rivide_cleanse(buf_b, sizeof(buf_b));
+    rivide_cleanse(buf_c, sizeof(buf_c));
+
     t_val = compute_t_statistic(&stats_class0, &stats_class1);
     printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
            (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
@@ -279,6 +374,83 @@ static int test_dudect_ct_memcmp(void) {
     }
 
     printf("  [PASS] rivide_ct_memcmp is strictly constant-time.\n");
+    return 0;
+}
+
+/**
+ * @brief Statistical timing leakage test for constant-time conditional buffer selection.
+ */
+static int test_dudect_ct_select(void) {
+    uint8_t buf_a[32];
+    uint8_t buf_b[32];
+    uint8_t dst[32];
+    dudect_stats_t stats_class0;
+    dudect_stats_t stats_class1;
+    double t_val;
+    size_t i;
+    volatile int dummy = 0;
+
+    printf("\n[Dudect] Testing rivide_ct_select Constant-Time Execution...\n");
+    stats_init(&stats_class0);
+    stats_init(&stats_class1);
+
+    rivide_randombytes(buf_a, sizeof(buf_a));
+    rivide_randombytes(buf_b, sizeof(buf_b));
+
+    /* Warm up */
+    for (i = 0; i < 100; i++) {
+        rivide_ct_select(dst, buf_a, buf_b, sizeof(dst), 0);
+        dummy += dst[0];
+        rivide_ct_select(dst, buf_a, buf_b, sizeof(dst), 1);
+        dummy += dst[0];
+    }
+
+    /* Statistical sampling loop */
+    for (i = 0; i < DUDECT_SAMPLE_COUNT; i++) {
+        uint8_t coin;
+        int selector;
+        uint64_t t0;
+        uint64_t t1;
+        double diff;
+        int k;
+
+        rivide_randombytes(&coin, 1);
+        coin &= 1;
+        selector = (coin == 0) ? 0 : 1;
+
+        t0 = get_time_ticks();
+        for (k = 0; k < 64; k++) {
+            rivide_ct_select(dst, buf_a, buf_b, sizeof(dst), selector);
+            dummy += dst[0];
+        }
+        t1 = get_time_ticks();
+        diff = (double)(t1 - t0) / 64.0;
+
+        if (coin == 0) {
+            stats_update(&stats_class0, diff);
+        } else {
+            stats_update(&stats_class1, diff);
+        }
+    }
+
+    (void)dummy;
+    rivide_cleanse(buf_a, sizeof(buf_a));
+    rivide_cleanse(buf_b, sizeof(buf_b));
+    rivide_cleanse(dst, sizeof(dst));
+
+    t_val = compute_t_statistic(&stats_class0, &stats_class1);
+    printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
+           (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
+    printf("  Mean Latency      : Class 0 = %.2f ticks, Class 1 = %.2f ticks\n", stats_class0.mean,
+           stats_class1.mean);
+    printf("  Welch's t-value   : %.4f (Threshold: |t| < %.2f)\n", t_val, DUDECT_MAX_T_THRESHOLD);
+
+    if (fabs(t_val) >= DUDECT_MAX_T_THRESHOLD) {
+        printf("  [FAIL] Observable timing leakage detected in rivide_ct_select (|t| >= 4.5)\n");
+        return -1;
+    }
+
+    printf("  [PASS] rivide_ct_select is strictly constant-time.\n");
     return 0;
 }
 
@@ -339,6 +511,11 @@ static int test_dudect_aes_block(void) {
     }
 
     rivide_aes_key_cleanse(&key);
+    rivide_cleanse(raw_key, sizeof(raw_key));
+    rivide_cleanse(pt_class0, sizeof(pt_class0));
+    rivide_cleanse(pt_class1, sizeof(pt_class1));
+    rivide_cleanse(ct_out, sizeof(ct_out));
+
     t_val = compute_t_statistic(&stats_class0, &stats_class1);
     printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
            (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
@@ -424,6 +601,16 @@ static int test_dudect_aes_gcm(void) {
     }
 
     rivide_aes_key_cleanse(&key);
+    rivide_cleanse(raw_key, sizeof(raw_key));
+    rivide_cleanse(iv, sizeof(iv));
+    rivide_cleanse(pt0, sizeof(pt0));
+    rivide_cleanse(pt1, sizeof(pt1));
+    rivide_cleanse(ct0, sizeof(ct0));
+    rivide_cleanse(ct1, sizeof(ct1));
+    rivide_cleanse(tag0, sizeof(tag0));
+    rivide_cleanse(tag1, sizeof(tag1));
+    rivide_cleanse(out, sizeof(out));
+
     t_val = compute_t_statistic(&stats_class0, &stats_class1);
     printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
            (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
@@ -496,6 +683,11 @@ static int test_dudect_ghash(void) {
         }
     }
 
+    rivide_cleanse(h, sizeof(h));
+    rivide_cleanse(data_class0, sizeof(data_class0));
+    rivide_cleanse(data_class1, sizeof(data_class1));
+    rivide_cleanse(tag_out, sizeof(tag_out));
+
     t_val = compute_t_statistic(&stats_class0, &stats_class1);
     printf("  Samples Collected : %zu (Class 0: %.0f, Class 1: %.0f)\n",
            (size_t)DUDECT_SAMPLE_COUNT, stats_class0.count, stats_class1.count);
@@ -529,7 +721,15 @@ int main(void) {
         ret = 1;
     }
 
+    if (test_dudect_ml_kem_1024() != 0) {
+        ret = 1;
+    }
+
     if (test_dudect_ct_memcmp() != 0) {
+        ret = 1;
+    }
+
+    if (test_dudect_ct_select() != 0) {
         ret = 1;
     }
 
