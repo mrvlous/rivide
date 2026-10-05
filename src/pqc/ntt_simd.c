@@ -34,7 +34,7 @@
  * per iteration.
  */
 void rivide_simd_poly_add_reduce(int16_t *r, const int16_t *a, const int16_t *b, int16_t q) {
-    if (!r || !a || !b) {
+    if (!r || !a || !b || q <= 0) {
         return;
     }
     size_t i;
@@ -69,7 +69,7 @@ void rivide_simd_poly_add_reduce(int16_t *r, const int16_t *a, const int16_t *b,
  * Performs branchless coefficient subtraction using SIMD registers or C99.
  */
 void rivide_simd_poly_sub_reduce(int16_t *r, const int16_t *a, const int16_t *b, int16_t q) {
-    if (!r || !a || !b) {
+    if (!r || !a || !b || q <= 0) {
         return;
     }
     size_t i;
@@ -105,7 +105,7 @@ void rivide_simd_poly_sub_reduce(int16_t *r, const int16_t *a, const int16_t *b,
  */
 void rivide_simd_poly_pointwise_montgomery(int16_t *r, const int16_t *a, const int16_t *b,
                                            int16_t q, int32_t qinv) {
-    if (!r || !a || !b) {
+    if (!r || !a || !b || q <= 0) {
         return;
     }
     size_t i;

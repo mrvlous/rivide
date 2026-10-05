@@ -125,7 +125,8 @@ int test_keccak_sponge_state_invariants(void) {
 
     rivide_shake_squeeze(&ctx, buf2, sizeof(buf2));
 
-    /* NULL context guards */
+    /* NULL context and state guards */
+    rivide_keccak_f1600(NULL);
     rivide_shake128_init(NULL);
     rivide_shake256_init(NULL);
     rivide_shake_absorb(NULL, data, sizeof(data));

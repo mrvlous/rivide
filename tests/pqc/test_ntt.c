@@ -49,10 +49,12 @@ int test_simd_poly_add_reduce(void) {
 
     rivide_simd_poly_add_reduce(r, a, b, 3329);
 
-    /* NULL pointer validation: must be safe no-op */
+    /* NULL pointer and invalid modulus validation: must be safe no-op */
     rivide_simd_poly_add_reduce(NULL, a, b, 3329);
     rivide_simd_poly_add_reduce(r, NULL, b, 3329);
     rivide_simd_poly_add_reduce(r, a, NULL, 3329);
+    rivide_simd_poly_add_reduce(r, a, b, 0);
+    rivide_simd_poly_add_reduce(r, a, b, -1);
 
     for (i = 0; i < 256; i++) {
         int16_t expected = (int16_t)(a[i] + b[i]);
@@ -73,10 +75,12 @@ int test_simd_poly_sub_reduce(void) {
 
     rivide_simd_poly_sub_reduce(r, a, b, 3329);
 
-    /* NULL pointer validation: must be safe no-op */
+    /* NULL pointer and invalid modulus validation: must be safe no-op */
     rivide_simd_poly_sub_reduce(NULL, a, b, 3329);
     rivide_simd_poly_sub_reduce(r, NULL, b, 3329);
     rivide_simd_poly_sub_reduce(r, a, NULL, 3329);
+    rivide_simd_poly_sub_reduce(r, a, b, 0);
+    rivide_simd_poly_sub_reduce(r, a, b, -1);
 
     for (i = 0; i < 256; i++) {
         int16_t expected = (int16_t)(a[i] - b[i]);
@@ -168,10 +172,12 @@ int test_simd_poly_pointwise_montgomery(void) {
 
     rivide_simd_poly_pointwise_montgomery(r, a, b, 3329, 62209);
 
-    /* NULL pointer validation: must safely return without crash */
+    /* NULL pointer and invalid modulus validation: must safely return without crash */
     rivide_simd_poly_pointwise_montgomery(NULL, a, b, 3329, 62209);
     rivide_simd_poly_pointwise_montgomery(r, NULL, b, 3329, 62209);
     rivide_simd_poly_pointwise_montgomery(r, a, NULL, 3329, 62209);
+    rivide_simd_poly_pointwise_montgomery(r, a, b, 0, 62209);
+    rivide_simd_poly_pointwise_montgomery(r, a, b, -1, 62209);
 
     for (i = 0; i < 256; i++) {
         int32_t prod = (int32_t)a[i] * (int32_t)b[i];

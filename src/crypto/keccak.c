@@ -64,6 +64,10 @@ static const unsigned int rho_offsets[25] = {0,  1,  62, 28, 27, 36, 44, 6,  55,
  * @param[in,out] s 25-lane 64-bit integer state array (1600 bits).
  */
 void rivide_keccak_f1600(uint64_t s[25]) {
+    if (!s) {
+        return;
+    }
+
     int round;
     uint64_t C[5], D[5], B[25];
     int x, y;
@@ -100,6 +104,10 @@ void rivide_keccak_f1600(uint64_t s[25]) {
         /* Iota step: break symmetry with round constant. */
         s[0] ^= keccak_rc[round];
     }
+
+    rivide_cleanse(C, sizeof(C));
+    rivide_cleanse(D, sizeof(D));
+    rivide_cleanse(B, sizeof(B));
 }
 
 /**

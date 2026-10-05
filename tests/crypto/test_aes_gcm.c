@@ -241,5 +241,6 @@ int test_aes_block_null_and_invalid_rounds(void) {
               RIVIDE_ERR_INVALID_PARAM);
 
     rivide_aes_key_cleanse(&key);
+    rivide_aes_key_cleanse(NULL);
     return 0;
 }

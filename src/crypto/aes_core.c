@@ -163,6 +163,7 @@ void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in
     }
 
     uint8_t state[16];
+    uint8_t tmp[16];
     int rounds = key_ctx->rounds;
     const uint32_t *rk = key_ctx->round_keys;
     int i, j, round;
@@ -173,8 +174,6 @@ void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in
     }
 
     for (round = 1; round < rounds; round++) {
-        uint8_t tmp[16];
-
         for (i = 0; i < 16; i++) {
             tmp[i] = aes_sbox_ct(state[i]);
         }
@@ -220,7 +219,6 @@ void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in
     }
 
     {
-        uint8_t tmp[16];
         for (i = 0; i < 16; i++) {
             tmp[i] = aes_sbox_ct(state[i]);
         }
@@ -252,6 +250,7 @@ void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in
     }
 
     rivide_cleanse(state, sizeof(state));
+    rivide_cleanse(tmp, sizeof(tmp));
 }
 
 /**
