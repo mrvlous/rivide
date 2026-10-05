@@ -70,6 +70,14 @@ int rivide_ct_memcmp(const void *a, const void *b, size_t len) {
     return (int)((diff | (0u - diff)) >> 31);
 }
 
+#if defined(__GNUC__) || defined(__clang__)
+#define RIVIDE_CONSTTIME_BARRIER(var) __asm__ volatile("" : "+r"(var))
+#elif defined(_MSC_VER)
+#define RIVIDE_CONSTTIME_BARRIER(var) _ReadWriteBarrier()
+#else
+#define RIVIDE_CONSTTIME_BARRIER(var) ((void)0)
+#endif
+
 void rivide_ct_select(void *dst, const void *src_a, const void *src_b, size_t len, int selector) {
     if (!dst || !src_a || !src_b || len == 0) {
         return;
@@ -78,15 +86,16 @@ void rivide_ct_select(void *dst, const void *src_a, const void *src_b, size_t le
     const unsigned char *a = (const unsigned char *)src_a;
     const unsigned char *b = (const unsigned char *)src_b;
     unsigned char *d = (unsigned char *)dst;
-    unsigned int mask;
+    uint32_t sel = (uint32_t)selector;
+    uint32_t is_nonzero = (sel | (0u - sel)) >> 31;
+    unsigned int mask = (0u - is_nonzero) & 0xFFu;
     size_t i;
 
     /*
-     * Convert selector to an all-zero or all-one byte mask without branching.
-     * If selector is 0, mask is 0x00 (select src_a).
-     * If selector is non-zero, mask is 0xFF (select src_b).
+     * Optimization barrier: ensures compiler does not pattern-match
+     * the mask into conditional branches or conditional move instructions.
      */
-    mask = (unsigned int)(-(selector != 0)) & 0xFFu;
+    RIVIDE_CONSTTIME_BARRIER(mask);
 
     for (i = 0; i < len; i++) {
         d[i] = (unsigned char)((unsigned int)a[i] ^

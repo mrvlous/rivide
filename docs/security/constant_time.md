@@ -62,13 +62,19 @@ void rivide_ct_select(void *dst, const void *src_a, const void *src_b, size_t le
     const unsigned char *a = (const unsigned char *)src_a;
     const unsigned char *b = (const unsigned char *)src_b;
     unsigned char *d = (unsigned char *)dst;
-    unsigned int mask = (unsigned int)(-(selector != 0)) & 0xFFu;
+    uint32_t sel = (uint32_t)selector;
+    uint32_t is_nonzero = (sel | (0u - sel)) >> 31;
+    unsigned int mask = (0u - is_nonzero) & 0xFFu;
+
+    RIVIDE_CONSTTIME_BARRIER(mask);
 
     for (size_t i = 0; i < len; i++) {
         d[i] = (unsigned char)((unsigned int)a[i] ^ (mask & ((unsigned int)a[i] ^ (unsigned int)b[i])));
     }
 }
 ```
+
+This ensures that selection between secrets (such as ML-KEM shared secrets and implicit rejection fallback seeds) executes in constant time with branchless two's complement arithmetic and compiler optimization barriers.
 
 ## 3. Statistical Timing Leakage Verification (Dudect Methodology)
 
@@ -77,8 +83,8 @@ To experimentally prove the absence of timing side-channels, Rivide includes a d
 ### Test Methodology
 
 1. **Two-Class Input Partitioning**:
-   - **Class 0 (Fixed / Valid)**: Legitimate cryptographic inputs (e.g. valid ML-KEM-768 ciphertext, identical memory buffers).
-   - **Class 1 (Random / Corrupted)**: Crafted or corrupted inputs designed to trigger internal verification failure or implicit rejection.
+   - **Class 0 (Fixed / Valid)**: Legitimate cryptographic inputs (e.g. valid ML-KEM-768/1024 ciphertext, identical memory buffers, selector 0).
+   - **Class 1 (Random / Corrupted)**: Crafted or corrupted inputs designed to trigger internal verification failure, implicit rejection, or alternate buffer selection.
 2. **Interleaved Sampling**:
    - In each iteration, a hardware random coin selects Class 0 or Class 1.
    - High-precision CPU timestamps (`rdtsc` / monotonic clock) record the start and completion timestamps.

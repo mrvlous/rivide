@@ -45,10 +45,28 @@ int test_ct_select(void) {
     uint8_t b[16] = {0x22, 0x22, 0x22, 0x22};
     uint8_t dst[16];
 
+    /* Selector 0 must select buffer a */
     rivide_ct_select(dst, a, b, 16, 0);
     ASSERT_MEM_EQ(dst, a, 16);
 
+    /* Selector 1 must select buffer b */
     rivide_ct_select(dst, a, b, 16, 1);
+    ASSERT_MEM_EQ(dst, b, 16);
+
+    /* Negative and diverse non-zero selectors must uniformly select buffer b */
+    rivide_ct_select(dst, a, b, 16, -1);
+    ASSERT_MEM_EQ(dst, b, 16);
+
+    rivide_ct_select(dst, a, b, 16, 42);
+    ASSERT_MEM_EQ(dst, b, 16);
+
+    rivide_ct_select(dst, a, b, 16, -100);
+    ASSERT_MEM_EQ(dst, b, 16);
+
+    rivide_ct_select(dst, a, b, 16, 0x7FFFFFFF);
+    ASSERT_MEM_EQ(dst, b, 16);
+
+    rivide_ct_select(dst, a, b, 16, (int)0x80000000u);
     ASSERT_MEM_EQ(dst, b, 16);
 
     /* NULL pointers and zero length must be safe no-ops */
