@@ -16,13 +16,14 @@ This guide describes best practices for deploying Rivide into resource-constrain
 2. **Standard Stack Allocation**:
    - For microcontrollers with limited RAM (e.g. ARM Cortex-M4/M7 with $\le 64$ KB RAM), buffer sizes for ML-KEM-768 key pairs (1184 bytes public key, 2400 bytes secret key) fit comfortably within function stack frames or static global arrays.
 3. **Custom Entropy Hook**:
-   - For bare-metal platforms without POSIX OS support, override `rivide_randombytes()` to sample hardware True Random Number Generators (TRNG).
+   - For bare-metal platforms without POSIX OS support, register an RNG callback via `rivide_set_rng_callback()` to sample hardware True Random Number Generators (TRNG).
 
 ```c
+#include "rivide/rivide.h"
 #include "rivide/utils/random.h"
 
-/* Custom hardware TRNG hook for bare-metal ARM Cortex-M */
-rivide_status_t rivide_randombytes(uint8_t *out, size_t len) {
+/* Custom hardware TRNG callback for bare-metal ARM Cortex-M */
+static rivide_status_t trng_callback(uint8_t *out, size_t len) {
     size_t i;
     for (i = 0; i < len; i++) {
         /* Sample from hardware TRNG register */
@@ -30,5 +31,10 @@ rivide_status_t rivide_randombytes(uint8_t *out, size_t len) {
         out[i] = (uint8_t)TRNG->DR;
     }
     return RIVIDE_SUCCESS;
+}
+
+void init_embedded_entropy(void) {
+    /* Register custom TRNG hook atomically */
+    rivide_set_rng_callback(trng_callback);
 }
 ```

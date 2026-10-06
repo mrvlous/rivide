@@ -25,11 +25,11 @@ In a detached signature workflow:
 #include <rivide/rivide.h>
 
 int sign_document(const uint8_t *doc, size_t doclen, const uint8_t *sk, uint8_t *sig_out) {
-    size_t siglen = RIVIDE_ML_DSA_65_BYTES;
+    size_t siglen = RIVIDE_ML_DSA_65_SIG_BYTES;
     return rivide_ml_dsa_65_sign(sig_out, &siglen, doc, doclen, sk);
 }
 
 int verify_document(const uint8_t *doc, size_t doclen, const uint8_t *pk, const uint8_t *sig) {
-    return rivide_ml_dsa_65_verify(sig, RIVIDE_ML_DSA_65_BYTES, doc, doclen, pk);
+    return rivide_ml_dsa_65_verify(sig, RIVIDE_ML_DSA_65_SIG_BYTES, doc, doclen, pk);
 }
 ```
