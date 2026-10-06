@@ -102,13 +102,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Bob Ciphertext Length   : {} bytes", bob.ciphertext.len());
 
     // 3. Alice decapsulates the shared secret using her secret key
+    // (decapsulate returns [u8; 32], decapsulate_secret returns RAII MlKemSharedSecret with drop zeroization)
     let alice_ss = MlKem768::decapsulate(&bob.ciphertext, &alice.secret_key)?;
+    let alice_secret = MlKem768::decapsulate_secret(&bob.ciphertext, &alice.secret_key)?;
 
     // 4. Verify shared secrets match in constant time
     assert_eq!(alice_ss, bob.shared_secret);
+    assert_eq!(*alice_secret, bob.shared_secret);
     println!("Quantum-safe shared secret established successfully!");
 
-    // Secret keys automatically zeroized upon drop
+    // Secret keys and shared secrets automatically zeroized upon drop
     Ok(())
 }
 ```

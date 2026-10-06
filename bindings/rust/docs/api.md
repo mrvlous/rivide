@@ -73,6 +73,9 @@ Encapsulates a 32-byte quantum-safe shared secret under the provided public key.
 #### `MlKem768::decapsulate(ciphertext: &[u8; 1088], secret_key: &MlKem768SecretKey) -> Result<[u8; 32], RivideError>`
 Decapsulates the 32-byte shared secret from the ciphertext in constant time.
 
+#### `MlKem768::decapsulate_secret(ciphertext: &[u8; 1088], secret_key: &MlKem768SecretKey) -> Result<MlKemSharedSecret, RivideError>`
+Decapsulates the 32-byte shared secret into an RAII zeroizing [`MlKemSharedSecret`](#mlkemsharedsecret) container that automatically scrubs sensitive key memory on drop.
+
 ### `MlKem1024` (NIST FIPS 203, Category 5)
 
 #### `MlKem1024::keypair() -> Result<MlKem1024KeyPair, RivideError>`
@@ -83,6 +86,15 @@ Encapsulates a 32-byte shared secret under the provided public key.
 
 #### `MlKem1024::decapsulate(ciphertext: &[u8; 1568], secret_key: &MlKem1024SecretKey) -> Result<[u8; 32], RivideError>`
 Decapsulates the 32-byte shared secret from the ciphertext in constant time.
+
+#### `MlKem1024::decapsulate_secret(ciphertext: &[u8; 1568], secret_key: &MlKem1024SecretKey) -> Result<MlKemSharedSecret, RivideError>`
+Decapsulates the 32-byte shared secret into an RAII zeroizing [`MlKemSharedSecret`](#mlkemsharedsecret) container that automatically scrubs sensitive key memory on drop.
+
+### `MlKemSharedSecret`
+RAII container wrapping a 32-byte quantum-safe shared secret (`[u8; 32]`).
+- Automatically wiped from memory using `cleanse` on drop.
+- Implements `Deref<Target = [u8; 32]>`, `AsRef<[u8]>`, `PartialEq`, and `Debug` with `[REDACTED]`.
+- Can be constructed from a raw byte array via `MlKemSharedSecret::from_bytes([u8; 32])` or accessed via `.as_bytes()`.
 
 ## Digital Signature Algorithm (`rivide::dsa`)
 
