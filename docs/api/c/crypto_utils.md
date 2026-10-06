@@ -9,7 +9,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 Public C99 declarations for SHA-3, SHAKE, AES-GCM AEAD, secure random generation, and constant-time memory utilities.
 
-Headers: `<rivide/crypto/sha3.h>`, `<rivide/crypto/aes.h>`, `<rivide/utils/mem.h>`, `<rivide/utils/random.h>`
+Headers: `<rivide/crypto/sha3.h>`, `<rivide/crypto/aes.h>`, `<rivide/crypto/aes_gcm.h>`, `<rivide/utils/mem.h>`, `<rivide/utils/random.h>`
 
 ## 1. SHA-3 & SHAKE Functions
 
@@ -47,6 +47,10 @@ rivide_status_t rivide_aes_gcm_decrypt(
     const uint8_t *tag,
     uint8_t *pt
 );
+
+/* Single block AES encryption and key cleansing */
+void rivide_aes_encrypt_block(const rivide_aes_key_t *key_ctx, const uint8_t *in, uint8_t *out);
+void rivide_aes_key_cleanse(rivide_aes_key_t *ctx);
 ```
 
 ## 3. Memory & Random Utilities
