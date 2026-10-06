@@ -26,6 +26,7 @@
 #include "rivide/internal/dsa_packing.h"
 
 #include "rivide/internal/dsa_poly.h"
+#include "rivide/utils/mem.h"
 
 /**
  * @brief Pack t1 polynomial (10 bits per coefficient) into byte buffer.
@@ -474,6 +475,9 @@ size_t dsa_pack_hint(uint8_t *buf, const dsa_polyveck_t *h, int k, int omega) {
  */
 int dsa_unpack_hint(dsa_polyveck_t *h, const uint8_t *buf, int k, int omega) {
     if (!h || !buf || k <= 0 || k > DSA_K_MAX || omega <= 0) {
+        if (h) {
+            rivide_cleanse(h, sizeof(*h));
+        }
         return 1;
     }
 
@@ -489,10 +493,12 @@ int dsa_unpack_hint(dsa_polyveck_t *h, const uint8_t *buf, int k, int omega) {
     for (i = 0; i < (unsigned int)k; i++) {
         unsigned int end = (unsigned int)buf[(unsigned int)omega + i];
         if (end < prev || end > (unsigned int)omega) {
+            rivide_cleanse(h, sizeof(*h));
             return 1;
         }
         for (j = prev; j < end; j++) {
             if (j > prev && buf[j] <= buf[j - 1]) {
+                rivide_cleanse(h, sizeof(*h));
                 return 1;
             }
             h->vec[i].coeffs[(unsigned int)buf[j]] = 1;
@@ -503,6 +509,7 @@ int dsa_unpack_hint(dsa_polyveck_t *h, const uint8_t *buf, int k, int omega) {
     /* Remaining entries in buf must be zero. */
     for (j = prev; j < (unsigned int)omega; j++) {
         if (buf[j] != 0) {
+            rivide_cleanse(h, sizeof(*h));
             return 1;
         }
     }
