@@ -78,6 +78,9 @@ extern "C" {
 /** @brief Ciphertext size in bytes. */
 #define RIVIDE_ML_KEM_768_CT_BYTES 1088
 
+/** @brief Shared secret size in bytes for ML-KEM-768. */
+#define RIVIDE_ML_KEM_768_SS_BYTES RIVIDE_ML_KEM_SS_BYTES
+
 /** @brief CBD eta_1 parameter for secret vector sampling. */
 #define RIVIDE_ML_KEM_768_ETA1 2
 
@@ -109,6 +112,9 @@ extern "C" {
 
 /** @brief Ciphertext size in bytes. */
 #define RIVIDE_ML_KEM_1024_CT_BYTES 1568
+
+/** @brief Shared secret size in bytes for ML-KEM-1024. */
+#define RIVIDE_ML_KEM_1024_SS_BYTES RIVIDE_ML_KEM_SS_BYTES
 
 /** @brief CBD eta_1 parameter. */
 #define RIVIDE_ML_KEM_1024_ETA1 2
