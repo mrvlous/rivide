@@ -95,6 +95,17 @@ To experimentally prove the absence of timing side-channels, Rivide includes a d
    - **Null Hypothesis ($H_0$)**: Execution distributions of Class 0 and Class 1 are identical.
    - **Threshold**: $|t| < 4.5$. A value below $4.5$ proves with $p > 10^{-5}$ confidence that no statistically significant timing difference exists.
 
+### Verified Cryptographic Primitives
+
+The Dudect statistical harness evaluates 10,000 samples per test across 7 sensitive routines:
+1. **ML-KEM-768 Decapsulation**: Valid ciphertext vs corrupted ciphertext triggering implicit rejection.
+2. **ML-KEM-1024 Decapsulation**: Valid ciphertext vs corrupted ciphertext under Category 5 parameters.
+3. **Memory Comparison (`rivide_ct_memcmp`)**: Identical buffers vs distinct buffers.
+4. **Conditional Selection (`rivide_ct_select`)**: Selector 0 vs selector 1 branchless multiplexing.
+5. **AES Block Encryption**: Fixed secret key vs random secret key.
+6. **AES-256-GCM AEAD Decryption**: Valid authentication tag vs tampered tag.
+7. **GHASH Field Multiplication**: Sparse zero bits vs dense pseudo-random bits.
+
 ### Executing Timing Verification
 
 ```bash

@@ -40,6 +40,8 @@ Rivide systematically sanitizes all sensitive stack buffers across all primitive
 2. **ML-KEM Ephemeral States**: Cleanses seeds ($\rho, \sigma$), matrix rows ($\mathbf{a}_{row}$), and polynomial vectors ($\mathbf{s}, \mathbf{e}, \mathbf{t}$) in key generation, as well as ephemeral secret buffers on both success and RNG failure paths in encapsulation.
 3. **GHASH Stack Cleansing**: Cleanses intermediate hash keys ($H$), multiplication accumulators, and input block chunks in `rivide_ghash_mult` and `rivide_ghash_update`.
 4. **Defensive Digest Cleansing**: Zeroizes output digest buffers on invalid NULL input pointers in SHA-3 and SHAKE routines to prevent silent forged empty-digest outputs.
+5. **AES Block & AEAD Stack Cleansing**: Cleanses intermediate S-box outputs and round state buffers in `rivide_aes_encrypt_block` and intermediate counter, length, and tag buffers in `rivide_aes_gcm_encrypt`/`decrypt`.
+6. **Keccak-f[1600] State Scrubbing**: Cleanses 280 bytes of intermediate step mapping accumulators ($C$, $D$, $B$) in `rivide_keccak_f1600`.
 
 ## 3. High-Level RAII Drop Integration
 
