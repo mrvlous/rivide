@@ -15,9 +15,9 @@ Header: `<rivide/pqc/ml_dsa.h>`
 
 | Constant Macro | ML-DSA-65 | ML-DSA-87 |
 | :--- | :--- | :--- |
-| `RIVIDE_ML_DSA_*_PUBLICKEYBYTES` | `1952` bytes | `2592` bytes |
-| `RIVIDE_ML_DSA_*_SECRETKEYBYTES` | `4032` bytes | `4896` bytes |
-| `RIVIDE_ML_DSA_*_BYTES` (Signature) | `3309` bytes | `4627` bytes |
+| `RIVIDE_ML_DSA_*_PK_BYTES` | `1952` bytes | `2592` bytes |
+| `RIVIDE_ML_DSA_*_SK_BYTES` | `4032` bytes | `4896` bytes |
+| `RIVIDE_ML_DSA_*_SIG_BYTES` (`*_BYTES`) | `3309` bytes | `4627` bytes |
 
 ## 2. ML-DSA-65 Functions
 
@@ -43,7 +43,7 @@ rivide_status_t rivide_ml_dsa_65_verify(
 
 - **`keygen`**: Generates a public key (`1952` bytes) and secret key (`4032` bytes).
 - **`sign`**: Generates signature (`3309` bytes) over `msg`.
-- **`verify`**: Verifies signature authenticity. Returns `RIVIDE_SUCCESS` (0) on valid signature, or `RIVIDE_ERR_VERIFICATION_FAILED` (-2) on invalid signature.
+- **`verify`**: Verifies signature authenticity. Returns `RIVIDE_SUCCESS` (0) on valid signature, or `RIVIDE_ERR_VERIFICATION_FAILED` (-4) on invalid signature.
 
 ## 3. ML-DSA-87 Functions
 
@@ -66,3 +66,7 @@ rivide_status_t rivide_ml_dsa_87_verify(
     const uint8_t *pk
 );
 ```
+
+- **`keygen`**: Generates a public key (`2592` bytes) and secret key (`4896` bytes).
+- **`sign`**: Generates signature (`4627` bytes) over `msg`.
+- **`verify`**: Verifies signature authenticity. Returns `RIVIDE_SUCCESS` (0) on valid signature, or `RIVIDE_ERR_VERIFICATION_FAILED` (-4) on invalid signature.

@@ -15,10 +15,10 @@ Header: `<rivide/pqc/ml_kem.h>`
 
 | Constant Macro | ML-KEM-768 | ML-KEM-1024 |
 | :--- | :--- | :--- |
-| `RIVIDE_ML_KEM_*_PUBLICKEYBYTES` | `1184` bytes | `1568` bytes |
-| `RIVIDE_ML_KEM_*_SECRETKEYBYTES` | `2400` bytes | `3168` bytes |
-| `RIVIDE_ML_KEM_*_CIPHERTEXTBYTES` | `1088` bytes | `1568` bytes |
-| `RIVIDE_ML_KEM_BYTES` | `32` bytes | `32` bytes |
+| `RIVIDE_ML_KEM_*_PK_BYTES` | `1184` bytes | `1568` bytes |
+| `RIVIDE_ML_KEM_*_SK_BYTES` | `2400` bytes | `3168` bytes |
+| `RIVIDE_ML_KEM_*_CT_BYTES` | `1088` bytes | `1568` bytes |
+| `RIVIDE_ML_KEM_SS_BYTES` (`*_SS_BYTES`) | `32` bytes | `32` bytes |
 
 ## 2. ML-KEM-768 Functions
 
