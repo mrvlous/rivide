@@ -67,7 +67,7 @@ int rivide_ct_memcmp(const void *a, const void *b, size_t len) {
      * Collapse the accumulated XOR difference into a single 0-or-1 result.
      * Returns 0 if buffers are equal, 1 if they differ.
      */
-    return (int)((diff | (0u - diff)) >> 31);
+    return (int)((diff | (0u - diff)) >> 31u);
 }
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -87,7 +87,7 @@ void rivide_ct_select(void *dst, const void *src_a, const void *src_b, size_t le
     const unsigned char *b = (const unsigned char *)src_b;
     unsigned char *d = (unsigned char *)dst;
     uint32_t sel = (uint32_t)selector;
-    uint32_t is_nonzero = (sel | (0u - sel)) >> 31;
+    uint32_t is_nonzero = (sel | (0u - sel)) >> 31u;
     unsigned int mask = (0u - is_nonzero) & 0xFFu;
     size_t i;
 

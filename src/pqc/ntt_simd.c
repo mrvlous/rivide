@@ -112,6 +112,6 @@ void rivide_simd_poly_pointwise_montgomery(int16_t *r, const int16_t *a, const i
     for (i = 0; i < 256; i++) {
         int32_t prod = (int32_t)a[i] * (int32_t)b[i];
         int16_t t = (int16_t)((int64_t)prod * (int16_t)qinv);
-        r[i] = (int16_t)((prod - (int32_t)t * q) >> 16);
+        r[i] = (int16_t)((prod - (int32_t)t * q) / 65536);
     }
 }
