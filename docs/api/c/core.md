@@ -31,10 +31,23 @@ const char *rivide_version_string(void);
 
 ## 3. Status Error Codes
 
+Header: `<rivide/rivide_types.h>`
+
 | Status Macro | Integer Value | Description |
 | :--- | :--- | :--- |
 | `RIVIDE_SUCCESS` | `0` | Operation completed successfully |
-| `RIVIDE_ERR_INVALID_PARAM` | `-1` | Invalid null pointer or out-of-bounds parameter |
-| `RIVIDE_ERR_VERIFICATION_FAILED` | `-2` | Signature verification or authentication tag failed |
-| `RIVIDE_ERR_ENTROPY_FAILURE` | `-3` | Operating system CSPRNG failure |
-| `RIVIDE_ERR_INTERNAL` | `-4` | Internal cryptographic state fault |
+| `RIVIDE_ERR_NULL_PTR` | `-1` | A required pointer argument was NULL |
+| `RIVIDE_ERR_INVALID_PARAM` | `-2` | Argument value out of acceptable range |
+| `RIVIDE_ERR_RNG_FAILURE` | `-3` | Operating system CSPRNG failed to produce entropy |
+| `RIVIDE_ERR_VERIFICATION_FAILED` | `-4` | Digital signature verification or authentication tag failed |
+| `RIVIDE_ERR_DECAPSULATION_FAILED` | `-5` | KEM decapsulation failed (implicit rejection triggered) |
+| `RIVIDE_ERR_UNSUPPORTED` | `-6` | Requested feature or algorithm not compiled in |
+| `RIVIDE_ERR_INTERNAL` | `-7` | Internal cryptographic state fault |
+
+## 4. Status String Representation
+
+```c
+const char *rivide_status_str(rivide_status_t status);
+```
+
+- Converts a `rivide_status_t` status code into a static, human-readable error description string (e.g. `"Success"`, `"Invalid parameter"`, `"Verification failed"`). The returned pointer is valid for the program lifetime.
