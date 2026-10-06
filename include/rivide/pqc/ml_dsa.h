@@ -80,6 +80,9 @@ extern "C" {
 /** @brief Maximum signature size in bytes. */
 #define RIVIDE_ML_DSA_65_SIG_BYTES 3309
 
+/** @brief Alias for signature size in bytes. */
+#define RIVIDE_ML_DSA_65_BYTES RIVIDE_ML_DSA_65_SIG_BYTES
+
 /** @brief Infinity norm bound for secret vectors (eta). */
 #define RIVIDE_ML_DSA_65_ETA 4
 
@@ -118,6 +121,9 @@ extern "C" {
 
 /** @brief Maximum signature size in bytes. */
 #define RIVIDE_ML_DSA_87_SIG_BYTES 4627
+
+/** @brief Alias for signature size in bytes. */
+#define RIVIDE_ML_DSA_87_BYTES RIVIDE_ML_DSA_87_SIG_BYTES
 
 /** @brief Infinity norm bound for secret vectors (eta). */
 #define RIVIDE_ML_DSA_87_ETA 2
