@@ -80,6 +80,7 @@ pub use error::RivideError;
 pub use kem::{
     MlKem1024, MlKem1024EncapsResult, MlKem1024KeyPair, MlKem1024PublicKey, MlKem1024SecretKey,
     MlKem768, MlKem768EncapsResult, MlKem768KeyPair, MlKem768PublicKey, MlKem768SecretKey,
+    MlKemSharedSecret,
 };
 pub use utils::{
     cleanse, ct_memcmp, get_cpu_features, randombytes, randombytes_into, version, CpuFeatures,

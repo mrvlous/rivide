@@ -66,3 +66,27 @@ fn test_ml_kem_1024_roundtrip() {
     assert_eq!(alice_ss, bob.shared_secret);
     assert_eq!(ct_memcmp(&alice_ss, &bob.shared_secret), 0);
 }
+
+#[test]
+fn test_ml_kem_shared_secret_raii() {
+    let alice = MlKem768::keypair().expect("ML-KEM-768 KeyGen failed");
+    let bob = MlKem768::encapsulate(&alice.public_key).expect("ML-KEM-768 Encaps failed");
+
+    let alice_secret = MlKem768::decapsulate_secret(&bob.ciphertext, &alice.secret_key)
+        .expect("ML-KEM-768 Decaps failed");
+
+    assert_eq!(alice_secret.as_bytes().len(), 32);
+    assert_eq!(*alice_secret, bob.shared_secret);
+    assert_eq!(alice_secret.as_ref(), &bob.shared_secret[..]);
+    assert_eq!(
+        format!("{:?}", alice_secret),
+        "MlKemSharedSecret([REDACTED])"
+    );
+
+    let alice1024 = MlKem1024::keypair().expect("ML-KEM-1024 KeyGen failed");
+    let bob1024 = MlKem1024::encapsulate(&alice1024.public_key).expect("ML-KEM-1024 Encaps failed");
+    let alice1024_secret =
+        MlKem1024::decapsulate_secret(&bob1024.ciphertext, &alice1024.secret_key)
+            .expect("ML-KEM-1024 Decaps failed");
+    assert_eq!(*alice1024_secret, bob1024.shared_secret);
+}

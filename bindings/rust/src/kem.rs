@@ -113,6 +113,48 @@ impl std::fmt::Debug for MlKem768EncapsResult {
     }
 }
 
+/// ML-KEM 32-byte shared secret with automatic RAII zeroization on drop.
+#[derive(Clone, PartialEq, Eq)]
+pub struct MlKemSharedSecret(pub [u8; 32]);
+
+impl MlKemSharedSecret {
+    /// Wraps a 32-byte shared secret in an RAII zeroizing container.
+    pub const fn from_bytes(bytes: [u8; 32]) -> Self {
+        Self(bytes)
+    }
+
+    /// Returns a slice reference to the underlying 32-byte shared secret.
+    pub fn as_bytes(&self) -> &[u8; 32] {
+        &self.0
+    }
+}
+
+impl AsRef<[u8]> for MlKemSharedSecret {
+    fn as_ref(&self) -> &[u8] {
+        &self.0
+    }
+}
+
+impl std::ops::Deref for MlKemSharedSecret {
+    type Target = [u8; 32];
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl Drop for MlKemSharedSecret {
+    fn drop(&mut self) {
+        cleanse(&mut self.0);
+    }
+}
+
+impl std::fmt::Debug for MlKemSharedSecret {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "MlKemSharedSecret([REDACTED])")
+    }
+}
+
 /// ML-KEM-768 Key Encapsulation Mechanism (NIST Security Category 3).
 pub struct MlKem768;
 
@@ -156,6 +198,14 @@ impl MlKem768 {
             rivide_ml_kem_768_decaps(ss.as_mut_ptr(), ciphertext.as_ptr(), secret_key.0.as_ptr())
         };
         RivideError::from_status(status).map(|_| ss)
+    }
+
+    /// Decapsulates a 32-byte shared secret into an RAII zeroizing `MlKemSharedSecret` container.
+    pub fn decapsulate_secret(
+        ciphertext: &[u8; RIVIDE_ML_KEM_768_CT_BYTES],
+        secret_key: &MlKem768SecretKey,
+    ) -> Result<MlKemSharedSecret, RivideError> {
+        Self::decapsulate(ciphertext, secret_key).map(MlKemSharedSecret)
     }
 }
 
@@ -290,5 +340,13 @@ impl MlKem1024 {
             rivide_ml_kem_1024_decaps(ss.as_mut_ptr(), ciphertext.as_ptr(), secret_key.0.as_ptr())
         };
         RivideError::from_status(status).map(|_| ss)
+    }
+
+    /// Decapsulates a 32-byte shared secret into an RAII zeroizing `MlKemSharedSecret` container.
+    pub fn decapsulate_secret(
+        ciphertext: &[u8; RIVIDE_ML_KEM_1024_CT_BYTES],
+        secret_key: &MlKem1024SecretKey,
+    ) -> Result<MlKemSharedSecret, RivideError> {
+        Self::decapsulate(ciphertext, secret_key).map(MlKemSharedSecret)
     }
 }
