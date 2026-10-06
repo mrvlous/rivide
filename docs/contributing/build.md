@@ -23,6 +23,9 @@ make test
 # Execute NIST Known Answer Test (KAT) validation suite
 make kat
 
+# Run Dudect constant-time statistical timing leakage verification
+make timing
+
 # Compile and execute dedicated PQC performance benchmark subsystem
 make bench
 
@@ -103,6 +106,7 @@ ctest --output-on-failure
 | `CMAKE_BUILD_TYPE` | `Release` | Build configuration (`Release` or `Debug`). |
 | `RIVIDE_BUILD_TESTS` | `ON` | Enable compilation of `rivide_tests` binary. |
 | `RIVIDE_BUILD_KAT` | `ON` | Enable compilation of NIST Known Answer Test (`rivide_kat_tests`) binary. |
+| `RIVIDE_BUILD_TIMING` | `ON` | Enable compilation of Dudect statistical timing leakage harness (`rivide_timing_tests`). |
 | `RIVIDE_BUILD_BENCHMARKS` | `ON` | Enable compilation of dedicated benchmark (`rivide_bench`) binary. |
 | `RIVIDE_BUILD_EXAMPLES` | `ON` | Enable compilation of sub-directory example binaries. |
 | `RIVIDE_BUILD_FUZZERS` | `OFF` | Enable compilation of LLVM libFuzzer fuzzing targets. |
