@@ -47,6 +47,13 @@ fn test_aes_256_gcm_roundtrip() {
         AesGcm::decrypt_256(&key, &iv, &encrypted.ciphertext, &encrypted.tag, Some(aad))
             .expect("Decryption failed");
     assert_eq!(decrypted, plaintext);
+
+    // Tampered tag must trigger VerificationFailed
+    let mut corrupt_tag = encrypted.tag;
+    corrupt_tag[0] ^= 0x01;
+    let err = AesGcm::decrypt_256(&key, &iv, &encrypted.ciphertext, &corrupt_tag, Some(aad))
+        .expect_err("Corrupted tag should fail verification");
+    assert_eq!(err, rivide::error::RivideError::VerificationFailed);
 }
 
 #[test]
