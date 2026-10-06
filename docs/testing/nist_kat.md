@@ -19,11 +19,14 @@ make kat
 
 ## 2. KAT Test Vectors Validated
 
-1. **ML-KEM-768 KAT**: Exact keypair, ciphertext, and shared secret matching official NIST CAVP / FIPS 203 vectors.
-2. **ML-KEM-1024 KAT**: Byte-exact validation for Category 5 parameters.
-3. **ML-DSA-65 KAT**: Fixed-seed deterministic signature generation and validation matching NIST FIPS 204 vectors.
-4. **ML-DSA-87 KAT**: Deterministic signature validation for Category 5 parameters.
-5. **SHA-3 & SHAKE KAT**: Exact CAVP digest validation across standard test vectors.
+1. **SHA3-256 KAT**: Exact NIST CAVP message digest verification across standard test vector sets.
+2. **SHA3-512 KAT**: Exact NIST CAVP 512-bit message digest validation.
+3. **SHAKE-128 KAT**: Variable-length extendable-output function (XOF) CAVP validation.
+4. **SHAKE-256 KAT**: Variable-length XOF CAVP validation.
+5. **ML-KEM-768 KAT**: Exact keypair, ciphertext, and shared secret matching official NIST CAVP / FIPS 203 vectors.
+6. **ML-KEM-1024 KAT**: Byte-exact validation for Category 5 parameters.
+7. **ML-DSA-65 KAT**: Fixed-seed deterministic signature generation and validation matching NIST FIPS 204 vectors.
+8. **ML-DSA-87 KAT**: Deterministic signature validation for Category 5 parameters.
 
 ## 3. Differential Reference Vector Comparison
 
