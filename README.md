@@ -357,6 +357,7 @@ For detailed architectural, algorithmic, and API documentation, refer to the [`d
 - **Testing & Verification**:
   - [Automated Unit Tests](docs/testing/unit_tests.md)
   - [NIST Known Answer Tests (KAT)](docs/testing/nist_kat.md)
+  - [Statistical Timing Verification (Dudect)](docs/security/constant_time.md#3-statistical-timing-leakage-verification-dudect-methodology)
   - [LLVM libFuzzer Fuzzing](docs/testing/fuzzing.md)
 - **Real-World Integration Blueprints**:
   - [TLS 1.3 Quantum-Safe Handshake](docs/use_cases/network_tls.md)

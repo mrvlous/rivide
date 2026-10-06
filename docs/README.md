@@ -61,6 +61,7 @@ Rivide is an industrial-grade, zero-allocation, constant-time C99 post-quantum c
 ### 7. [Quality Assurance & Testing](testing/unit_tests.md)
 - **[Automated Unit Tests](testing/unit_tests.md)**: Unit test suite execution via `make test`.
 - **[NIST Known Answer Tests (KAT)](testing/nist_kat.md)**: Byte-exact CAVP test vector validation via `make kat`.
+- **[Statistical Timing Verification](security/constant_time.md#3-statistical-timing-leakage-verification-dudect-methodology)**: Dudect Welch's t-test statistical side-channel verification via `make timing`.
 - **[LLVM libFuzzer Fuzzing](testing/fuzzing.md)**: Continuous coverage-guided fuzzing targets via `make fuzz`.
 
 ### 8. [Real-World Deployment Use Cases](use_cases/network_tls.md)
