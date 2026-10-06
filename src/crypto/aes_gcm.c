@@ -315,6 +315,9 @@ rivide_status_t rivide_aes_gcm_decrypt(const rivide_aes_key_t *key, const uint8_
     /* 7. Constant-time tag verification BEFORE releasing plaintext (NIST SP 800-38D / RUP
      * prevention). */
     if (rivide_ct_memcmp(computed_tag, tag, 16) != 0) {
+        if (pt && ct_len > 0) {
+            rivide_cleanse(pt, ct_len);
+        }
         rivide_cleanse(h, sizeof(h));
         rivide_cleanse(j0, sizeof(j0));
         rivide_cleanse(counter, sizeof(counter));

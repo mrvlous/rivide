@@ -60,6 +60,7 @@ int test_aes256_gcm_invalid_tag(void) {
     uint8_t ct[sizeof(pt)];
     uint8_t tag[16];
     uint8_t recovered[sizeof(pt)];
+    static const uint8_t zeroes[sizeof(pt)] = {0};
 
     ASSERT_OK(rivide_aes256_key_expand(&key, raw_key));
     ASSERT_OK(rivide_aes_gcm_encrypt(&key, iv, NULL, 0, pt, sizeof(pt), ct, tag));
@@ -67,7 +68,10 @@ int test_aes256_gcm_invalid_tag(void) {
     /* Tamper tag. */
     tag[0] ^= 0x01;
 
+    /* Fill recovered buffer with non-zero sentinel bytes to verify RUP zeroization */
+    memset(recovered, 0xAA, sizeof(recovered));
     ASSERT_FAIL(rivide_aes_gcm_decrypt(&key, iv, NULL, 0, ct, sizeof(pt), tag, recovered));
+    ASSERT_MEM_EQ(recovered, zeroes, sizeof(recovered));
 
     rivide_aes_key_cleanse(&key);
     return 0;
