@@ -125,7 +125,16 @@ int test_keccak_sponge_state_invariants(void) {
 
     rivide_shake_squeeze(&ctx, buf2, sizeof(buf2));
 
-    /* NULL context and state guards */
+    /* Squeezing unfinalized sponge must be rejected without modifying output */
+    rivide_keccak_init(&ctx, 136);
+    rivide_keccak_absorb(&ctx, data, sizeof(data));
+    memset(buf, 0x55, sizeof(buf));
+    rivide_keccak_squeeze(&ctx, buf, sizeof(buf));
+    {
+        uint8_t sentinel[32];
+        memset(sentinel, 0x55, sizeof(sentinel));
+        ASSERT_MEM_EQ(buf, sentinel, sizeof(buf));
+    }
     rivide_keccak_f1600(NULL);
     rivide_shake128_init(NULL);
     rivide_shake256_init(NULL);

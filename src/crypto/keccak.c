@@ -211,7 +211,7 @@ void rivide_keccak_finalize(rivide_keccak_state_t *ctx, uint8_t domain_sep) {
  * @param[in]     outlen Number of bytes to squeeze.
  */
 void rivide_keccak_squeeze(rivide_keccak_state_t *ctx, uint8_t *out, size_t outlen) {
-    if (!ctx || outlen == 0 || !out || ctx->rate == 0 || ctx->rate >= 200) {
+    if (!ctx || outlen == 0 || !out || !ctx->squeezing || ctx->rate == 0 || ctx->rate >= 200) {
         return;
     }
 
