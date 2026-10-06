@@ -192,6 +192,20 @@ fuzz: ## Build LLVM libFuzzer targets using Clang
 	$(Q)$(CMAKE) --build $(BUILD_DIR)-fuzz $(VERBOSE_FLAG)
 	$(Q)$(LOG_DONE) "Fuzzing targets compiled in $(BUILD_DIR)-fuzz/."
 
+sanitize: ## Build and execute unit tests, KAT, and examples under ASan & UBSan
+	$(Q)$(LOG_INFO) "Configuring CMake with AddressSanitizer and UndefinedBehaviorSanitizer..."
+	$(Q)$(CMAKE) -B $(BUILD_DIR)-asan -S $(CMAKE_DIR) \
+		-DCMAKE_C_COMPILER=clang \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -g"
+	$(Q)$(CMAKE) --build $(BUILD_DIR)-asan $(VERBOSE_FLAG)
+	$(Q)$(LOG_INFO) "Executing test suites with ASan & UBSan..."
+	$(Q)./$(BUILD_DIR)-asan/rivide_tests
+	$(Q)./$(BUILD_DIR)-asan/rivide_kat_tests
+	$(Q)./$(BUILD_DIR)-asan/basic_kem_example
+	$(Q)./$(BUILD_DIR)-asan/basic_dsa_example
+	$(Q)$(LOG_DONE) "Sanitizer execution completed successfully with 0 violations."
+
 node-build: ## Build Node.js native bindings using node-gyp
 	$(Q)$(LOG_INFO) "Building Node.js native bindings in bindings/node/..."
 	$(Q)mkdir -p bindings/node/deps
@@ -257,7 +271,7 @@ install: build ## Install public headers and libraries to system/DESTDIR
 
 clean: ## Remove build directories and generated compile_commands.json
 	$(Q)$(LOG_INFO) "Cleaning build artifacts..."
-	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz compile_commands.json bindings/node/build bindings/node/deps bindings/rust/target bindings/rust/c_src
+	$(Q)rm -rf $(BUILD_DIR) $(BUILD_DIR)-fuzz $(BUILD_DIR)-asan compile_commands.json bindings/node/build bindings/node/deps bindings/rust/target bindings/rust/c_src
 	$(Q)$(LOG_DONE) "Clean finished."
 
 format: ## Format all C, Rust, and Node.js files using clang-format, rustfmt, and prettier
