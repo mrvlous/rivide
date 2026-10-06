@@ -22,14 +22,22 @@ pub type rivide_status_t = i32;
 
 /// Operation completed successfully.
 pub const RIVIDE_SUCCESS: rivide_status_t = 0;
-/// Invalid parameter or null pointer passed to function.
-pub const RIVIDE_ERR_INVALID_PARAM: rivide_status_t = -1;
-/// Cryptographic signature or authentication tag verification failed.
-pub const RIVIDE_ERR_VERIFICATION_FAILED: rivide_status_t = -2;
+/// Required pointer argument was NULL.
+pub const RIVIDE_ERR_NULL_PTR: rivide_status_t = -1;
+/// Argument value was out of acceptable range.
+pub const RIVIDE_ERR_INVALID_PARAM: rivide_status_t = -2;
 /// Operating system CSPRNG failure.
-pub const RIVIDE_ERR_ENTROPY_FAILURE: rivide_status_t = -3;
+pub const RIVIDE_ERR_RNG_FAILURE: rivide_status_t = -3;
+/// Alias for backwards compatibility.
+pub const RIVIDE_ERR_ENTROPY_FAILURE: rivide_status_t = RIVIDE_ERR_RNG_FAILURE;
+/// Cryptographic signature or authentication tag verification failed.
+pub const RIVIDE_ERR_VERIFICATION_FAILED: rivide_status_t = -4;
+/// KEM decapsulation failed.
+pub const RIVIDE_ERR_DECAPSULATION_FAILED: rivide_status_t = -5;
+/// Requested feature is unsupported.
+pub const RIVIDE_ERR_UNSUPPORTED: rivide_status_t = -6;
 /// Internal cryptographic or system fault.
-pub const RIVIDE_ERR_INTERNAL: rivide_status_t = -4;
+pub const RIVIDE_ERR_INTERNAL: rivide_status_t = -7;
 
 // Buffer length constants for ML-KEM
 pub const RIVIDE_ML_KEM_768_PK_BYTES: usize = 1184;

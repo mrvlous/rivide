@@ -48,9 +48,12 @@ impl RivideError {
     pub(crate) fn from_status(status: crate::sys::rivide_status_t) -> Result<(), Self> {
         match status {
             crate::sys::RIVIDE_SUCCESS => Ok(()),
-            crate::sys::RIVIDE_ERR_INVALID_PARAM => Err(RivideError::InvalidParameter),
-            crate::sys::RIVIDE_ERR_VERIFICATION_FAILED => Err(RivideError::VerificationFailed),
-            crate::sys::RIVIDE_ERR_ENTROPY_FAILURE => Err(RivideError::EntropyFailure),
+            crate::sys::RIVIDE_ERR_NULL_PTR | crate::sys::RIVIDE_ERR_INVALID_PARAM => {
+                Err(RivideError::InvalidParameter)
+            }
+            crate::sys::RIVIDE_ERR_VERIFICATION_FAILED
+            | crate::sys::RIVIDE_ERR_DECAPSULATION_FAILED => Err(RivideError::VerificationFailed),
+            crate::sys::RIVIDE_ERR_RNG_FAILURE => Err(RivideError::EntropyFailure),
             _ => Err(RivideError::InternalError),
         }
     }
