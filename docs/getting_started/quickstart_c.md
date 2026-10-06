@@ -45,11 +45,11 @@ int main(void) {
     printf("Rivide Engine v%s initialized successfully.\n", rivide_version_string());
 
     /* 2. Allocate stack buffers */
-    uint8_t pk[RIVIDE_ML_KEM_768_PUBLICKEYBYTES];
-    uint8_t sk[RIVIDE_ML_KEM_768_SECRETKEYBYTES];
-    uint8_t ct[RIVIDE_ML_KEM_768_CIPHERTEXTBYTES];
-    uint8_t ss_alice[RIVIDE_ML_KEM_BYTES];
-    uint8_t ss_bob[RIVIDE_ML_KEM_BYTES];
+    uint8_t pk[RIVIDE_ML_KEM_768_PK_BYTES];
+    uint8_t sk[RIVIDE_ML_KEM_768_SK_BYTES];
+    uint8_t ct[RIVIDE_ML_KEM_768_CT_BYTES];
+    uint8_t ss_alice[RIVIDE_ML_KEM_SS_BYTES];
+    uint8_t ss_bob[RIVIDE_ML_KEM_SS_BYTES];
 
     /* 3. Alice generates keypair */
     printf("[Alice] Generating ML-KEM-768 keypair...\n");
@@ -64,7 +64,7 @@ int main(void) {
     if (rivide_ml_kem_768_decaps(ss_alice, ct, sk) != RIVIDE_SUCCESS) return 1;
 
     /* 6. Verify shared secrets match in constant time */
-    if (rivide_ct_memcmp(ss_alice, ss_bob, RIVIDE_ML_KEM_BYTES) == 0) {
+    if (rivide_ct_memcmp(ss_alice, ss_bob, RIVIDE_ML_KEM_SS_BYTES) == 0) {
         printf("[SUCCESS] 256-bit quantum-safe shared secret established!\n");
     } else {
         printf("[ERROR] Shared secret mismatch!\n");
