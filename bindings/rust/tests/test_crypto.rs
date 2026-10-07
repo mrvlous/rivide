@@ -75,7 +75,7 @@ fn test_utils_functions() {
     println!("Detected CPU Features: {:?}", cpu);
 
     let ver = version();
-    assert_eq!(ver, "1.1.6");
+    assert_eq!(ver, "1.1.7");
 }
 
 fn hex_encode(bytes: &[u8]) -> String {
