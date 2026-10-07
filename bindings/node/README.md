@@ -204,7 +204,7 @@ utils.cleanse(serverKey);
 - **Safety Guarantees**: Powered by a C core guaranteeing **0 dynamic memory allocations (0 malloc)**, 100% official NIST KAT vector conformity, non-elidable volatile memory cleansing (`utils.cleanse()`), and constant-time execution verified via Dudect statistical leakage testing.
 - **Production Recommendation**: We strongly encourage deploying **Hybrid Cryptography** (e.g. ML-KEM-768 with classical AES-256-GCM) as recommended by NIST, BSI, and ANSSI during the post-quantum transition.
 
-For complete vulnerability reporting protocols, see the root [SECURITY.md](../../SECURITY.md).
+For complete vulnerability reporting protocols, see [SECURITY.md](../../.github/SECURITY.md).
 
 ## Package Scripts & Automation
 
