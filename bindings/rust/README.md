@@ -198,7 +198,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 - **Safety Guarantees**: Built upon a C core that guarantees **0 dynamic memory allocations (0 malloc)**, automated volatile memory cleansing (`rivide_cleanse` and Rust RAII `Drop` zeroization on [`MlKemSharedSecret`](src/kem.rs)), 100% official NIST KAT vector conformity, and constant-time execution verified via Dudect statistical leakage testing.
 - **Production Recommendation**: We strongly encourage employing **Hybrid Cryptography** (e.g. ML-KEM-768 with classical AES-256-GCM or X25519) as recommended by NIST, BSI, and ANSSI during the post-quantum transition.
 
-For complete vulnerability reporting protocols, see the root [SECURITY.md](../../SECURITY.md).
+For complete vulnerability reporting protocols, see [SECURITY.md](../../.github/SECURITY.md).
 
 ## Cargo Automation & Testing
 
