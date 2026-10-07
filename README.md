@@ -7,7 +7,7 @@ Copyright (C) 2026 Moh. Ananda Firmansyah Putra
 
 # Rivide: Post-Quantum Cryptography C99 Library
 
-[![Version](https://img.shields.io/badge/Version-v1.1.6-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-v1.1.7-informational.svg)](CHANGELOG.md)
 [![npm version](https://img.shields.io/npm/v/rivide.svg?logo=npm&logoColor=white)](https://www.npmjs.com/package/rivide)
 [![Crates.io](https://img.shields.io/crates/v/rivide.svg?logo=rust&logoColor=white)](https://crates.io/crates/rivide)
 [![Documentation](https://docs.rs/rivide/badge.svg)](https://docs.rs/rivide)
