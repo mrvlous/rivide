@@ -35,6 +35,7 @@ Rivide is an industrial-grade, zero-allocation, constant-time C99 post-quantum c
 - **[Rust Bindings Architecture](architecture/rust_bindings.md)**: Raw FFI layers, safe abstractions, RAII zeroization, and crates.io bundling.
 
 ### 4. [Security & Side-Channel Hardening](security/threat_model.md)
+- **[Security Policy & Audit Transparency](../SECURITY.md)**: Independent implementation disclosure, audit roadmap, and hybrid deployment guidance.
 - **[Threat Model & Security Goals](security/threat_model.md)**: IND-CCA2 and EUF-CMA formal adversary models.
 - **[Constant-Time Engineering](security/constant_time.md)**: Elimination of secret-dependent branches, cache-timing mitigation, and constant-time comparators.
 - **[Memory Safety Guarantees](security/memory_safety.md)**: Dead-store elimination prevention, volatile memory barriers, and spatial safety.
