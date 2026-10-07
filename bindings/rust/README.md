@@ -192,6 +192,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 | **ML-DSA-65** | NIST FIPS 204 | `1952` bytes | `4032` bytes | `3309` bytes | Category 3 / AES-192 equivalent |
 | **ML-DSA-87** | NIST FIPS 204 | `2592` bytes | `4896` bytes | `4627` bytes | Category 5 / AES-256 equivalent |
 
+## Security, Audit Status, & Responsible Use
+
+- **Third-Party Audit Status**: Rivide is an independent post-quantum cryptography library. **As of version 1.1.7, Rivide has NOT yet undergone a formal commercial third-party security audit**. Independent peer review, formal verification, and academic scrutiny are warmly welcomed.
+- **Safety Guarantees**: Built upon a C core that guarantees **0 dynamic memory allocations (0 malloc)**, automated volatile memory cleansing (`rivide_cleanse` and Rust RAII `Drop` zeroization on [`MlKemSharedSecret`](src/kem.rs)), 100% official NIST KAT vector conformity, and constant-time execution verified via Dudect statistical leakage testing.
+- **Production Recommendation**: We strongly encourage employing **Hybrid Cryptography** (e.g. ML-KEM-768 with classical AES-256-GCM or X25519) as recommended by NIST, BSI, and ANSSI during the post-quantum transition.
+
+For complete vulnerability reporting protocols, see the root [SECURITY.md](../../SECURITY.md).
+
 ## Cargo Automation & Testing
 
 | Command | Purpose |
