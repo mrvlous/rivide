@@ -12,6 +12,17 @@ All notable changes to the **`rivide`** Rust crate will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.7] - 2026-10-07
+
+### Added
+- **`MlKemSharedSecret` RAII Container with Automated Drop Zeroization**:
+  - Introduced `MlKemSharedSecret` wrapping 32-byte shared secret buffers with non-elidable zeroization (`cleanse`) on drop, `Deref<Target = [u8; 32]>`, `AsRef<[u8]>`, and redacted `Debug` formatting.
+  - Added `MlKem768::decapsulate_secret()` and `MlKem1024::decapsulate_secret()` returning `Result<MlKemSharedSecret, RivideError>` alongside existing `decapsulate()` methods for complete backward compatibility.
+
+### Fixed
+- **Underlying C Core Hardening**:
+  - Inherited critical security fixes from core engine v1.1.7 including AES-GCM plaintext buffer zeroization on tag mismatch (RUP defense), Keccak sponge lifecycle state guards, ML-DSA hint vector zeroization on unpack failure, and static analysis bitwise shifts cleanups.
+
 ## [1.1.6] - 2026-10-01
 
 ### Fixed
