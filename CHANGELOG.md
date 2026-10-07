@@ -12,6 +12,26 @@ All notable changes to the **Rivide** Post-Quantum Cryptography library will be 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.7] - 2026-10-07
+
+### Fixed
+- **AES-GCM Plaintext Zeroization on Tag Verification Failure (RUP Prevention)**:
+  - Enforced proactive memory zeroization of caller-provided plaintext buffers (`rivide_cleanse(pt, ct_len)`) in `src/crypto/aes_gcm.c` (`rivide_aes_gcm_decrypt`) when authentication tag verification fails (`RIVIDE_ERR_VERIFICATION_FAILED`). Fulfills NIST SP 800-38D Release of Unverified Plaintext (RUP) guidelines and the documented API contract in `include/rivide/crypto/aes_gcm.h`.
+- **Keccak / SHAKE Sponge State Transition Invariant Guards**:
+  - Added strict state transition guards (`!ctx->squeezing`) in `src/crypto/keccak.c` (`rivide_keccak_squeeze`) to reject squeezing on unfinalized sponge contexts, preventing unpadded or unpermuted internal state disclosure.
+- **ML-DSA Hint Vector Unpacking Zeroization & Malleability Defense**:
+  - Enforced non-elidable zeroization of the destination polynomial vector `h` (`rivide_cleanse(h, sizeof(*h))`) in `src/pqc/ml_dsa/dsa_packing.c` (`dsa_unpack_hint`) upon encountering invalid indices, non-monotonic values, or non-zero trailing padding bytes, eliminating signature malleability under NIST FIPS 204.
+- **Static Analysis & Clang-Tidy Cleanups**:
+  - Replaced signed shift literal `>> 31` with unsigned literal `>> 31u` in `src/utils/mem.c` (`rivide_ct_memcmp`, `rivide_ct_select`) to eliminate `bugprone-signed-bitwise` diagnostics.
+  - Employed exact power-of-two division `/ 65536` for Montgomery polynomial reduction products in `src/pqc/ntt_simd.c` (`rivide_simd_poly_pointwise_montgomery`) to eliminate implementation-defined signed arithmetic shift warnings.
+
+### Added
+- **Sanitizer Automated Verification Target (`make sanitize`)**:
+  - Added dedicated `sanitize` target in `Makefile` compiling with Clang AddressSanitizer (ASan) and UndefinedBehaviorSanitizer (UBSan) (`-fsanitize=address,undefined -fno-omit-frame-pointer -g`), verifying unit tests, NIST KATs, and example binaries with zero memory violations or undefined behaviors.
+- **Negative & Fault Injection Test Suites**:
+  - Added unit test assertion in `tests/crypto/test_aes_gcm.c` confirming caller plaintext buffers are wiped upon tampered tag decryption.
+  - Added unit test assertion in `tests/crypto/test_sha3.c` confirming unfinalized sponge squeeze attempts are rejected without modifying output buffers.
+
 ## [1.1.6] - 2026-10-01
 
 ### Fixed
