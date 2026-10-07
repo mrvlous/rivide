@@ -59,3 +59,17 @@ Rivide is engineered for safe deployment in high-throughput concurrent environme
    - Eliminates data races and torn pointer reads during concurrent key generation across worker threads.
 3. **Thread-Local Volatile Memory Cleansing**:
    - Sensitive intermediate polynomial vectors and secrets are cleansed locally within each thread's stack frame prior to return, preventing cross-thread memory bleed.
+
+## 5. Audit Transparency & Defense-in-Depth Hybrid Cryptography
+
+### Independent Implementation Notice
+Rivide is an independent post-quantum cryptography library. As of version **1.1.7**, Rivide has **NOT yet undergone a formal commercial third-party security audit** (e.g. from firms such as Trail of Bits, Cure53, or NCC Group). We actively welcome academic peer reviews, security researchers, and formal grant support (e.g. OSTIF, NLnet) to facilitate commercial third-party audits.
+
+### Defense-in-Depth: The Hybrid Deployment Model
+To mitigate the inherent risk of newly standardized post-quantum schemes prior to decades of cryptanalysis, international security agencies (including **NIST**, **BSI Germany**, and **ANSSI France**) advocate for **Hybrid Cryptography**:
+- Encapsulate session keys using **ML-KEM-768** combined with classical authenticated encryption (**AES-256-GCM**) or classical key exchange (**X25519**).
+- Under this architecture, even in the hypothetical scenario of a mathematical advance against module lattices, the classical encryption layer ensures full data confidentiality.
+- Rivide includes native AES-128/256-GCM directly in the engine to facilitate immediate hybrid channel construction without external dependencies.
+
+For complete vulnerability reporting and security policies, see [SECURITY.md](../../SECURITY.md).
+
