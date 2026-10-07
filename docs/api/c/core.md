@@ -27,7 +27,7 @@ Initializes the Rivide cryptographic engine, validates internal constants, and p
 const char *rivide_version_string(void);
 ```
 
-- `rivide_version_string()`: Returns static semantic version string (e.g. `"1.1.6"`).
+- `rivide_version_string()`: Returns static semantic version string (e.g. `"1.1.7"`).
 
 ## 3. Status Error Codes
 
