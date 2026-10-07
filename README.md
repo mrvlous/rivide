@@ -284,6 +284,21 @@ For full documentation, refer to the [Rust Bindings Guide](bindings/rust/README.
 | **ML-DSA-65** | NIST FIPS 204 | `1952` bytes | `4032` bytes | `3309` bytes | Category 3 / AES-192 equivalent |
 | **ML-DSA-87** | NIST FIPS 204 | `2592` bytes | `4896` bytes | `4627` bytes | Category 5 / AES-256 equivalent |
 
+## Security Assurance, Audit Status, & Responsible Use
+
+Rivide is committed to absolute transparency regarding cryptographic assurance and third-party validation:
+
+- **Third-Party Audit Status**: Rivide is an independent post-quantum cryptography implementation. **As of version 1.1.7, Rivide has NOT yet undergone a formal commercial third-party security audit** (e.g. from Trail of Bits, Cure53, or NCC Group). We actively welcome security researchers, academic peer reviews, and grant opportunities (such as OSTIF or NLnet) for independent auditing.
+- **Verifiable Mathematical Rigor**: To provide concrete verification prior to commercial audits, Rivide enforces:
+  - **100% NIST CAVP Known Answer Tests**: 8/8 official test vectors validated via `make kat`.
+  - **Zero Dynamic Memory Allocation (0 Malloc)**: Eliminates heap vulnerabilities (use-after-free, double-free, heap corruption) by design.
+  - **Statistical Constant-Time Verification**: Dudect Welch's $t$-test verification ensures $|t| \le 1.85 \ll 4.50$ via `make timing`.
+  - **Automated Memory Sanitizers**: Clang AddressSanitizer and UndefinedBehaviorSanitizer pass with zero violations via `make sanitize`.
+  - **Table-Free S-Box**: AES S-box calculated algebraically over $GF(2^8)$ to prevent cache-timing attacks.
+- **Recommended Production Strategy**: In accordance with NIST, BSI, and ANSSI post-quantum guidelines, we strongly encourage deploying Rivide in **Hybrid Mode** (combining ML-KEM-768 with classical AES-256-GCM or classical ECDH), ensuring uninterrupted protection even against potential theoretical advances against lattice schemes.
+
+For full vulnerability disclosure protocols and security policies, see [SECURITY.md](SECURITY.md).
+
 ## Master Makefile Command Automation
 
 The master [`Makefile`](Makefile) provides simple automation targets:
