@@ -34,10 +34,10 @@
 #define RIVIDE_VERSION_MINOR 1
 
 /** @brief Patch version number. */
-#define RIVIDE_VERSION_PATCH 6
+#define RIVIDE_VERSION_PATCH 7
 
-/** @brief Complete version string constant (e.g., "1.1.6"). */
-#define RIVIDE_VERSION_STRING "1.1.6"
+/** @brief Complete version string constant (e.g., "1.1.7"). */
+#define RIVIDE_VERSION_STRING "1.1.7"
 
 #include "crypto/sha3.h"
 #include "rivide_config.h"
@@ -76,7 +76,7 @@ rivide_status_t rivide_init(void);
  * @brief Retrieve the library version as a human-readable string.
  *
  * @return A pointer to a static, null-terminated version string
- *         (e.g., "1.1.6"). Valid for the lifetime of the program.
+ *         (e.g., "1.1.7"). Valid for the lifetime of the program.
  */
 const char *rivide_version_string(void);
 
