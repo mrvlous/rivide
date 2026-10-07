@@ -34,10 +34,10 @@
 #define RIVIDE_VERSION_MINOR 1
 
 /** @brief Patch version number. */
-#define RIVIDE_VERSION_PATCH 6
+#define RIVIDE_VERSION_PATCH 7
 
 /** @brief Complete version string constant. */
-#define RIVIDE_VERSION_STRING "1.1.6"
+#define RIVIDE_VERSION_STRING "1.1.7"
 
 /**
  * @defgroup config_feature_flags Feature Flags
