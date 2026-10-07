@@ -71,5 +71,5 @@ To mitigate the inherent risk of newly standardized post-quantum schemes prior t
 - Under this architecture, even in the hypothetical scenario of a mathematical advance against module lattices, the classical encryption layer ensures full data confidentiality.
 - Rivide includes native AES-128/256-GCM directly in the engine to facilitate immediate hybrid channel construction without external dependencies.
 
-For complete vulnerability reporting and security policies, see [SECURITY.md](../../SECURITY.md).
+For complete vulnerability reporting and security policies, see [SECURITY.md](../../.github/SECURITY.md).
 
